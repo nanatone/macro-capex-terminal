@@ -1,38 +1,39 @@
-# 宏观流动性与科技 CapEx 终端
+# 宏观流动性与科技 CapEx 投研终端 (Pro)
 
-零构建静态看板，支持五页浏览、规则推演与双视角模板晨报。
+零构建静态看板，支持五页交互浏览、七维量化规则推演、9变量压力测试沙盘、股债传导百科及动态双视角晨报（二级交易实战版 + 理财存续期/渠道陪伴版）。
 
-## 数据覆盖
+## 数据覆盖（全量 16 项真实数据源接入）
 
-- FRED：DGS10、T10Y2Y、EFFR、RRPONTSYD、WTREGEN。
-- AkShare/东方财富：中债10Y/30Y与M1-M2剪刀差，并非直连中国官方接口。
-- DR007、沪深300 ERP：原包演示数据，尚未接入自动抓取；不会标记为已更新。
-- 科技 CapEx：静态跟踪与核查框架，尚无财报自动抓取。
-- 晨报：规则模板生成，尚无大模型调用。含未验证指标的推演会明确提示。
+- **FRED API（美国宏观与狭义流动性 9 项）**：
+  - `DGS10`（10Y美债名义收益率）、`DFII10`（10Y TIPS实际利率）、`T10YIE`（10Y盈亏平衡通胀预期）
+  - `T10Y2Y`（10Y-2Y期限利差）、`EFFR`（联邦基金有效利率）
+  - `RRPONTSYD`（美联储隔夜逆回购 ON RRP）、`WTREGEN`（美国财政部一般账户 TGA，百万美元自动换算为十亿美元）
+  - `WRESBAL`（美联储商业银行准备金余额，百万美元自动换算为十亿美元）、`BAMLH0A0HYM2`（美债高收益期权调整利差 HY OAS）
+- **中国外汇交易中心 / AkShare / 东方财富 / 乐咕（中国宏观、资金分层与估值 7 项）**：
+  - `CN10Y` / `CN30Y`：中债 10Y / 30Y 国债收益率（`ak.bond_zh_us_rate`）
+  - `CN10Y-US10Y`：中美 10Y 国债利差（由中债10Y与美债10Y序列计算）
+  - `FDR007`（DR007基准）：中国外汇交易中心银银间 7 天回购定盘利率（`ak.repo_rate_query` 直连 ChinaMoney CSV，近1年滚动分位）
+  - `FR007-FDR007`（R007-DR007）：银行间非银流动性分层利差（单位 bp，理财赎回负反馈领先预警指标，近1年滚动分位）
+  - `M1-M2`：月度 M1-M2 同比剪刀差（`ak.macro_china_money_supply`，近36个月分位）
+  - `CSI300_ERP`：沪深300 股债风险溢价（`ak.stock_ebs_lg` 股债利差序列换算为百分比，近3年日历窗口分位）
+- **科技 CapEx 追踪**：三阶段产业链（算力基建、Agent 商业化、具身智能）、月度/旬度高频先导指标、一阶/二阶导与 ROI 闭环验证标准及 SEC/巨潮检索词一键复制。
+- **双视角晨报**：严格根据七维硬规则状态与真实涨跌方向动态合成，消除静态死锁矛盾。
 
-每个已接入指标保存 observation_date 与 data_status。页面运行时间不代表所有指标的观测日期。
-TGA 从百万美元换算为十亿美元；WTREGEN 是周均序列。变化列沿用原 JSON 字段名，实际表示最近1/5期观测变化；月频剪刀差为环比百分点变化。三年分位按数据频率使用日历窗口或36个月计算。
+每个指标均保存 `observation_date`、`data_status`、`freq`（`daily`/`weekly`/`monthly`）与 `window_label`。前端根据频率自动显示 `1日/5日`、`1周/5周` 或 `月环比`。
 
 ## 本地使用
 
-安装：`python -m pip install -r requirements.txt`
+安装依赖：`python -m pip install -r requirements.txt`
 
-在本机进程环境中设置 FRED_API_KEY 后执行：`python scripts/update_macro.py`。
-不要将密钥写入代码、JSON、README 或 Git。
+在本机进程环境中设置 `FRED_API_KEY` 后执行：`python scripts/update_macro.py`（切勿将密钥写入代码或 Git）。
 
-预览：`python -m http.server 8080 --bind 127.0.0.1`，访问 http://127.0.0.1:8080。
+本地预览：`python -m http.server 8080 --bind 127.0.0.1`，访问 http://127.0.0.1:8080。
 
-验证：`python -m unittest discover -s tests -v`
+回归测试：`python -m unittest discover -s tests -v`
 
-## GitHub 部署
+## GitHub 部署与自动更新
 
-1. 推送到公开仓库 main 分支。
-2. 将 FRED_API_KEY 配置为仓库 Actions Secret；WEBHOOK_URL 为选填。
-3. Settings → Pages → Source 选择 GitHub Actions。
-4. 运行 Daily Macro & CapEx Intelligence Auto-Update。
-
-工作流每天北京时间08:00触发，GitHub可能延迟执行；更新JSON并提交，然后显式发布Pages。
-这可避免 GITHUB_TOKEN 自动提交不触发分支式 Pages 构建的问题。
-发布包仅包含 index.html 与 data/macro_daily.json，不包含本地依赖与配置文件。
-
-前端依赖 React、Babel、Tailwind 公共 CDN，需要网络访问这些服务。
+1. 推送到公开仓库 `main` 分支。
+2. 在仓库 Settings → Secrets and variables → Actions 中配置 `FRED_API_KEY`（`WEBHOOK_URL` 为选填）。
+3. Settings → Pages → Source 选择 `GitHub Actions`。
+4. 工作流 `Daily Macro & CapEx Intelligence Auto-Update` 每天北京时间 08:00 自动触发（支持手动 `workflow_dispatch`），完成回归测试、数据更新、JSON 提交与 Pages 显式发布。

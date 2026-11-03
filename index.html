@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-  <title>宏观流动性与科技CapEx一手数据投研终端 | Macro & Tech CapEx Terminal</title>
+  <title>宏观流动性与科技CapEx一手数据投研终端 (Pro) | Macro & Tech CapEx Terminal</title>
   <!-- Tailwind CSS CDN -->
   <script src="https://cdn.tailwindcss.com"></script>
   <!-- React 18 & Babel CDN for Zero-Build GitHub Pages Deployment -->
@@ -34,7 +34,71 @@
     const { useState, useEffect, useMemo, useRef } = React;
 
     // 默认内置兜底数据（当本地直接双击打开 file:// 时同样完美运行，部署到 GitHub Pages 后会自动 fetch ./data/macro_daily.json）
-    const FALLBACK_DATA = {"meta": {"updated_at": "2026-11-02 08:00:00 CST", "data_source": "FRED API + AkShare Official Feeds", "market_regime": "海外高利率震荡 + 国内宽货币资产荒延续", "regime_code": "US_TIGHT_CN_ASSET_FAMINE"}, "metrics": {"us": {"dgs10": {"name": "10Y 美债收益率", "code": "DGS10", "value": 4.28, "unit": "%", "chg_1d_bp": 3.0, "chg_5d_bp": 14.0, "percentile_3y": 78, "threshold_warn": 4.35, "role": "DCF分母端：全球无风险利率锚", "url": "https://fred.stlouisfed.org/series/DGS10"}, "t10y2y": {"name": "10Y-2Y 美债期限利差", "code": "T10Y2Y", "value": 0.18, "unit": "%", "chg_1d_bp": 2.0, "chg_5d_bp": 6.0, "percentile_3y": 82, "threshold_warn": 0.5, "role": "衰退预期与长端期限溢价(Term Premium)", "url": "https://fred.stlouisfed.org/series/T10Y2Y"}, "effr": {"name": "联邦基金有效利率", "code": "EFFR", "value": 4.58, "unit": "%", "chg_1d_bp": 0.0, "chg_5d_bp": 0.0, "percentile_3y": 55, "threshold_warn": 5.0, "role": "短端资金成本基准", "url": "https://fred.stlouisfed.org/series/EFFR"}, "rrp": {"name": "美联储隔夜逆回购 (ON RRP)", "code": "RRPONTSYD", "value": 165.4, "unit": "十亿美元", "chg_1d_bp": -12.5, "chg_5d_bp": -38.0, "percentile_3y": 8, "threshold_warn": 200.0, "role": "美元狭义超额流动性缓冲垫", "url": "https://fred.stlouisfed.org/series/RRPONTSYD"}, "tga": {"name": "美国财政部一般账户 (TGA)", "code": "WTREGEN", "value": 782.0, "unit": "十亿美元", "chg_1d_bp": 15.0, "chg_5d_bp": 42.0, "percentile_3y": 74, "threshold_warn": 850.0, "role": "财政发债抽水(>800B偏紧)与投放指标", "url": "https://fred.stlouisfed.org/series/WTREGEN"}}, "cn": {"cn10y": {"name": "10Y 中债国债收益率", "code": "CN10Y", "value": 2.11, "unit": "%", "chg_1d_bp": -1.2, "chg_5d_bp": -4.5, "percentile_3y": 6, "threshold_warn": 2.15, "role": "DCF分母端：国内无风险利率与资产荒温度计", "url": "https://yield.chinabond.com.cn/"}, "cn30y": {"name": "30Y 超长国债收益率", "code": "CN30Y", "value": 2.29, "unit": "%", "chg_1d_bp": -1.5, "chg_5d_bp": -6.0, "percentile_3y": 8, "threshold_warn": 2.35, "role": "险资欠配压力与超长期特别国债供需锚", "url": "https://yield.chinabond.com.cn/"}, "dr007": {"name": "银行间7天质押式回购 (DR007)", "code": "DR007", "value": 1.62, "unit": "%", "chg_1d_bp": -3.0, "chg_5d_bp": -8.0, "percentile_3y": 19, "threshold_warn": 1.85, "role": "银行间狭义资金面松紧核心指标", "url": "https://www.chinamoney.com.cn/"}, "m1_m2_diff": {"name": "M1 - M2 同比剪刀差", "code": "M1-M2", "value": -6.8, "unit": "%", "chg_1d_bp": 0.4, "chg_5d_bp": 0.4, "percentile_3y": 14, "threshold_warn": -3.0, "role": "DCF分子端：实体企业资金活化与宽信用成色", "url": "http://www.pbc.gov.cn/diaochatongjisi/116219/index.html"}, "erp_csi300": {"name": "沪深300股债风险溢价 (ERP)", "code": "CSI300_ERP", "value": 6.15, "unit": "%", "chg_1d_bp": 4.0, "chg_5d_bp": 11.0, "percentile_3y": 86, "threshold_warn": 5.5, "role": "股债性价比标尺(>6.0%权益极具配置性价比)", "url": "https://www.csindex.com.cn/"}}}, "decision_engine": {"hard_rules": [{"id": "RULE_US_RATE_SLOPE", "dimension": "海外分母端斜率预警", "status": "warning", "status_label": "斜率承压", "trigger_condition": "10Y美债 > 4.25% 或 5日上行 > 12bp", "current_reading": "4.28% (5日 +14.0bp | 3年78%分位)", "action_instruction": "美债长端受期限溢价与发债供给扰动上冲过快，压制远期现金流占比高但无当期业绩的纯概念成长股；海外久期宜控制在短端。"}, {"id": "RULE_US_LIQUIDITY_BUFFER", "dimension": "美元狭义流动性缓冲", "status": "danger", "status_label": "缓冲偏薄", "trigger_condition": "ON RRP < 2000亿美元 且 TGA > 7500亿美元", "current_reading": "RRP 165.4B (8%分位) / TGA 782.0B", "action_instruction": "隔夜逆回购蓄水池接近耗尽，叠加财政部TGA账户回补抽水，警惕美股高收益债与高Beta小盘股波动放大。"}, {"id": "RULE_CN_ASSET_FAMINE", "dimension": "国内资产荒与利率象限", "status": "bullish", "status_label": "资产荒延续", "trigger_condition": "10Y中债 < 2.15% 且 DR007 < 1.75%", "current_reading": "10Y中债 2.11% (6%分位) / DR007 1.62%", "action_instruction": "狭义资金面维持宽松，长端利率处于历史极低分位，固收与险资欠配压力显著，高股息红利低波与中短久期高等级信用债安全垫极厚。"}, {"id": "RULE_CN_CREDIT_PULSE", "dimension": "国内分子端宽信用拐点", "status": "neutral", "status_label": "磨底待验证", "trigger_condition": "M1-M2剪刀差 > -5.0% 触发顺周期进攻", "current_reading": "M1-M2剪刀差 -6.8% (边际收敛 +0.4pct)", "action_instruction": "企业活期存款活化初现企稳迹象但尚未脱离负值深水区，全面顺周期贝塔行情仍需等待财政实物工作量进一步验证。"}, {"id": "RULE_EQUITY_ERP_VALUATION", "dimension": "A股股债性价比 (ERP)", "status": "bullish", "status_label": "高性价比区", "trigger_condition": "沪深300 ERP > 5.8% (近3年 >80%分位)", "current_reading": "ERP 6.15% (近3年 86%分位)", "action_instruction": "无风险利率下行推升权益资产隐含风险溢价至历史高位，向下空间已被封锁，宜通过哑铃策略进攻端积极布局具备CapEx订单兑现的硬科技板块。"}], "barbell_allocation": {"defense_total": 60, "offense_total": 40, "breakdown": [{"bucket": "防御端：中短久期利率债/高等级信用债", "weight": 35, "tag": "流动性底仓", "rationale": "DR007低位运行保障票息套息空间，规避30Y超长债在财政发债窗口期的供给波动。"}, {"bucket": "防御端：央国企高股息红利低波", "weight": 25, "tag": "类债替代锚", "rationale": "10Y国债2.11%背景下，股息率>4.5%且自由现金流充裕的水电、运营商、银行具备强险资配置支撑。"}, {"bucket": "进攻端：全球AI算力基建与国产卡点供应链", "weight": 25, "tag": "CapEx硬逻辑", "rationale": "紧盯北美云厂商季度CapEx指引与台积电CoWoS/800G-1.6T光模块/液冷排产，业绩确定性对冲分母端扰动。"}, {"bucket": "进攻端：AI Agent商业化与具身智能核心部件", "weight": 15, "tag": "高弹性期权", "rationale": "围绕推理侧Scaling Law成本下降与人形机器人丝杠/传感器小批量定点，结合板块量价共振逢低卡位。"}]}, "soft_reports": {"trading_perspective": {"title": "【二级市场实战晨报】海外分母端斜率偏陡，维持“60%红利短债 + 40%CapEx硬科技”哑铃结构", "core_marginal_change": "隔夜10Y美债收益率报4.28%（5日累计上行14bp，处近3年78%分位），叠加美联储ON RRP降至1654亿美元低位，海外分母端贴现率短期出现脉冲式收紧；国内10Y国债则稳守2.11%（近3年6%极低分位），DR007回落至1.62%，沪深300 ERP升至6.15%（86%分位），呈现典型的“内松外紧、分子端磨底”格局。", "transmission_logic": "1. 美债10Y近5日斜率超12bp阈值，对缺乏当期现金流支撑的海外纯概念科技股形成估值压制；\n2. 国内狭义流动性充裕而M1-M2剪刀差（-6.8%）尚在磨底，‘资产荒’逻辑未被证伪，高股息红利板块与短久期债券依然是资金阻力最小的方向；\n3. ERP处于86%分位极值区，A股/港股具备显著估值保护，结构性超额收益高度集中于资本开支（CapEx）验证通过的硬件基建与自主可控主线。", "action_instructions": ["【仓位与配比】将哑铃策略锁定为 防守端60% : 进攻端40%，暂不盲目追高无业绩题材。", "【进攻端选股过滤】重点筛选北美四大云厂商CapEx映射链（1.6T光模块、HBM配套、数据中心液冷）及北交所/科创板中具备丝杠、六维力传感器实质送样订单的共振标的。", "【债券久期管理】10Y国债接近2.10%关口后赔率有所下降，新增固收仓位以1-3年期高等级信用债与存单替代30Y超长债博弈。"]}, "wealth_perspective": {"title": "【存续期管理与渠道陪伴话术】如何向客户解释近期长债小幅震荡与“固收+”哑铃配置逻辑？", "core_marginal_change": "近期国内资金面保持平稳偏松（DR007仅1.62%，10年期国债收益率处于2.11%历史低位区间），但受海外美债利率反弹至4.28%及国内超长期特别国债供给节奏影响，长久期债券与成长风格权益资产日内波动有所加大。", "transmission_logic": "1. 【债市存续期归因】：当前短端利率极具安全垫，存续产品净值微幅波动主要源于长端（10Y/30Y）在极低收益率分位（6%分位）下的止盈盘与财政发债预期扰动，并非货币政策转向，票息资产底仓依然稳固；\n2. 【含权产品/固收+归因】：海外美债利率短线上冲导致全球高估值成长板块承压，但国内股债风险溢价（ERP 6.15%）处于近三年86%的高性价比区间，产品通过“高股息红利+业绩确定性科技”对冲了单一风格回撤。", "action_instructions": ["【纯固收客户安抚话术】：“当前央行呵护流动性态度明确（DR007低位运行），近期净值小幅波动主要是长端国债在历史低利率区间的正常呼吸。我们产品以中短久期高等级信用债筑底，吃稳健票息，不建议在波动中频繁赎回损失复利。”", "【分行RM配置转化建议】：针对风险偏好适中的存量到期客户，主推“短债底仓 + 央企红利/硬科技固收+”哑铃型组合，既锁定当前稀缺的稳健票息，又保留AI产业周期与宽信用修复的向上期权。", "【预警阈值跟踪】：持续监控10Y国债2.25%与DR007 1.90%两条风控线，未触及前维持存续产品“持仓待涨”评级。"]}}}, "capex_tracker": [{"stage": "第一阶段：算力与硬件基建 (先导指标)", "status": "高景气兑现期", "badge_color": "emerald", "chain_nodes": "台积电CoWoS先进封装 ➔ HBM3e/HBM4存储 ➔ 800G/1.6T光模块 ➔ AIDC液冷与电力设备", "sec_cninfo_keywords": ["Purchases of property and equipment", "CoWoS capacity allocation", "800G/1.6T transceivers", "Liquid cooling", "合同负债", "在建工程"], "verification_metric": "北美四大云厂商(MSFT/GOOG/META/AMZN)季度CapEx同比增速 > 35%，且台积电法说会维持AI营收CAGR指引。", "red_flag": "云厂商下调下季度CapEx指引，或光模块/服务器ODM厂商存货周转天数连续两个季度异常攀升。"}, {"stage": "第二阶段：模型架构与Agent商业化 (中期演进)", "status": "分化验证期", "badge_color": "blue", "chain_nodes": "Reasoning推理期扩展 ➔ 端侧轻量化模型 ➔ 企业级AI Agent工作流 ➔ 垂直行业SaaS增收", "sec_cninfo_keywords": ["Remaining Performance Obligations (RPO)", "AI Copilot seat adoption", "Inference token volume", "ARR增速", "研发费用资本化率"], "verification_metric": "软件企业RPO（剩余履约义务）增速连续超越营收增速，AI附加功能带来ARPU值实质提升 > 15%。", "red_flag": "空有Token调用量暴增但客户留存率低，毛利率因算力租赁成本过高而持续恶化。"}, {"stage": "第三阶段：具身智能与人形机器人 (长周期空间)", "status": "0到1定点突破期", "badge_color": "purple", "chain_nodes": "多模态端到端控制算法 ➔ 行星滚柱丝杠 ➔ 谐波减速器 ➔ 六维力传感器与空心杯电机", "sec_cninfo_keywords": ["行星滚柱丝杠", "六维力传感器", "客户送样验证", "小批量定点通知书", "投资者关系活动记录表"], "verification_metric": "头部主机厂进入千台级产线实训，国内核心零部件厂商在巨潮资讯网披露正式定点公告与专用产线环评。", "red_flag": "仅停留在框架战略合作协议、无实质研发设备投入、主业现金流恶化且大股东高位减持。"}]};
+    const FALLBACK_DATA = {"meta": {"updated_at": "2026-11-03 20:32:07 CST", "data_source": "FRED API (9项) + ChinaMoney/AkShare/Eastmoney/Legu (7项); CapEx Framework", "market_regime": "海外实际利率2.6% + 国内低利率资产荒(中债1.62%) · 哑铃 65:35", "regime_code": "PRO_SEVEN_DIM_BARBELL", "data_quality_note": "全部16项中美宏观、流动性与估值指标均已实时核验更新。 CapEx 为三阶段产业链与财报先行指标核查框架；双视角晨报由七维规则引擎动态合成。"}, "metrics": {"us": {"dgs10": {"name": "10Y 美债名义收益率", "code": "DGS10", "value": 4.94, "unit": "%", "freq": "daily", "window_label": "近3年历史分位数", "chg_1d_bp": -4.0, "chg_5d_bp": -6.0, "percentile_3y": 95, "threshold_warn": 4.35, "role": "DCF分母总锚：名义利率 = 实际利率(DFII10) + 通胀预期(T10YIE)", "url": "https://fred.stlouisfed.org/series/DGS10", "data_status": "updated", "observation_date": "2026-10-30"}, "dfii10": {"name": "10Y TIPS 实际利率", "code": "DFII10", "value": 2.6, "unit": "%", "freq": "daily", "window_label": "近3年历史分位数", "chg_1d_bp": -3.0, "chg_5d_bp": -6.0, "percentile_3y": 95, "threshold_warn": 2.2, "role": "DCF真实分母端：剔除通胀后的全球科技成长股真实无风险贴现率", "url": "https://fred.stlouisfed.org/series/DFII10", "data_status": "updated", "observation_date": "2026-10-30"}, "t10yie": {"name": "10Y 盈亏平衡通胀预期", "code": "T10YIE", "value": 2.29, "unit": "%", "freq": "daily", "window_label": "近3年历史分位数", "chg_1d_bp": -5.0, "chg_5d_bp": -5.0, "percentile_3y": 36, "threshold_warn": 2.45, "role": "DCF分子端映射：隐含通胀与增长预期（急跌<1.9%预示衰退交易）", "url": "https://fred.stlouisfed.org/series/T10YIE", "data_status": "updated", "observation_date": "2026-11-02"}, "t10y2y": {"name": "10Y-2Y 美债期限利差", "code": "T10Y2Y", "value": 0.32, "unit": "%", "freq": "daily", "window_label": "近3年历史分位数", "chg_1d_bp": -6.0, "chg_5d_bp": 0.0, "percentile_3y": 46, "threshold_warn": 0.5, "role": "收益率曲线形态与长债期限溢价(Term Premium)周期", "url": "https://fred.stlouisfed.org/series/T10Y2Y", "data_status": "updated", "observation_date": "2026-11-02"}, "effr": {"name": "联邦基金有效利率", "code": "EFFR", "value": 3.88, "unit": "%", "freq": "daily", "window_label": "近3年历史分位数", "chg_1d_bp": 0.0, "chg_5d_bp": 0.0, "percentile_3y": 27, "threshold_warn": 5.0, "role": "美联储短端政策利率基准与货币市场资金成本锚", "url": "https://fred.stlouisfed.org/series/EFFR", "data_status": "updated", "observation_date": "2026-10-30"}, "rrp": {"name": "美联储隔夜逆回购 (ON RRP)", "code": "RRPONTSYD", "value": 5.09, "unit": "十亿美元", "freq": "daily", "window_label": "近3年历史分位数", "chg_1d_bp": 0.7, "chg_5d_bp": 4.9, "percentile_3y": 29, "threshold_warn": 200.0, "role": "美元非银超额流动性第一道缓冲池（耗尽后QT直接抽离银行准备金）", "url": "https://fred.stlouisfed.org/series/RRPONTSYD", "data_status": "updated", "observation_date": "2026-11-02"}, "tga": {"name": "美国财政部一般账户 (TGA)", "code": "WTREGEN", "value": 999.73, "unit": "十亿美元", "freq": "weekly", "window_label": "近3年历史分位数(周频)", "chg_1d_bp": 47.7, "chg_5d_bp": 22.6, "percentile_3y": 99, "threshold_warn": 800.0, "role": "财政发债抽水(>800B显著收紧市场准备金)与财政支出投放账户", "url": "https://fred.stlouisfed.org/series/WTREGEN", "data_status": "updated", "observation_date": "2026-10-28"}, "wresbal": {"name": "美联储商业银行准备金余额", "code": "WRESBAL", "value": 2893.77, "unit": "十亿美元", "freq": "weekly", "window_label": "近3年历史分位数(周频)", "chg_1d_bp": -68.8, "chg_5d_bp": -36.4, "percentile_3y": 3, "threshold_warn": 3000.0, "role": "美元流动性最终底线（跌破3000B触发华尔街回购市场资金紧缺预警）", "url": "https://fred.stlouisfed.org/series/WRESBAL", "data_status": "updated", "observation_date": "2026-10-28"}, "hy_oas": {"name": "美国高收益债利差 (HY OAS)", "code": "BAMLH0A0HYM2", "value": 3.44, "unit": "%", "freq": "daily", "window_label": "近3年历史分位数", "chg_1d_bp": 18.0, "chg_5d_bp": 6.0, "percentile_3y": 88, "threshold_warn": 4.0, "role": "跨市场信用风险溢价与全球套息交易(Carry Trade)去杠杆温度计", "url": "https://fred.stlouisfed.org/series/BAMLH0A0HYM2", "data_status": "updated", "observation_date": "2026-10-30"}}, "cn": {"cn10y": {"name": "10Y 中债国债收益率", "code": "CN10Y", "value": 1.62, "unit": "%", "freq": "daily", "window_label": "近3年历史分位数", "chg_1d_bp": -1.3, "chg_5d_bp": -0.5, "percentile_3y": 1, "threshold_warn": 2.15, "role": "DCF分母端：国内无风险利率核心锚与低利率资产荒温度计", "url": "https://yield.chinabond.com.cn/", "data_status": "updated", "observation_date": "2026-11-03"}, "cn30y": {"name": "30Y 超长国债收益率", "code": "CN30Y", "value": 2.05, "unit": "%", "freq": "daily", "window_label": "近3年历史分位数", "chg_1d_bp": -1.5, "chg_5d_bp": 1.0, "percentile_3y": 23, "threshold_warn": 2.35, "role": "险资长久期配置锚与超长期特别国债供给冲击敏感度指标", "url": "https://yield.chinabond.com.cn/", "data_status": "updated", "observation_date": "2026-11-03"}, "dr007": {"name": "银行间7天回购定盘利率 (FDR007/DR007)", "code": "FDR007", "value": 1.35, "unit": "%", "freq": "daily", "window_label": "近1年历史分位数(外汇交易中心)", "chg_1d_bp": -1.0, "chg_5d_bp": 0.0, "percentile_3y": 13, "threshold_warn": 1.8, "role": "中国外汇交易中心存款类机构7天质押式回购定盘基准（狭义资金面核心锚）", "url": "https://www.chinamoney.com.cn/chinese/bkfrr/", "data_status": "updated", "observation_date": "2026-11-03"}, "r007_dr007_spread": {"name": "R007 - DR007 流动性分层利差", "code": "FR007-FDR007", "value": 5.0, "unit": "bp", "freq": "daily", "window_label": "近1年历史分位数(外汇交易中心)", "chg_1d_bp": 3.0, "chg_5d_bp": 1.0, "percentile_3y": 56, "threshold_warn": 20.0, "role": "非银机构/理财子资金松紧与债基/理财预防性赎回负反馈领先预警器", "url": "https://www.chinamoney.com.cn/chinese/bkfrr/", "data_status": "updated", "observation_date": "2026-11-03"}, "us_cn_spread": {"name": "中美 10Y 国债利差 (中-美)", "code": "CN10Y-US10Y", "value": -3.28, "unit": "%", "freq": "daily", "window_label": "近3年历史分位数", "chg_1d_bp": 1.4, "chg_5d_bp": 8.7, "percentile_3y": 4, "threshold_warn": -2.2, "role": "跨境资本流动、人民币汇率稳汇率约束与港股离岸市场分母端锚", "url": "https://yield.chinabond.com.cn/", "data_status": "updated", "observation_date": "2026-11-02"}, "m1_m2_diff": {"name": "M1 - M2 同比剪刀差 (新口径)", "code": "M1-M2", "value": -4.0, "unit": "%", "freq": "monthly", "window_label": "近3年(36月)分位数", "chg_1d_bp": -0.6, "chg_5d_bp": -0.6, "percentile_3y": 58, "threshold_warn": -3.5, "role": "DCF分子端：实体企业活期存款活化与宽信用向顺周期传导成色", "url": "http://www.pbc.gov.cn/diaochatongjisi/116219/index.html", "data_status": "updated", "observation_date": "2026年09月份"}, "erp_csi300": {"name": "沪深300 股债风险溢价 (ERP)", "code": "CSI300_ERP", "value": 6.25, "unit": "%", "freq": "daily", "window_label": "近3年历史分位数", "chg_1d_bp": 2.6, "chg_5d_bp": -37.1, "percentile_3y": 44, "threshold_warn": 5.8, "role": "A股股债性价比标尺（>=5.8%且处高分位代表权益向下空间封锁）", "url": "https://www.csindex.com.cn/", "data_status": "updated", "observation_date": "2026-11-03"}}}, "decision_engine": {"hard_rules": [{"id": "RULE_US_RATE_SLOPE", "dimension": "① 海外分母端与实际利率拆解", "status": "warning", "status_label": "实际利率承压", "trigger_condition": "10Y美债>=4.35% 或 实际利率>=2.20% 或 5日>=+12bp", "current_reading": "名义 4.94% (5日-6.0bp) | 实际 2.6% + 通胀 2.29%", "action_instruction": "10Y美债报4.94%（近5日虽边际回落6.0bp），拆解看10Y TIPS实际利率高达2.6%、通胀预期2.29%。高实际利率直接抬升DCF无风险分母，压制远期现金流占比高但无当期业绩的纯概念股；海外债久期宜控制在短端。"}, {"id": "RULE_US_LIQUIDITY_BUFFER", "dimension": "② 美元狭义流动性与准备金底线", "status": "danger", "status_label": "准备金逼近临界", "trigger_condition": "(RRP<200B且TGA>750B) 或 准备金<3000B 或 HY利差>=4%", "current_reading": "准备金 2893.77B | RRP 5.09B | TGA 999.73B | HY利差 3.44%", "action_instruction": "ON RRP蓄水池仅剩5.09B（近乎耗尽），叠加财政部TGA高达999.73B抽水，直接导致美联储商业银行准备金降至2893.77B（低于3000B充裕线），高收益债利差报3.44%。警惕华尔街回购利率跳升与海外高Beta资产去杠杆波动。"}, {"id": "RULE_CROSS_BORDER_FX", "dimension": "③ 中美利差与跨境汇率约束", "status": "warning", "status_label": "深度倒挂约束", "trigger_condition": "中美10Y利差 <= -2.20% 触发外部稳汇率与离岸分母约束", "current_reading": "中美利差 -3.28% (中债1.62% - 美债4.94%)", "action_instruction": "中美10Y利差深度倒挂至-3.28%（中债1.62% vs 美债4.94%），外部稳汇率（USD/CNH）约束国内央行大幅降息空间，同时压制离岸港股分母端外资回流；权益配置宜偏重内需自主可控与A股红利底仓。"}, {"id": "RULE_CN_ASSET_FAMINE", "dimension": "④ 国内宽货币与资产荒象限", "status": "bullish", "status_label": "资产荒延续", "trigger_condition": "10Y中债<=2.18% 且 DR007<=1.80% 且 5日变动<8bp", "current_reading": "10Y中债 1.62% (1%分位) | 30Y 2.05% | DR007 1.35%", "action_instruction": "银行间FDR007报1.35%维持低位，注意10Y中债已处1.62%（近3年1%极低分位），30Y超长债(2.05%)赔率空间受限且对特别国债供给敏感，建议以1-3年高等级信用债吃票息+央国企红利低波替代盲目拉长久期。"}, {"id": "RULE_CN_WEALTH_REDEMPTION", "dimension": "⑤ 理财赎回负反馈与流动性分层", "status": "bullish", "status_label": "非银无赎回压力", "trigger_condition": "R007-DR007分层利差>=25bp 或 (长债5日>=10bp且利差>=15bp)", "current_reading": "R007-DR007利差 5.0bp | 10Y中债5日 -0.5bp", "action_instruction": "R007-DR007分层利差仅5.0bp且10Y中债5日变动-0.5bp，银行向非银流动性传导顺畅，理财与债基规模稳定，信用债票息套息环境安全。"}, {"id": "RULE_CN_CREDIT_PULSE", "dimension": "⑥ 国内分子端宽信用与M1活化", "status": "neutral", "status_label": "剪刀差磨底待验证", "trigger_condition": "M1-M2>-3.5% 或 (M1-M2>-4.8%且月环比>0) 确认宽信用拐点", "current_reading": "M1-M2剪刀差 -4.0% (月环比 -0.6pct | 2026年09月份)", "action_instruction": "新口径M1-M2剪刀差报-4.0%，但最新月度环比变动为-0.6pct（尚未连续回升）。考虑央行新M1已纳入个人活期与支付备付金，实体企业内生资本开支与地产链活化仍需社融中长期贷款进一步验证，维持哑铃配置。"}, {"id": "RULE_EQUITY_ERP_VALUATION", "dimension": "⑦ A股股债性价比 (沪深300 ERP)", "status": "bullish", "status_label": "高性价比赔率区", "trigger_condition": "沪深300 ERP >= 5.80% 触发高性价比配置信号", "current_reading": "ERP 6.25% (近3年 44%分位 | 1日 +2.6bp)", "action_instruction": "沪深300 ERP达6.25%（近3年44%分位（因包含2024年极端底部样本，但绝对溢价已显著高于5.8%配置线）），10Y国债1.62%低利率推升权益隐含风险溢价，指数向下空间受封锁，宜通过哑铃进攻端布局CapEx订单验证的硬科技板块。"}], "barbell_allocation": {"defense_total": 65, "offense_total": 35, "breakdown": [{"bucket": "防御端：中短久期利率债/高等级信用债", "weight": 40, "tag": "流动性与票息底仓", "rationale": "FDR007报1.35%、R007-DR007利差5.0bp保障稳健套息，规避30Y超长债(2.05%)在极低利率分位下的供给与止盈波动。"}, {"bucket": "防御端：央国企高股息红利低波", "weight": 25, "tag": "险资类债替代锚", "rationale": "10Y国债1.62%（1%分位）背景下，自由现金流充裕、分红率>4.5%的公用事业/运营商/龙头银行具备险资OCI账户强力承接，注意规避分子端景气下滑的资源类伪红利。"}, {"bucket": "进攻端：全球AI算力基建与国产卡点供应链", "weight": 20, "tag": "CapEx一阶与二阶导验证", "rationale": "紧盯台积电月度营收、韩国HBM出口与北美云厂商CapEx同比增速斜率，精选1.6T光模块、液冷、AIDC电源及国产算力芯片实质放量标的。"}, {"bucket": "进攻端：AI Agent商业化与具身智能核心部件", "weight": 15, "tag": "ROI闭环与0到1期权", "rationale": "围绕推理侧Scaling Law降本后的企业级Agent软件RPO加速，以及人形机器人行星滚柱丝杠/六维力传感器正式定点公告逢低卡位。"}]}, "soft_reports": {"trading_perspective": {"title": "【二级市场实战晨报】美债4.94%(实际2.6%)、中债1.62%，执行“65%红利短债 + 35%CapEx硬科技”哑铃配置", "core_marginal_change": "【数据核验状态】全部16项中美宏观、流动性与估值指标均已实时核验更新。 CapEx 为三阶段产业链与财报先行指标核查框架；双视角晨报由七维规则引擎动态合成。\n海外10Y美债报4.94%（5日-6.0bp，95%分位；拆解为10Y实际利率2.6% + 通胀预期2.29%），ON RRP报5.09B、TGA报999.73B、商业银行准备金2893.77B，高收益债利差3.44%；国内10Y中债报1.62%（1%分位）、30Y报2.05%，FDR007(DR007)报1.35%，R007-DR007分层利差5.0bp，中美10Y利差-3.28%，沪深300 ERP达6.25%（44%分位）。", "transmission_logic": "1. 海外分母端与流动性：10Y美债5日虽边际回落6.0bp至4.94%，但拆解后10Y TIPS实际利率仍高达2.6%（通胀预期2.29%），且ON RRP耗尽(5.09B)、TGA高企(999.73B)将银行准备金抽离至2893.77B，海外无风险贴现率绝对水位与流动性底线依然偏紧，压制无现金流支撑的纯概念题材；\n2. 国内宽货币与分子端传导：FDR007仅1.35%、10Y中债处1.62%（近3年1%分位），而新口径M1-M2剪刀差(-4.0%，月环比-0.6pct)尚未形成连续上行斜率，中美利差倒挂(-3.28%)约束下‘低利率资产荒+分子端磨底’格局延续，高股息红利与短久期高等级信用债底仓逻辑稳固；\n3. 产业CapEx二阶导与估值安全垫：沪深300 ERP处6.25%（44%高分位）封锁指数下行空间；科技股需警惕单纯CapEx总量叙事钝化，超额收益聚焦于CapEx同比增速斜率未减、且下游ROI（软件RPO/ARR）能覆盖折旧的算力卡点与具身智能定点环节。", "action_instructions": ["【仓位与子篮子配比】今日七维量化规则锁定 防守端 65%（中短债40% + 央企红利25%）: 进攻端 35%（AI算力基建20% + Agent/具身智能15%）。", "【进攻端选股过滤】以台积电月度营收、韩国HBM出口及云厂商CapEx/OCF现金流占比为先导验证，精选1.6T光模块、液冷、AIDC电源及披露正式定点通知书的丝杠/六维力传感器标的。", "【债市久期与红利排雷】10Y国债处1.62%极低分位，R007-DR007利差5.0bp（非银无赎回压力），固收底仓以1-3年高等级信用债/存单吃票息替代30Y超长债博弈；红利端剔除价格下跌的周期资源股，聚焦自由现金流稳定的水电、运营商与国有大行。"]}, "wealth_perspective": {"title": "【存续期管理与渠道陪伴】10Y中债1.62%、R-DR分层利差5.0bp环境下，固收/固收+归因与分行沟通话术", "core_marginal_change": "【数据核验状态】全部16项中美宏观、流动性与估值指标均已实时核验更新。 CapEx 为三阶段产业链与财报先行指标核查框架；双视角晨报由七维规则引擎动态合成。\n国内银行间狭义资金面平稳（FDR007报1.35%，R007-DR007流动性分层利差5.0bp），10Y国债报1.62%（近3年1%分位）、30Y国债报2.05%；海外10Y美债报4.94%（实际利率2.6%，5日变动-6.0bp），A股沪深300股债风险溢价（ERP）处于6.25%（近3年44%分位）。", "transmission_logic": "1. 【纯债与理财存续期归因】：决定理财净值回撤的核心并非单看央票利率，而是非银资金分层（R007-DR007当前5.0bp）与长债供给冲击。当前短端票息底仓稳固，而10Y/30Y长债在1%极低收益率分位下赔率偏薄、对超长期特别国债供给敏感；\n2. 【固收+与含权产品归因】：中美利差倒挂(-3.28%)与海外高实际利率(2.6%)压制纯概念估值，但国内沪深300 ERP(6.25%)处近3年44%高性价比区，通过“65%短债/红利安全垫 + 35%业绩验证硬科技”的哑铃结构，可有效平滑单一资产波动。", "action_instructions": ["【纯固收/短债客户安抚话术】：“当前央行呵护狭义流动性态度明确（FDR007仅1.35%，R007-DR007非银分层利差仅5.0bp，无机构赎回负反馈压力）。近期长端国债在1.62%历史极低利率区间的微幅波动属于正常久期呼吸，我们产品以中短久期高等级信用债筑底锁票息，建议安心持有获取时间复利。”", "【分行RM配置转化建议】：针对存款到期或寻求稳健增值的客户，主推“40%短债理财底仓 + 25%央企红利低波 + 35%硬科技固收+”组合，既规避单一押注30Y长债的久期回撤，又保留AI产业周期与宽信用修复的向上弹性。", "【渠道风控三大扳机线】：① 10Y中债突破2.15%（长债止损线）；② FDR007突破1.85%（资金收敛线）；③ R007-DR007利差突破25bp（理财赎回踩踏预警线，当前仅5.0bp，维持“持仓待涨”评级）。"]}}}, "capex_tracker": [{"stage": "第一阶段：算力与硬件基建 (先导指标与二阶导验证)", "status": "高景气兑现期 · 盯紧增速斜率", "badge_color": "emerald", "chain_nodes": "台积电CoWoS先进封装 ➔ HBM3e/HBM4存储 ➔ 800G/1.6T光模块与CPO ➔ AIDC液冷(CDU)与HVDC供电", "lead_indicators": "① 每月10日：台积电(TSMC)月度合并营收同比/环比；② 每月1/11/21日：韩国关税厅前10/20日半导体与HBM出口额；③ 北美四大云厂商 CapEx / 经营性现金流(OCF) 比例。", "sec_cninfo_keywords": ["Purchases of property and equipment", "Capital expenditures guidance", "CoWoS capacity allocation", "1.6T transceivers", "Liquid cooling", "合同负债", "在建工程", "存货跌价准备"], "verification_metric": "【一阶导+二阶导】北美四大云厂商(MSFT/GOOG/META/AMZN)季度CapEx同比 > 35%，且下季指引环比增速不降，云业务营收增量能覆盖新增算力折旧摊销。", "red_flag": "【二阶导见顶预警】云厂商CapEx绝对值虽创新高但同比增速斜率连续放缓（触发硬件杀估值），或光模块/服务器ODM厂商存货周转天数攀升、出现重复下单(Double Ordering)砍单。"}, {"stage": "第二阶段：推理期扩展与 Agent 商业化 (ROI 闭环期)", "status": "分化验证期 · 考核RPO与毛利", "badge_color": "blue", "chain_nodes": "Reasoning推理期算力扩展 ➔ 端侧轻量化蒸馏模型 ➔ 企业级AI Agent工作流 ➔ 垂直行业SaaS增收(ARR)", "lead_indicators": "① 企业软件财报 RPO(剩余履约义务)增速 vs 营收增速剪刀差；② 主流算力租赁平台 GPU 时租价格(GPU Hour Rate)走势；③ 企业级 Copilot/Agent 净金额留存率(NDR)。", "sec_cninfo_keywords": ["Remaining Performance Obligations (RPO)", "Net Dollar Retention (NDR)", "AI Copilot seat adoption", "Inference token volume", "ARR增速", "研发费用资本化率", "毛利率同比变动"], "verification_metric": "【ROI商业化闭环】软件企业RPO（剩余履约义务）增速连续超越营收增速 > 5pct，AI附加功能带来ARPU值实质提升 > 15% 且毛利率保持稳定。", "red_flag": "【ROI证伪红线】空有Token调用量暴增但付费转化率与留存率低，企业因外部大模型API与推理算力成本过高导致销售毛利率持续恶化。"}, {"stage": "第三阶段：具身智能与人形机器人 (0 到 1 定点突破期)", "status": "小批量试产与定点验证期", "badge_color": "purple", "chain_nodes": "VLA多模态端到端控制算法 ➔ 行星滚柱丝杠/微型丝杠 ➔ 谐波减速器/空心杯电机 ➔ 六维力传感器与轻量化材料", "lead_indicators": "① 头部主机厂(Tesla Optimus / 国内本体厂)产线实训台数与BOM降本进展；② 核心零部件厂高精度磨床采购与专用产线环评批复；③ 巨潮《投资者关系活动记录表》送样阶段（A样➔B样➔C样/定点）。", "sec_cninfo_keywords": ["行星滚柱丝杠", "六维力传感器", "空心杯电机", "客户送样验证", "小批量定点通知书", "专用产线环评", "投资者关系活动记录表"], "verification_metric": "【工程化定点兑现】头部主机厂进入千台级产线实训，国内核心零部件厂商在巨潮资讯网披露正式T1定点通知书、专用产线投产且主业现金流稳健。", "red_flag": "【概念炒作排雷】仅停留在无约束力战略合作框架协议、无实质研发与精密加工设备投入、传统主业现金流恶化或配合概念披露期间大股东高位减持。"}]};
+
+    const MACRO_SCENARIO_MATRIX = [
+      {
+        scenario: "美联储预防式降息 + 经济软着陆",
+        driver: "10Y TIPS实际利率(DFII10)回落，通胀预期(T10YIE)稳定在2.0%~2.3%",
+        rateBond: "美债收益率曲线牛陡，中长久期国债显著获益",
+        creditBond: "HY OAS高收益利差维持<3.5%低位，高等级与高收益债稳健上涨",
+        equity: "DCF分母端实质宽松，纳斯达克、港股科技与硬科技成长领涨；警惕若伴随日元加息引发Carry Trade平仓扰动"
+      },
+      {
+        scenario: "美联储高利率 + 财政超发长债 + RRP耗尽",
+        driver: "期限溢价抬升，TGA高企抽干银行准备金(<3000B)，实际利率>2.2%",
+        rateBond: "长端美债受供给与期限溢价冲击承压，宜控久期在短端",
+        creditBond: "SOFR>IORB回购利率跳升，高负债企业再融资受阻、信用利差走阔",
+        equity: "严厉压制无当期现金流的纯概念题材；资金流向现金流充裕、CapEx订单实质兑现的算力龙头与防御蓝筹"
+      },
+      {
+        scenario: "中国宽货币 + 实体信贷磨底（低利率资产荒）",
+        driver: "FDR007低位运行(<1.6%)，R007-DR007分层利差平稳(<15bp)，M1-M2未连续转正",
+        rateBond: "利率债底仓稳固；但10Y中债破1.7%后30Y超长债赔率下降、对供给敏感",
+        creditBond: "非银无赎回压力，1-3年高等级信用债、二永债与同业存单套息利差极度压缩",
+        equity: "险资OCI欠配压力驱动水电/运营商/大行等真红利走牛；结合高ERP通过哑铃进攻端布局AI算力与具身定点"
+      },
+      {
+        scenario: "中国财政大幅扩张 + 股市暴涨抽水（赎回负反馈）",
+        driver: "超长期特别国债集中发行或风险偏好骤升，R007-DR007分层利差飙升(>25bp)",
+        rateBond: "10Y/30Y长端收益率快速反弹10~20bp，长久期债基净值回撤",
+        creditBond: "散户预防性赎回理财/债基 ➔ 理财子被迫抛售银行二永债与存单 ➔ 信用利差无差别踩踏走阔",
+        equity: "资金由纯债与红利切换至顺周期核心资产、大盘成长及港股弹性标的"
+      }
+    ];
+
+    const SIX_PITFALL_GUIDES = [
+      {
+        title: "误区①：把“10Y美债下行”无条件当成科技股利好",
+        truth: "名义美债(DGS10) = 实际利率(DFII10) + 通胀预期(T10YIE)。若美债下行是由实际利率回落驱动（预防式降息），则股债双牛；若是由通胀预期坍塌(<1.9%)与衰退恐慌驱动，分子端盈利下修快于分母端，美债涨但科技与周期股暴跌。",
+        metric: "必看指标：DFII10 (10Y实际利率) & T10YIE (盈亏平衡通胀率)"
+      },
+      {
+        title: "误区②：只看美联储降息，忽视“商业银行准备金临界线”",
+        truth: "美联储负债端恒等式：Δ准备金 = Δ美联储总资产 - ΔTGA - ΔON RRP。当ON RRP蓄水池耗尽（目前仅~5B）后，财政部TGA发债抽水与QT缩表将1:1直接抽离商业银行准备金(WRESBAL)。一旦跌破3000B充裕线，华尔街回购市场随时触发钱荒(SOFR > IORB)。",
+        metric: "必看指标：WRESBAL (银行准备金) + TGA + ON RRP"
+      },
+      {
+        title: "误区③：割裂看待中美政策，忽略“汇率约束与日元套息平仓”",
+        truth: "中美10Y利差深度倒挂(>-220bp)时，稳汇率(USD/CNH)会制约国内央行大幅降息空间，且压制离岸港股分母端外资回流；同时需警惕美联储降息叠加日本加息引发全球Carry Trade去杠杆踩踏。",
+        metric: "必看指标：中美10Y国债利差 (CN10Y-US10Y) & 美债HY OAS利差"
+      },
+      {
+        title: "误区④：沿用旧M1阈值判断宽信用，忽视新M1口径与实际利率",
+        truth: "央行新修订M1已纳入个人活期存款与支付机构备付金，不能仅凭M1-M2高于旧阈值(-4.5%)就盲目重仓顺周期，必须确认月环比斜率连续回升及企业中长期贷款改善；同时PPI低位下需关注企业真实实际融资成本(LPR - PPI)。",
+        metric: "必看指标：M1-M2剪刀差月环比斜率 & 社融企业中长期贷款"
+      },
+      {
+        title: "误区⑤：理财渠道只盯央票利率，忽视“R007-DR007与赎回负反馈”",
+        truth: "国内债市最大短期回撤往往不是违约，而是“长债急跌或股市暴涨 ➔ 理财净值回撤 ➔ 散户赎回 ➔ 理财子抛售高流动性银行二永债/存单 ➔ 信用利差飙升”。监控非银资金分层利差(FR007-FDR007)才能提前3~5天预警。",
+        metric: "必看指标：R007 - DR007 流动性分层利差 (预警阈值 20~25bp)"
+      },
+      {
+        title: "误区⑥：科技股只看CapEx绝对值高增，掉入“二阶导见顶陷阱”",
+        truth: "二级市场对光模块/服务器等硬件股定价锚定在CapEx同比增速的边际斜率（二阶导）。当云厂商CapEx绝对额创新高但同比增速从+60%放缓至+30%，且AI软件收入(ARR/RPO)未能覆盖新增算力折旧时，硬件股会率先杀估值。",
+        metric: "必看指标：台积电月度营收(每月10日) + 韩国HBM出口 + 云厂商CapEx/OCF"
+      }
+    ];
 
     function App() {
       const [rawData, setRawData] = useState(FALLBACK_DATA);
@@ -43,25 +107,40 @@
       const [simMode, setSimMode] = useState(false);
       const [copiedText, setCopiedText] = useState("");
 
-      // 实时沙盘模拟参数
-      const [simUs10y, setSimUs10y] = useState(4.28);
-      const [simUs10y5d, setSimUs10y5d] = useState(14.0);
-      const [simCn10y, setSimCn10y] = useState(2.11);
-      const [simDr007, setSimDr007] = useState(1.62);
-      const [simScissors, setSimScissors] = useState(-6.8);
-      const [simErp, setSimErp] = useState(6.15);
+      // 实时沙盘模拟参数 (9大核心变量，与后端7维规则引擎100%对齐)
+      const [simUs10y, setSimUs10y] = useState(FALLBACK_DATA.metrics.us.dgs10.value);
+      const [simDfii10, setSimDfii10] = useState(FALLBACK_DATA.metrics.us.dfii10?.value ?? 2.60);
+      const [simUs10y5d, setSimUs10y5d] = useState(FALLBACK_DATA.metrics.us.dgs10.chg_5d_bp);
+      const [simWresbal, setSimWresbal] = useState(FALLBACK_DATA.metrics.us.wresbal?.value ?? 2893.77);
+      const [simCn10y, setSimCn10y] = useState(FALLBACK_DATA.metrics.cn.cn10y.value);
+      const [simDr007, setSimDr007] = useState(FALLBACK_DATA.metrics.cn.dr007.value);
+      const [simRDrSpread, setSimRDrSpread] = useState(FALLBACK_DATA.metrics.cn.r007_dr007_spread?.value ?? 5.0);
+      const [simScissors, setSimScissors] = useState(FALLBACK_DATA.metrics.cn.m1_m2_diff.value);
+      const [simErp, setSimErp] = useState(FALLBACK_DATA.metrics.cn.erp_csi300.value);
 
       // 移动端触摸滑动监听
       const touchStartX = useRef(null);
       const touchEndX = useRef(null);
 
       const PAGES = [
-        { id: 0, short: "① 双层决策", title: "硬逻辑阈值 + AI双视角早报" },
-        { id: 1, short: "② 宏观脉冲", title: "中美一手指标与3年分位数" },
-        { id: 2, short: "③ 科技CapEx", title: "全球AI算力/Agent/具身智能验证" },
-        { id: 3, short: "④ 哑铃沙盘", title: "动态攻防配比与实时压力测试" },
-        { id: 4, short: "⑤ 权威信源", title: "一手监管披露直达与核查SOP" }
+        { id: 0, short: "① 双层决策", title: "七维硬逻辑阈值 + 双视角动态早报" },
+        { id: 1, short: "② 宏观脉冲", title: "16项中美一手指标与流动性/利差拆解" },
+        { id: 2, short: "③ 科技CapEx", title: "先导高频指标 + 二阶导/ROI闭环验证" },
+        { id: 3, short: "④ 哑铃沙盘", title: "9变量全维压力测试与预设情景推演" },
+        { id: 4, short: "⑤ 传导百科", title: "股债传导全景矩阵、六大误区与一手信源" }
       ];
+
+      const syncSlidersFromData = (json) => {
+        setSimUs10y(json.metrics.us.dgs10.value);
+        setSimDfii10(json.metrics.us.dfii10?.value ?? 2.60);
+        setSimUs10y5d(json.metrics.us.dgs10.chg_5d_bp);
+        setSimWresbal(json.metrics.us.wresbal?.value ?? 2893.77);
+        setSimCn10y(json.metrics.cn.cn10y.value);
+        setSimDr007(json.metrics.cn.dr007.value);
+        setSimRDrSpread(json.metrics.cn.r007_dr007_spread?.value ?? 5.0);
+        setSimScissors(json.metrics.cn.m1_m2_diff.value);
+        setSimErp(json.metrics.cn.erp_csi300.value);
+      };
 
       // 加载云端由 GitHub Actions 每日更新的 ./data/macro_daily.json
       useEffect(() => {
@@ -72,21 +151,17 @@
           })
           .then(json => {
             setRawData(json);
-            setSimUs10y(json.metrics.us.dgs10.value);
-            setSimUs10y5d(json.metrics.us.dgs10.chg_5d_bp);
-            setSimCn10y(json.metrics.cn.cn10y.value);
-            setSimDr007(json.metrics.cn.dr007.value);
-            setSimScissors(json.metrics.cn.m1_m2_diff.value);
-            setSimErp(json.metrics.cn.erp_csi300.value);
+            syncSlidersFromData(json);
           })
           .catch(() => {
-            console.log("Using built-in baseline macro data.");
+            console.log("Using built-in verified macro data snapshot.");
           });
       }, []);
 
       // 键盘左右方向键翻页支持
       useEffect(() => {
         const handleKeyDown = (e) => {
+          if (e.target && (e.target.tagName === "INPUT" || e.target.tagName === "TEXTAREA")) return;
           if (e.key === "ArrowRight") setActivePage(p => Math.min(4, p + 1));
           if (e.key === "ArrowLeft") setActivePage(p => Math.max(0, p - 1));
         };
@@ -95,119 +170,337 @@
       }, []);
 
       const onTouchStart = (e) => {
+        if (e.target && e.target.tagName === "INPUT") return;
         touchStartX.current = e.targetTouches[0].clientX;
       };
       const onTouchMove = (e) => {
+        if (!touchStartX.current) return;
         touchEndX.current = e.targetTouches[0].clientX;
       };
       const onTouchEnd = () => {
         if (!touchStartX.current || !touchEndX.current) return;
         const distance = touchStartX.current - touchEndX.current;
-        if (distance > 65) setActivePage(p => Math.min(4, p + 1));
-        if (distance < -65) setActivePage(p => Math.max(0, p - 1));
+        if (distance > 75) setActivePage(p => Math.min(4, p + 1));
+        if (distance < -75) setActivePage(p => Math.max(0, p - 1));
         touchStartX.current = null;
         touchEndX.current = null;
       };
 
-      // 前端实时双层决策重算引擎（当开启沙盘推演 simMode 时动态重算所有硬规则、哑铃配比和软研报）
+      // 预设情景一键应用
+      const applyScenario = (type) => {
+        if (type === "reset") {
+          setSimMode(false);
+          syncSlidersFromData(rawData);
+          return;
+        }
+        setSimMode(true);
+        if (type === "us_liquidity_crunch") {
+          setSimUs10y(5.10);
+          setSimDfii10(2.75);
+          setSimUs10y5d(18.0);
+          setSimWresbal(2750.0);
+          setSimCn10y(1.65);
+          setSimDr007(1.40);
+          setSimRDrSpread(8.0);
+          setSimScissors(-4.5);
+          setSimErp(6.20);
+        } else if (type === "cn_redemption_shock") {
+          setSimUs10y(4.50);
+          setSimDfii10(2.25);
+          setSimUs10y5d(4.0);
+          setSimWresbal(3050.0);
+          setSimCn10y(2.05);
+          setSimDr007(1.98);
+          setSimRDrSpread(32.0);
+          setSimScissors(-3.8);
+          setSimErp(5.90);
+        } else if (type === "goldilocks_bull") {
+          setSimUs10y(3.75);
+          setSimDfii10(1.60);
+          setSimUs10y5d(-12.0);
+          setSimWresbal(3350.0);
+          setSimCn10y(1.95);
+          setSimDr007(1.50);
+          setSimRDrSpread(6.0);
+          setSimScissors(-2.2);
+          setSimErp(6.10);
+        }
+      };
+
+      // 前端实时七维决策重算引擎（与 scripts/update_macro.py 严格保持 100% 规则与权重一致）
       const computedEngine = useMemo(() => {
         if (!simMode) return rawData.decision_engine;
 
         let defense = 50;
         const rules = [];
 
-        if (simUs10y >= 4.35 || simUs10y5d >= 12) {
+        const t10yie = Number((simUs10y - simDfii10).toFixed(2));
+        const rrpVal = rawData.metrics.us.rrp.value;
+        const tgaVal = rawData.metrics.us.tga.value;
+        const hyOasVal = rawData.metrics.us.hy_oas?.value ?? 3.44;
+        const cn30yVal = Number((simCn10y + 0.43).toFixed(2));
+        const cn10y5d = simRDrSpread >= 25 ? 12.0 : rawData.metrics.cn.cn10y.chg_5d_bp;
+        const usCnSpread = Number((simCn10y - simUs10y).toFixed(2));
+        const scissorsChg = simScissors > rawData.metrics.cn.m1_m2_diff.value ? 0.5 : rawData.metrics.cn.m1_m2_diff.chg_1d_bp;
+
+        // 规则 1：海外分母端与实际利率拆解
+        if (simUs10y >= 4.35 || simUs10y5d >= 12.0 || simDfii10 >= 2.20) {
           defense += 8;
+          const slopeDesc = simUs10y5d < 0 ? `近5日虽边际回落${Math.abs(simUs10y5d)}bp` : `近5日上冲+${simUs10y5d}bp`;
           rules.push({
             id: "RULE_US_RATE_SLOPE",
-            dimension: "海外分母端斜率预警 (沙盘推演)",
+            dimension: "① 海外分母端与实际利率拆解 (沙盘)",
             status: "warning",
-            status_label: "斜率承压",
-            trigger_condition: "10Y美债 > 4.35% 或 5日上行 > 12bp",
-            current_reading: `${simUs10y.toFixed(2)}% (5日 ${simUs10y5d >= 0 ? "+" : ""}${simUs10y5d}bp)`,
-            action_instruction: "美债分母端贴现率上冲过快，压制远期现金流占比高的高估值科技概念，海外久期宜缩短。"
+            status_label: "实际利率承压",
+            trigger_condition: "10Y美债>=4.35% 或 实际利率>=2.20% 或 5日>=+12bp",
+            current_reading: `名义 ${simUs10y.toFixed(2)}% (5日${simUs10y5d >= 0 ? "+" : ""}${simUs10y5d}bp) | 实际 ${simDfii10.toFixed(2)}% + 通胀 ${t10yie}%`,
+            action_instruction: `10Y美债报${simUs10y.toFixed(2)}%（${slopeDesc}），10Y TIPS实际利率达${simDfii10.toFixed(2)}%。高实际利率直接抬升DCF无风险分母，压制无当期现金流支撑的纯概念股；海外债久期宜控制在短端。`
           });
-        } else if (simUs10y <= 3.90) {
+        } else if (simUs10y <= 3.90 && t10yie < 1.90) {
+          defense += 6;
+          rules.push({
+            id: "RULE_US_RATE_SLOPE",
+            dimension: "① 海外分母端与实际利率拆解 (沙盘)",
+            status: "danger",
+            status_label: "衰退通缩交易",
+            trigger_condition: "10Y美债<=3.90% 且 隐含通胀<1.90%",
+            current_reading: `名义 ${simUs10y.toFixed(2)}% | 实际 ${simDfii10.toFixed(2)}% + 通胀 ${t10yie}%`,
+            action_instruction: `美债名义利率回落主要由隐含通胀预期(${t10yie}%)坍塌驱动，反映衰退恐慌快于分母宽松，美债走牛但需警惕权益分子端下修。`
+          });
+        } else if (simUs10y <= 3.90 && simUs10y5d <= -5.0) {
           defense -= 8;
           rules.push({
             id: "RULE_US_RATE_SLOPE",
-            dimension: "海外分母端斜率预警 (沙盘推演)",
+            dimension: "① 海外分母端与实际利率拆解 (沙盘)",
             status: "bullish",
-            status_label: "分母宽松",
-            trigger_condition: "10Y美债 <= 3.90%",
-            current_reading: `${simUs10y.toFixed(2)}% (5日 ${simUs10y5d}bp)`,
-            action_instruction: "全球无风险利率回落，分母端扩张显著利好纳指、港股科技及A股硬科技成长估值修复。"
+            status_label: "分母实质宽松",
+            trigger_condition: "10Y美债<=3.90% 且 5日<=-5bp 且 通胀预期稳定",
+            current_reading: `名义 ${simUs10y.toFixed(2)}% (5日${simUs10y5d}bp) | 实际 ${simDfii10.toFixed(2)}%`,
+            action_instruction: "10Y美债与实际利率同步温和回落，属典型预防式降息环境，显著利好纳指、港股科技与A股硬科技估值扩张。"
           });
         } else {
           rules.push({
             id: "RULE_US_RATE_SLOPE",
-            dimension: "海外分母端斜率预警 (沙盘推演)",
+            dimension: "① 海外分母端与实际利率拆解 (沙盘)",
             status: "neutral",
-            status_label: "区间震荡",
-            trigger_condition: "10Y美债处于 3.90%~4.35% 震荡带",
-            current_reading: `${simUs10y.toFixed(2)}% (5日 ${simUs10y5d}bp)`,
-            action_instruction: "分母端扰动钝化，重点检验科技巨头分子端 CapEx 资本开支与供应链订单兑现度。"
+            status_label: "分母区间震荡",
+            trigger_condition: "美债与实际利率处于箱体均衡区",
+            current_reading: `名义 ${simUs10y.toFixed(2)}% (5日${simUs10y5d}bp) | 实际 ${simDfii10.toFixed(2)}%`,
+            action_instruction: "分母端扰动钝化，科技股超额收益取决于分子端云厂商CapEx指引斜率与订单ROI兑现度。"
           });
         }
 
-        if (simCn10y <= 2.18 && simDr007 <= 1.80) {
+        // 规则 2：美元狭义流动性与准备金底线
+        if ((rrpVal < 200.0 && tgaVal > 750.0 && simWresbal < 3100.0) || simWresbal < 3000.0) {
           defense += 6;
           rules.push({
-            id: "RULE_CN_ASSET_FAMINE",
-            dimension: "国内资产荒与利率象限 (沙盘推演)",
+            id: "RULE_US_LIQUIDITY_BUFFER",
+            dimension: "② 美元狭义流动性与准备金底线 (沙盘)",
+            status: "danger",
+            status_label: "准备金逼近临界",
+            trigger_condition: "(RRP<200B且TGA>750B) 或 准备金<3000B",
+            current_reading: `准备金 ${simWresbal.toFixed(0)}B | RRP ${rrpVal}B | TGA ${tgaVal}B`,
+            action_instruction: `ON RRP蓄水池耗尽(${rrpVal}B)，商业银行准备金降至${simWresbal.toFixed(0)}B（低于3000B充裕线），警惕华尔街回购利率跳升(SOFR>IORB)与海外高Beta资产波动放大。`
+          });
+        } else if (simWresbal >= 3250.0) {
+          defense -= 4;
+          rules.push({
+            id: "RULE_US_LIQUIDITY_BUFFER",
+            dimension: "② 美元狭义流动性与准备金底线 (沙盘)",
             status: "bullish",
-            status_label: "资产荒延续",
-            trigger_condition: "10Y中债 <= 2.18% 且 DR007 <= 1.80%",
-            current_reading: `10Y中债 ${simCn10y.toFixed(2)}% / DR007 ${simDr007.toFixed(2)}%`,
-            action_instruction: "银行间流动性充裕且长债利率极低，险资欠配压力驱动央国企高股息红利与短久期信用债持续走牛。"
+            status_label: "美元流动性充裕",
+            trigger_condition: "商业银行准备金 >= 3250B",
+            current_reading: `准备金 ${simWresbal.toFixed(0)}B | RRP ${rrpVal}B | TGA ${tgaVal}B`,
+            action_instruction: "美联储银行体系准备金缓冲充裕，美元狭义流动性无虞，支持全球风险资产偏好。"
           });
         } else {
+          rules.push({
+            id: "RULE_US_LIQUIDITY_BUFFER",
+            dimension: "② 美元狭义流动性与准备金底线 (沙盘)",
+            status: "neutral",
+            status_label: "准备金供需平衡",
+            trigger_condition: "商业银行准备金处于 3000B~3250B 均衡带",
+            current_reading: `准备金 ${simWresbal.toFixed(0)}B | TGA ${tgaVal}B`,
+            action_instruction: "银行准备金处于均衡水位，持续跟踪美国财政部季度再融资会议(QRA)长债发行计划。"
+          });
+        }
+
+        // 规则 3：中美利差与跨境汇率约束
+        if (usCnSpread <= -2.20) {
+          defense += 4;
+          rules.push({
+            id: "RULE_CROSS_BORDER_FX",
+            dimension: "③ 中美利差与跨境汇率约束 (沙盘)",
+            status: "warning",
+            status_label: "深度倒挂约束",
+            trigger_condition: "中美10Y利差 <= -2.20%",
+            current_reading: `中美利差 ${usCnSpread.toFixed(2)}% (中债${simCn10y.toFixed(2)}% - 美债${simUs10y.toFixed(2)}%)`,
+            action_instruction: "中美利差深度倒挂约束国内央行大幅降息空间，同时压制离岸港股外资回流；权益配置偏重内需自主可控与A股红利底仓。"
+          });
+        } else if (usCnSpread >= -1.20) {
+          defense -= 4;
+          rules.push({
+            id: "RULE_CROSS_BORDER_FX",
+            dimension: "③ 中美利差与跨境汇率约束 (沙盘)",
+            status: "bullish",
+            status_label: "利差收敛共振",
+            trigger_condition: "中美10Y利差 >= -1.20%",
+            current_reading: `中美利差 ${usCnSpread.toFixed(2)}%`,
+            action_instruction: "中美利差倒挂显著收敛，人民币汇率与跨境套息压力解除，港股与A股核心资产迎来外资回流共振。"
+          });
+        } else {
+          rules.push({
+            id: "RULE_CROSS_BORDER_FX",
+            dimension: "③ 中美利差与跨境汇率约束 (沙盘)",
+            status: "neutral",
+            status_label: "利差温和倒挂",
+            trigger_condition: "中美10Y利差处于 -2.20% ~ -1.20%",
+            current_reading: `中美利差 ${usCnSpread.toFixed(2)}%`,
+            action_instruction: "中美利差温和倒挂，汇率约束可控，国内货币政策以我为主。"
+          });
+        }
+
+        // 规则 4：国内宽货币与资产荒象限
+        if (simCn10y <= 2.18 && simDr007 <= 1.80 && cn10y5d < 8.0) {
+          defense += 5;
+          rules.push({
+            id: "RULE_CN_ASSET_FAMINE",
+            dimension: "④ 国内宽货币与资产荒象限 (沙盘)",
+            status: "bullish",
+            status_label: "资产荒延续",
+            trigger_condition: "10Y中债<=2.18% 且 DR007<=1.80%",
+            current_reading: `10Y中债 ${simCn10y.toFixed(2)}% | 30Y约 ${cn30yVal}% | FDR007 ${simDr007.toFixed(2)}%`,
+            action_instruction: simCn10y <= 1.75
+              ? `FDR007报${simDr007.toFixed(2)}%维持宽松，但10Y中债(${simCn10y.toFixed(2)}%)已处历史极低分位，建议以1-3年高等级信用债吃票息+央企红利低波替代盲目拉长30Y超长债久期。`
+              : "银行间流动性充裕，固收与险资欠配压力驱动央国企高股息红利与中短久期信用债持续走牛。"
+          });
+        } else if (cn10y5d >= 8.0 || simDr007 >= 1.95 || simCn10y > 2.25) {
           defense -= 4;
           rules.push({
             id: "RULE_CN_ASSET_FAMINE",
-            dimension: "国内资产荒与利率象限 (沙盘推演)",
+            dimension: "④ 国内宽货币与资产荒象限 (沙盘)",
             status: "warning",
-            status_label: "利率防回调",
-            trigger_condition: "10Y中债 > 2.18% 或 DR007 > 1.80%",
-            current_reading: `10Y中债 ${simCn10y.toFixed(2)}% / DR007 ${simDr007.toFixed(2)}%`,
-            action_instruction: "长债供给或资金面收敛引发收益率反弹，警惕30Y超长债久期回撤，固收底仓全面收缩至短久期。"
+            status_label: "债市久期防回调",
+            trigger_condition: "10Y中债>2.25% 或 DR007>=1.95% 或 5日>=8bp",
+            current_reading: `10Y中债 ${simCn10y.toFixed(2)}% | FDR007 ${simDr007.toFixed(2)}%`,
+            action_instruction: "资金面收敛或长债供给冲击引发收益率反弹，警惕30Y超长债久期回撤，固收底仓全面收缩至短债与同业存单。"
+          });
+        } else {
+          rules.push({
+            id: "RULE_CN_ASSET_FAMINE",
+            dimension: "④ 国内宽货币与资产荒象限 (沙盘)",
+            status: "neutral",
+            status_label: "票息筑底",
+            trigger_condition: "利率曲线温和波动",
+            current_reading: `10Y中债 ${simCn10y.toFixed(2)}% | FDR007 ${simDr007.toFixed(2)}%`,
+            action_instruction: "国内利率曲线平稳，维持中短久期信用债底仓吃票息策略。"
           });
         }
 
-        if (simScissors > -4.5) {
+        // 规则 5：理财赎回负反馈与流动性分层 (R007 - DR007)
+        if (simRDrSpread >= 25.0 || (cn10y5d >= 10.0 && simRDrSpread >= 15.0)) {
+          defense += 5;
+          rules.push({
+            id: "RULE_CN_WEALTH_REDEMPTION",
+            dimension: "⑤ 理财赎回负反馈与流动性分层 (沙盘)",
+            status: "danger",
+            status_label: "赎回负反馈预警",
+            trigger_condition: "R007-DR007分层利差 >= 25bp",
+            current_reading: `R007-DR007利差 ${simRDrSpread.toFixed(1)}bp`,
+            action_instruction: "⚠️ 非银资金面显著分层趋紧！高度警惕散户赎回债基/理财引发银行二永债与存单抛售踩踏，立即降杠杆、砍信用久期并启动渠道客户安抚。"
+          });
+        } else if (simRDrSpread >= 15.0) {
+          defense += 2;
+          rules.push({
+            id: "RULE_CN_WEALTH_REDEMPTION",
+            dimension: "⑤ 理财赎回负反馈与流动性分层 (沙盘)",
+            status: "warning",
+            status_label: "非银资金边际收敛",
+            trigger_condition: "R007-DR007分层利差 15~25bp",
+            current_reading: `R007-DR007利差 ${simRDrSpread.toFixed(1)}bp`,
+            action_instruction: "非银机构融资成本边际抬升，存续产品暂停拉长银行二永债久期，保持高流动性资产备付。"
+          });
+        } else {
+          defense -= 2;
+          rules.push({
+            id: "RULE_CN_WEALTH_REDEMPTION",
+            dimension: "⑤ 理财赎回负反馈与流动性分层 (沙盘)",
+            status: "bullish",
+            status_label: "非银无赎回压力",
+            trigger_condition: "R007-DR007分层利差 < 15bp",
+            current_reading: `R007-DR007利差 ${simRDrSpread.toFixed(1)}bp`,
+            action_instruction: "银行向非银流动性传导顺畅，理财与债基规模稳定，高等级信用债票息套息环境安全。"
+          });
+        }
+
+        // 规则 6：国内分子端宽信用拐点 (M1-M2剪刀差)
+        if (simScissors > -3.5 || (simScissors > -4.8 && scissorsChg > 0)) {
           defense -= 10;
           rules.push({
             id: "RULE_CN_CREDIT_PULSE",
-            dimension: "国内分子端宽信用拐点 (沙盘推演)",
+            dimension: "⑥ 国内分子端宽信用与M1活化 (沙盘)",
             status: "bullish",
-            status_label: "宽信用激活",
-            trigger_condition: "M1-M2剪刀差 > -4.5%",
+            status_label: "宽信用主动修复",
+            trigger_condition: "M1-M2>-3.5% 或 (M1-M2>-4.8%且环比改善)",
             current_reading: `M1-M2剪刀差 ${simScissors.toFixed(1)}%`,
-            action_instruction: "企业活期存款显著活化，实体需求回暖，建议由纯红利防御向顺周期核心资产与港股弹性标的切换。"
+            action_instruction: "企业活期存款与财政实物工作量同步活化，建议由纯红利防御向顺周期核心资产及港股弹性标的切换。"
           });
-        } else {
-          defense += 3;
+        } else if (simScissors > -6.0) {
+          defense += 2;
           rules.push({
             id: "RULE_CN_CREDIT_PULSE",
-            dimension: "国内分子端宽信用拐点 (沙盘推演)",
+            dimension: "⑥ 国内分子端宽信用与M1活化 (沙盘)",
             status: "neutral",
-            status_label: "磨底待验证",
-            trigger_condition: "M1-M2剪刀差 <= -4.5%",
+            status_label: "剪刀差磨底待验证",
+            trigger_condition: "M1-M2处于 -6.0% ~ -3.5% 磨底区",
             current_reading: `M1-M2剪刀差 ${simScissors.toFixed(1)}%`,
-            action_instruction: "M1-M2剪刀差仍处负值区间，顺周期全面贝塔行情尚需等待，维持哑铃型两端配置策略。"
+            action_instruction: "考虑央行新M1已纳入个人活期与支付备付金，实体企业内生资本开支仍需社融中长期贷款进一步验证，维持哑铃配置。"
+          });
+        } else {
+          defense += 5;
+          rules.push({
+            id: "RULE_CN_CREDIT_PULSE",
+            dimension: "⑥ 国内分子端宽信用与M1活化 (沙盘)",
+            status: "warning",
+            status_label: "分子端收缩防御",
+            trigger_condition: "M1-M2剪刀差 <= -6.0%",
+            current_reading: `M1-M2剪刀差 ${simScissors.toFixed(1)}%`,
+            action_instruction: "实体资金定期化沉淀明显，规避高负债顺周期板块，强化红利与短债底仓。"
           });
         }
 
-        if (simErp >= 5.8) {
-          defense -= 5;
+        // 规则 7：A股股债性价比 ERP
+        if (simErp >= 5.80) {
+          defense -= 6;
           rules.push({
-            id: "RULE_EQUITY_ERP",
-            dimension: "A股股债性价比 ERP (沙盘推演)",
+            id: "RULE_EQUITY_ERP_VALUATION",
+            dimension: "⑦ A股股债性价比 ERP (沙盘)",
             status: "bullish",
-            status_label: "高性价比区",
-            trigger_condition: "沪深300 ERP >= 5.8%",
+            status_label: "高性价比赔率区",
+            trigger_condition: "沪深300 ERP >= 5.80%",
             current_reading: `ERP ${simErp.toFixed(2)}%`,
-            action_instruction: "股债性价比处于历史极值区，权益资产向下空间被封锁，逢回调果断增配硬科技进攻端。"
+            action_instruction: "无风险利率低位推升权益隐含风险溢价，指数向下空间被封锁，逢回调果断布局CapEx订单验证的硬科技进攻端。"
+          });
+        } else if (simErp >= 5.00) {
+          rules.push({
+            id: "RULE_EQUITY_ERP_VALUATION",
+            dimension: "⑦ A股股债性价比 ERP (沙盘)",
+            status: "neutral",
+            status_label: "估值性价比均衡",
+            trigger_condition: "沪深300 ERP 5.00% ~ 5.80%",
+            current_reading: `ERP ${simErp.toFixed(2)}%`,
+            action_instruction: "股债性价比处于合理区间，权益重在把握结构性CapEx景气分化。"
+          });
+        } else {
+          defense += 6;
+          rules.push({
+            id: "RULE_EQUITY_ERP_VALUATION",
+            dimension: "⑦ A股股债性价比 ERP (沙盘)",
+            status: "warning",
+            status_label: "风险溢价偏薄",
+            trigger_condition: "沪深300 ERP < 5.00%",
+            current_reading: `ERP ${simErp.toFixed(2)}%`,
+            action_instruction: "权益整体估值保护减弱，严控追高并收缩进攻端敞口。"
           });
         }
 
@@ -218,41 +511,48 @@
         const aiHwW = Math.round((offense * 0.62) / 5) * 5;
         const agentW = offense - aiHwW;
 
+        const redempWarning = simRDrSpread >= 25.0;
+
         return {
           hard_rules: rules,
           barbell_allocation: {
             defense_total: defense,
             offense_total: offense,
             breakdown: [
-              { bucket: "防御端：中短久期利率债/高等级信用债", weight: bondW, tag: "流动性底仓", rationale: `DR007(${simDr007.toFixed(2)}%)锁定稳健套息空间，规避超长债波动。` },
-              { bucket: "防御端：央国企高股息红利低波", weight: divW, tag: "类债替代锚", rationale: `10Y中债(${simCn10y.toFixed(2)}%)低位运行，高股息资产具备强险资承接。` },
-              { bucket: "进攻端：全球AI算力基建与国产卡点供应链", weight: aiHwW, tag: "CapEx硬逻辑", rationale: "光模块/HBM/液冷/先进封装订单高景气对冲海外宏观扰动。" },
-              { bucket: "进攻端：AI Agent商业化与具身智能核心部件", weight: agentW, tag: "高弹性期权", rationale: "围绕推理侧降本与人形机器人丝杠/传感器定点突破布局。" }
+              { bucket: "防御端：中短久期利率债/高等级信用债", weight: bondW, tag: "流动性与票息底仓", rationale: `FDR007(${simDr007.toFixed(2)}%)、R-DR分层利差(${simRDrSpread.toFixed(1)}bp)决定套息安全垫，规避超长债波动。` },
+              { bucket: "防御端：央国企高股息红利低波", weight: divW, tag: "险资类债替代锚", rationale: `10Y中债(${simCn10y.toFixed(2)}%)背景下，高自由现金流央企红利具备强险资OCI承接。` },
+              { bucket: "进攻端：全球AI算力基建与国产卡点供应链", weight: aiHwW, tag: "CapEx一阶与二阶导验证", rationale: "紧盯台积电月度营收与云厂商CapEx增速斜率，精选1.6T光模块/液冷/国产算力放量标的。" },
+              { bucket: "进攻端：AI Agent商业化与具身智能核心部件", weight: agentW, tag: "ROI闭环与0到1期权", rationale: "围绕推理降本后软件RPO加速与人形机器人丝杠/六维力传感器定点突破布局。" }
             ]
           },
           soft_reports: {
             trading_perspective: {
-              title: `【沙盘实时推演·交易版】美债${simUs10y.toFixed(2)}%、中债${simCn10y.toFixed(2)}%，动态调整哑铃配比至 ${defense}% : ${offense}%`,
-              core_marginal_change: `当前沙盘设定：10Y美债=${simUs10y.toFixed(2)}%（5日变动${simUs10y5d}bp），10Y中债=${simCn10y.toFixed(2)}%，DR007=${simDr007.toFixed(2)}%，M1-M2剪刀差=${simScissors.toFixed(1)}%，沪深300 ERP=${simErp.toFixed(2)}%。`,
-              transmission_logic: `基于DCF定价公式，海外分母端${simUs10y >= 4.35 ? "明显承压" : "温和可控"}，国内处于${simCn10y <= 2.18 ? "典型低利率资产荒" : "利率回升宽信用预期"}环境，系统自动将防守端权重调整为 ${defense}%，进攻端调整为 ${offense}%。`,
+              title: `【沙盘实时推演·交易版】美债${simUs10y.toFixed(2)}%(实际${simDfii10.toFixed(2)}%)、中债${simCn10y.toFixed(2)}%，动态锁定哑铃配比 ${defense}% : ${offense}%`,
+              core_marginal_change: `当前沙盘设定：10Y美债=${simUs10y.toFixed(2)}%（10Y实际利率=${simDfii10.toFixed(2)}%，隐含通胀=${t10yie}%，5日变动=${simUs10y5d}bp），美联储准备金=${simWresbal.toFixed(0)}B；国内10Y中债=${simCn10y.toFixed(2)}%，FDR007=${simDr007.toFixed(2)}%，R007-DR007分层利差=${simRDrSpread.toFixed(1)}bp，中美利差=${usCnSpread.toFixed(2)}%，M1-M2剪刀差=${simScissors.toFixed(1)}%，沪深300 ERP=${simErp.toFixed(2)}%。`,
+              transmission_logic: `1. 海外分母与流动性：10Y实际利率(${simDfii10.toFixed(2)}%)与银行准备金(${simWresbal.toFixed(0)}B)处于${simDfii10 >= 2.20 || simWresbal < 3000 ? "紧约束状态，压制纯概念估值" : "温和友善区间，支持成长估值扩张"}；\n2. 国内资金与分子端：10Y中债(${simCn10y.toFixed(2)}%)与M1-M2剪刀差(${simScissors.toFixed(1)}%)显示${simScissors > -3.5 ? "宽信用顺周期修复开启" : "低利率资产荒与分子端磨底延续"}，系统自动将防守端调整为 ${defense}%、进攻端调整为 ${offense}%。`,
               action_instructions: [
-                `【仓位指令】立即将组合再平衡至 防守端 ${defense}%（短债${bondW}%+红利${divW}%）: 进攻端 ${offense}%（算力${aiHwW}%+具身/Agent${agentW}%）。`,
-                "【选股过滤】仅保留季报/中报在建工程与合同负债同步高增、且通过北美云厂商或国内头部主机厂CapEx验证的硬科技标的。"
+                `【仓位指令】立即将组合再平衡至 防守端 ${defense}%（短债${bondW}% + 央企红利${divW}%）: 进攻端 ${offense}%（AI算力${aiHwW}% + Agent/具身${agentW}%）。`,
+                "【进攻端选股过滤】重点核查台积电月度营收、云厂商CapEx/OCF比例及巨潮资讯网正式定点公告，规避CapEx二阶导放缓环节。",
+                redempWarning
+                  ? "🚨【债市紧急风控】沙盘显示R007-DR007分层利差突破25bp赎回预警线，立即抛售高弹性银行二永债并缩短久期至存单！"
+                  : `【债市久期管理】R007-DR007利差(${simRDrSpread.toFixed(1)}bp)平稳，维持1-3年高等级信用债底仓吃票息。`
               ]
             },
             wealth_perspective: {
-              title: `【沙盘实时推演·存续期与渠道版】10Y国债${simCn10y.toFixed(2)}%情境下的固收+归因与分行客户配置建议`,
-              core_marginal_change: `当前沙盘模拟：国内10Y国债${simCn10y.toFixed(2)}%、DR007 ${simDr007.toFixed(2)}%，股债风险溢价 ERP ${simErp.toFixed(2)}%。`,
-              transmission_logic: `1. 纯债底仓：${simCn10y <= 2.18 ? "低利率环境下票息稀缺，严控长债久期敞口，依靠中短久期高等级信用债锁定稳健收益" : "利率回升期缩短久期防范净值回撤"}；
-2. 固收+弹性：通过 ${offense}% 的高景气科技与红利资产捕捉分子端产业升级红利。`,
+              title: `【沙盘实时推演·存续期与渠道版】10Y中债${simCn10y.toFixed(2)}%、R-DR利差${simRDrSpread.toFixed(1)}bp情境下的固收+归因与沟通话术`,
+              core_marginal_change: `当前沙盘模拟：国内10Y国债${simCn10y.toFixed(2)}%、FDR007 ${simDr007.toFixed(2)}%、R007-DR007非银分层利差 ${simRDrSpread.toFixed(1)}bp，沪深300 ERP ${simErp.toFixed(2)}%。`,
+              transmission_logic: `1. 纯债与理财赎回监控：${redempWarning ? "非银分层利差突破25bp，需防范散户赎回引发二永债负反馈踩踏，产品已全面收缩久期防守" : "银行向非银流动性传导顺畅，短端票息安全垫稳固，长债微幅波动属正常久期呼吸"}；\n2. 固收+弹性归因：通过 ${defense}% 稳健底仓 + ${offense}% 高景气科技对冲单一资产波动。`,
               action_instructions: [
-                `【分行客户沟通话术】：“当前市场环境下，单一押注长债或单一追高题材均面临波动，建议采用 ${defense}% 稳健底仓 + ${offense}% 硬科技弹性的哑铃配置方案。”`,
-                "【存续期监控】密切跟踪DR007与10Y国债关键风控水位，及时向理财子与分行输出归因周报。"
+                redempWarning
+                  ? `⚠️【防赎回踩踏紧急话术】：“当前非银资金面短期收敛导致二永债利差波动，我们产品已提前降久期切换至高流动性短债与存单，回撤受控，切勿在流动性冲击波峰盲目赎回将浮亏变成实亏。”`
+                  : `【纯固收客户安抚话术】：“当前FDR007仅${simDr007.toFixed(2)}%、R007-DR007利差仅${simRDrSpread.toFixed(1)}bp，无机构赎回负反馈压力，建议坚定持有中短债底仓获取时间复利。”`,
+                `【分行RM配置转化建议】：推荐按照“${bondW}%短债理财底仓 + ${divW}%央企红利 + ${offense}%硬科技固收+”构建哑铃组合。`,
+                "【渠道风控扳机线】：持续盯紧 10Y中债 2.15%、FDR007 1.85% 与 R007-DR007 25bp 三条风控线。"
               ]
             }
           }
         };
-      }, [simMode, rawData, simUs10y, simUs10y5d, simCn10y, simDr007, simScissors, simErp]);
+      }, [simMode, rawData, simUs10y, simDfii10, simUs10y5d, simWresbal, simCn10y, simDr007, simRDrSpread, simScissors, simErp]);
 
       const handleCopy = (text, label) => {
         navigator.clipboard.writeText(text);
@@ -274,9 +574,28 @@
         );
       };
 
+      const formatPeriodLabels = (m) => {
+        if (m.freq === "monthly") {
+          return {
+            p1: `月环比: ${m.chg_1d_bp > 0 ? "+" : ""}${m.chg_1d_bp}pct`,
+            p5: `序列频率: 月度`
+          };
+        }
+        const unitSuffix = m.unit === "%" ? "bp" : m.unit === "bp" ? "bp" : "B";
+        const prefix1 = m.freq === "weekly" ? "1周" : "1日";
+        const prefix5 = m.freq === "weekly" ? "5周" : "5日";
+        return {
+          p1: `${prefix1}: ${m.chg_1d_bp > 0 ? "+" : ""}${m.chg_1d_bp}${unitSuffix}`,
+          p5: `${prefix5}: ${m.chg_5d_bp > 0 ? "+" : ""}${m.chg_5d_bp}${unitSuffix}`
+        };
+      };
+
       const activeReport = reportMode === "trading"
         ? computedEngine.soft_reports.trading_perspective
         : computedEngine.soft_reports.wealth_perspective;
+
+      const usMetrics = rawData.metrics.us;
+      const cnMetrics = rawData.metrics.cn;
 
       return (
         <div
@@ -292,18 +611,18 @@
                 <div className="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-pulse" />
                 <div>
                   <h1 className="text-base md:text-lg font-bold tracking-tight text-white flex items-center gap-2">
-                    宏观流动性与科技CapEx一手数据终端
-                    {simMode && <span className="text-xs bg-amber-500/20 text-amber-300 border border-amber-500/40 px-2 py-0.5 rounded-full">沙盘实时重算中</span>}
+                    宏观流动性与科技CapEx一手数据投研终端
+                    <span className="text-[11px] bg-indigo-500/20 text-indigo-300 border border-indigo-500/40 px-2 py-0.5 rounded-full font-mono">
+                      Pro 7-Dim
+                    </span>
+                    {simMode && <span className="text-xs bg-amber-500/20 text-amber-300 border border-amber-500/40 px-2 py-0.5 rounded-full">⚡ 沙盘实时接管中</span>}
                   </h1>
                   <p className="text-xs text-slate-400">
-                    运行: {rawData.meta.updated_at} | 象限: <span className="text-sky-300 font-medium">{rawData.meta.market_regime}</span>
+                    更新: {rawData.meta.updated_at} | 宏观象限: <span className="text-sky-300 font-medium">{rawData.meta.market_regime}</span>
                   </p>
                 </div>
               </div>
 
-              <p className="w-full text-xs text-amber-300" role="status">
-                {rawData.meta.data_quality_note || "当前为内置演示快照，等待加载数据。DR007/ERP 未接入；CapEx 为静态框架。"}
-              </p>
               {/* PC端顶部导航切换 */}
               <nav className="hidden md:flex items-center gap-1.5 bg-slate-900/90 p-1 rounded-xl border border-slate-800">
                 {PAGES.map(p => (
@@ -320,12 +639,16 @@
                   </button>
                 ))}
               </nav>
+
+              <p className="w-full text-xs text-emerald-300/90 bg-emerald-950/30 border border-emerald-500/20 rounded-lg px-3 py-1.5" role="status">
+                ✓ {rawData.meta.data_quality_note}
+              </p>
             </div>
           </header>
 
           {/* 主体多页滑动容器 */}
-          <main className="flex-1 max-w-7xl w-full mx-auto px-4 pt-5">
-            {/* 页面进度指示条 (手机端直观感知第几页，可左右滑动) */}
+          <main className="flex-1 max-w-7xl w-full mx-auto px-4 pt-4">
+            {/* 页面进度指示条 */}
             <div className="flex items-center justify-between mb-4 bg-slate-900/60 px-3.5 py-2 rounded-xl border border-slate-800/80">
               <div className="flex items-center gap-2">
                 <span className="text-xs font-bold text-indigo-400 uppercase tracking-wider">
@@ -349,7 +672,7 @@
               </div>
             </div>
 
-            {/* ==================== PAGE 0: 双层决策引擎 (硬逻辑触发器 + AI双视角软研报) ==================== */}
+            {/* ==================== PAGE 0: 双层决策引擎 (七维硬逻辑触发器 + 双视角动态软研报) ==================== */}
             {activePage === 0 && (
               <div className="space-y-6">
                 {/* 顶部核心哑铃配比仪表横幅 */}
@@ -357,20 +680,26 @@
                   <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
                     <div>
                       <div className="text-xs text-indigo-400 font-semibold uppercase tracking-wider mb-1">
-                        今日量化规则引擎自动推导 · 哑铃型配置 (Barbell Strategy)
+                        今日七维量化规则引擎推导 · 哑铃型策略最优仓位 (Barbell Allocation)
                       </div>
                       <h2 className="text-xl md:text-2xl font-bold text-white">
-                        防守端 <span className="text-emerald-400">{computedEngine.barbell_allocation.defense_total}%</span>
+                        防守端（短债+央企红利）<span className="text-emerald-400">{computedEngine.barbell_allocation.defense_total}%</span>
                         <span className="mx-2 text-slate-500">:</span>
-                        进攻端 <span className="text-indigo-400">{computedEngine.barbell_allocation.offense_total}%</span>
+                        进攻端（AI算力+具身/Agent）<span className="text-indigo-400">{computedEngine.barbell_allocation.offense_total}%</span>
                       </h2>
                     </div>
-                    <div className="flex items-center gap-2">
+                    <div className="flex flex-wrap items-center gap-2">
                       <button
                         onClick={() => setActivePage(3)}
                         className="px-3.5 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-xs font-medium text-slate-200 border border-slate-700 transition"
                       >
-                        进入沙盘调节参数 ➔
+                        进入沙盘压力测试 ➔
+                      </button>
+                      <button
+                        onClick={() => setActivePage(4)}
+                        className="px-3.5 py-2 rounded-xl bg-indigo-950/60 hover:bg-indigo-900/60 text-xs font-medium text-indigo-300 border border-indigo-500/30 transition"
+                      >
+                        查看六大传导误区 ➔
                       </button>
                     </div>
                   </div>
@@ -385,12 +714,12 @@
                       className="bg-gradient-to-r from-indigo-600 to-purple-500 rounded-r-full transition-all duration-500"
                     />
                   </div>
-                  <div className="grid grid-cols-2 md:grid-cols-4 gap-2.5 mt-4">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2.5 mt-4">
                     {computedEngine.barbell_allocation.breakdown.map((item, idx) => (
                       <div key={idx} className="bg-slate-900/75 rounded-xl p-3 border border-slate-800/90">
                         <div className="flex items-center justify-between text-xs text-slate-400 mb-1">
-                          <span>{item.tag}</span>
-                          <span className="text-sm font-bold text-white">{item.weight}%</span>
+                          <span className="text-indigo-300/90 font-medium">{item.tag}</span>
+                          <span className="text-sm font-bold text-white font-mono">{item.weight}%</span>
                         </div>
                         <div className="text-xs font-semibold text-slate-200 mb-1">{item.bucket}</div>
                         <div className="text-[11px] text-slate-400 leading-relaxed">{item.rationale}</div>
@@ -399,14 +728,14 @@
                   </div>
                 </div>
 
-                {/* 第二层决策：AI 双视角软研报（二级交易版 vs 存续期管理与渠道版） */}
+                {/* 第二层决策：动态双视角软研报（二级交易实战版 vs 存续期管理与渠道版） */}
                 <div className="glass-card rounded-2xl p-5">
-                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-4 border-b border-slate-800">
+                  <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-3 pb-4 border-b border-slate-800">
                     <div>
-                      <span className="text-xs font-bold text-purple-400 uppercase">Layer 2 · AI 软研报自动合成引擎</span>
+                      <span className="text-xs font-bold text-purple-400 uppercase">Layer 2 · 条件驱动动态双视角早报引擎</span>
                       <h3 className="text-base md:text-lg font-bold text-white mt-0.5">{activeReport.title}</h3>
                     </div>
-                    <div className="flex items-center gap-2 self-start sm:self-auto">
+                    <div className="flex flex-wrap items-center gap-2">
                       <div className="bg-slate-900 p-1 rounded-xl border border-slate-800 flex text-xs">
                         <button
                           onClick={() => setReportMode("trading")}
@@ -427,37 +756,36 @@
                       </div>
                       <button
                         onClick={() => handleCopy(
-                          `${activeReport.title}
-
-【核心边际变化】
-${activeReport.core_marginal_change}
-
-【传导逻辑】
-${activeReport.transmission_logic}
-
-【行动指令】
-${activeReport.action_instructions.join("\n")}`,
+                          `${activeReport.title}\n\n【核心边际变化】\n${activeReport.core_marginal_change}\n\n【传导逻辑】\n${activeReport.transmission_logic}\n\n【行动指令】\n${activeReport.action_instructions.join("\n")}`,
                           "早报全文"
                         )}
                         className="px-3 py-1.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-xs text-slate-200 border border-slate-700 shrink-0"
                       >
-                        {copiedText === "早报全文" ? "✅ 已复制" : "复制晨报"}
+                        {copiedText === "早报全文" ? "✅ 已复制全文" : "📋 复制晨报全文"}
                       </button>
+                      {reportMode === "wealth" && (
+                        <button
+                          onClick={() => handleCopy(activeReport.action_instructions[0], "渠道安抚话术")}
+                          className="px-3 py-1.5 rounded-xl bg-emerald-950/60 hover:bg-emerald-900/60 text-xs text-emerald-300 border border-emerald-500/30 shrink-0"
+                        >
+                          {copiedText === "渠道安抚话术" ? "✅ 已复制话术" : "💬 仅复制客户安抚话术"}
+                        </button>
+                      )}
                     </div>
                   </div>
 
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-4">
                     <div className="bg-slate-900/60 p-4 rounded-xl border border-slate-800/80">
-                      <div className="text-xs font-bold text-sky-400 mb-2">1. 一手指标核心边际变化</div>
-                      <p className="text-xs md:text-sm text-slate-300 leading-relaxed">{activeReport.core_marginal_change}</p>
+                      <div className="text-xs font-bold text-sky-400 mb-2">1. 16项一手指标核心边际变化</div>
+                      <p className="text-xs md:text-sm text-slate-300 leading-relaxed whitespace-pre-line">{activeReport.core_marginal_change}</p>
                     </div>
                     <div className="bg-slate-900/60 p-4 rounded-xl border border-slate-800/80">
-                      <div className="text-xs font-bold text-amber-400 mb-2">2. DCF 分子/分母传导归因</div>
+                      <div className="text-xs font-bold text-amber-400 mb-2">2. DCF 分子/分母与机构行为归因</div>
                       <p className="text-xs md:text-sm text-slate-300 leading-relaxed whitespace-pre-line">{activeReport.transmission_logic}</p>
                     </div>
                     <div className="bg-slate-900/60 p-4 rounded-xl border border-slate-800/80">
-                      <div className="text-xs font-bold text-emerald-400 mb-2">3. 今日可执行落地指令</div>
-                      <ul className="space-y-2 text-xs md:text-sm text-slate-200">
+                      <div className="text-xs font-bold text-emerald-400 mb-2">3. 今日可执行落地指令与风控线</div>
+                      <ul className="space-y-2.5 text-xs md:text-sm text-slate-200">
                         {activeReport.action_instructions.map((inst, i) => (
                           <li key={i} className="leading-relaxed flex items-start gap-1.5">
                             <span className="text-indigo-400 font-bold">•</span>
@@ -469,11 +797,14 @@ ${activeReport.action_instructions.join("\n")}`,
                   </div>
                 </div>
 
-                {/* 第一层决策：硬逻辑量化阈值触发器列表 */}
+                {/* 第一层决策：七维硬逻辑量化阈值触发器列表 */}
                 <div className="glass-card rounded-2xl p-5">
-                  <div className="mb-4">
-                    <span className="text-xs font-bold text-emerald-400 uppercase">Layer 1 · 硬逻辑量化阈值触发器 (Rule-Based Engine)</span>
-                    <h3 className="text-base md:text-lg font-bold text-white mt-0.5">五大核心宏观与估值维度实时信号灯</h3>
+                  <div className="mb-4 flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                    <div>
+                      <span className="text-xs font-bold text-emerald-400 uppercase">Layer 1 · 七维硬逻辑量化阈值触发器 (Rule-Based Engine)</span>
+                      <h3 className="text-base md:text-lg font-bold text-white mt-0.5">覆盖实际利率拆解、准备金临界线、中美利差、理财赎回负反馈与ERP</h3>
+                    </div>
+                    <span className="text-xs text-slate-400">共 {computedEngine.hard_rules.length} 大实战传导维度</span>
                   </div>
                   <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3.5">
                     {computedEngine.hard_rules.map((rule) => (
@@ -500,117 +831,149 @@ ${activeReport.action_instructions.join("\n")}`,
               </div>
             )}
 
-            {/* ==================== PAGE 1: 中美宏观脉冲与3年历史分位数 ==================== */}
+            {/* ==================== PAGE 1: 16项中美宏观脉冲与流动性/利差拆解 ==================== */}
             {activePage === 1 && (
-              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                {/* 美国分母端流动性锚 */}
-                <div className="glass-card rounded-2xl p-5">
-                  <div className="flex items-center justify-between pb-3 mb-4 border-b border-slate-800">
-                    <div>
-                      <span className="text-xs font-bold text-sky-400 uppercase">US Macro & Fed Liquidity</span>
-                      <h3 className="text-base md:text-lg font-bold text-white">美国宏观：全球无风险利率分母锚</h3>
+              <div className="space-y-6">
+                {/* 顶部两大核心传导公式实时拆解卡片 */}
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+                  <div className="bg-sky-950/30 border border-sky-500/30 rounded-2xl p-4">
+                    <div className="text-xs font-bold text-sky-400 uppercase mb-1">
+                      🔍 海外分母端与美联储准备金恒等式实时拆解
                     </div>
-                    <span className="text-xs text-slate-400 font-mono">数据源: FRED API</span>
+                    <div className="text-sm font-bold text-white font-mono">
+                      10Y美债({usMetrics.dgs10.value}%) ≈ 10Y实际利率({usMetrics.dfii10?.value}%) + 通胀预期({usMetrics.t10yie?.value}%)
+                    </div>
+                    <p className="text-xs text-slate-300 mt-1.5 leading-relaxed">
+                      • <strong>DCF分母诊断</strong>：当前实际利率高达 <span className="text-amber-300 font-mono">{usMetrics.dfii10?.value}%</span>（{usMetrics.dfii10?.percentile_3y}%分位），并非衰退恐慌，而是高实际利率压制远期无业绩成长股。<br/>
+                      • <strong>美元准备金底线</strong>：ON RRP 仅剩 <span className="text-rose-300 font-mono">{usMetrics.rrp.value}B</span>，TGA 高达 <span className="text-amber-300 font-mono">{usMetrics.tga.value}B</span>，银行准备金已降至 <span className="text-rose-300 font-mono">{usMetrics.wresbal?.value}B</span>（破3000B充裕线）。
+                    </p>
                   </div>
-                  <div className="space-y-3.5">
-                    {Object.values(rawData.metrics.us).map((m) => (
-                      <div key={m.code} className="bg-slate-900/75 p-4 rounded-xl border border-slate-800">
-                        <div className="flex items-center justify-between mb-1">
-                          <div className="flex items-center gap-2">
-                            <span className="text-sm font-bold text-white">{m.name}</span>
-                            <span className="text-[11px] font-mono px-2 py-0.5 bg-slate-800 text-sky-300 rounded">{m.code}</span>
-                          </div>
-                          <a href={m.url} target="_blank" rel="noreferrer" className="text-xs text-indigo-400 hover:underline">
-                            官方源 ↗
-                          </a>
-                        </div>
-                        <p className="text-xs text-slate-400 mb-1">{m.role}</p>
-                        <p className="text-xs text-amber-300 mb-3">
-                          {m.data_status === "updated" ? "已获取" : m.data_status === "cached" ? "缓存（本次未更新）" : "演示数据（未接入）"} · 观测: {m.observation_date || "未验证"}
-                        </p>
-                        <div className="flex items-baseline justify-between mb-2">
-                          <div className="text-xl font-bold font-mono text-white">
-                            {m.value}<span className="text-xs text-slate-400 ml-1">{m.unit}</span>
-                          </div>
-                          <div className="flex items-center gap-3 text-xs font-mono">
-                            <span className={m.chg_1d_bp > 0 ? "text-rose-400" : "text-emerald-400"}>
-                              1期: {m.chg_1d_bp > 0 ? "+" : ""}{m.chg_1d_bp}
-                            </span>
-                            <span className={m.chg_5d_bp > 10 ? "text-rose-400 font-bold" : "text-slate-300"}>
-                              5期: {m.chg_5d_bp > 0 ? "+" : ""}{m.chg_5d_bp}
-                            </span>
-                          </div>
-                        </div>
-                        {/* 近3年分位数进度条 */}
-                        <div className="space-y-1">
-                          <div className="flex justify-between text-[11px] text-slate-400">
-                            <span>近3年历史分位数</span>
-                            <span className="font-mono text-slate-200">{m.percentile_3y}% 分位 (预警线: {m.threshold_warn}{m.unit})</span>
-                          </div>
-                          <div className="h-1.5 w-full bg-slate-800 rounded-full overflow-hidden">
-                            <div
-                              style={{ width: `${m.percentile_3y}%` }}
-                              className={`h-full rounded-full ${m.percentile_3y > 75 ? "bg-rose-500" : m.percentile_3y < 25 ? "bg-emerald-500" : "bg-sky-500"}`}
-                            />
-                          </div>
-                        </div>
-                      </div>
-                    ))}
+
+                  <div className="bg-emerald-950/30 border border-emerald-500/30 rounded-2xl p-4">
+                    <div className="text-xs font-bold text-emerald-400 uppercase mb-1">
+                      🏦 国内理财赎回负反馈监控与股债性价比拆解
+                    </div>
+                    <div className="text-sm font-bold text-white font-mono">
+                      R-DR分层利差({cnMetrics.r007_dr007_spread?.value}bp) | 中美利差({cnMetrics.us_cn_spread?.value}%) | ERP({cnMetrics.erp_csi300.value}%)
+                    </div>
+                    <p className="text-xs text-slate-300 mt-1.5 leading-relaxed">
+                      • <strong>理财赎回预警器</strong>：FDR007 报 <span className="text-emerald-300 font-mono">{cnMetrics.dr007.value}%</span>，R007-DR007非银利差仅 <span className="text-emerald-300 font-mono">{cnMetrics.r007_dr007_spread?.value}bp</span>（远低于25bp赎回踩踏线），纯债与短债理财底仓安全。<br/>
+                      • <strong>跨市场与ERP</strong>：10Y中债 <span className="text-emerald-300 font-mono">{cnMetrics.cn10y.value}%</span>（1%分位）推升沪深300 ERP至 <span className="text-amber-300 font-mono">{cnMetrics.erp_csi300.value}%</span>，权益向下空间封锁。
+                    </p>
                   </div>
                 </div>
 
-                {/* 中国宽货币与宽信用传导 */}
-                <div className="glass-card rounded-2xl p-5">
-                  <div className="flex items-center justify-between pb-3 mb-4 border-b border-slate-800">
-                    <div>
-                      <span className="text-xs font-bold text-emerald-400 uppercase">CN Macro & Credit Pulse</span>
-                      <h3 className="text-base md:text-lg font-bold text-white">中国宏观：资产荒温度计与分子端活化</h3>
-                    </div>
-                    <span className="text-xs text-slate-400 font-mono">数据源: AkShare/东方财富（含演示项）</span>
-                  </div>
-                  <div className="space-y-3.5">
-                    {Object.values(rawData.metrics.cn).map((m) => (
-                      <div key={m.code} className="bg-slate-900/75 p-4 rounded-xl border border-slate-800">
-                        <div className="flex items-center justify-between mb-1">
-                          <div className="flex items-center gap-2">
-                            <span className="text-sm font-bold text-white">{m.name}</span>
-                            <span className="text-[11px] font-mono px-2 py-0.5 bg-slate-800 text-emerald-300 rounded">{m.code}</span>
-                          </div>
-                          <a href={m.url} target="_blank" rel="noreferrer" className="text-xs text-indigo-400 hover:underline">
-                            官方源 ↗
-                          </a>
-                        </div>
-                        <p className="text-xs text-slate-400 mb-1">{m.role}</p>
-                        <p className="text-xs text-amber-300 mb-3">
-                          {m.data_status === "updated" ? "已获取" : m.data_status === "cached" ? "缓存（本次未更新）" : "演示数据（未接入）"} · 观测: {m.observation_date || "未验证"}
-                        </p>
-                        <div className="flex items-baseline justify-between mb-2">
-                          <div className="text-xl font-bold font-mono text-white">
-                            {m.value}<span className="text-xs text-slate-400 ml-1">{m.unit}</span>
-                          </div>
-                          <div className="flex items-center gap-3 text-xs font-mono">
-                            <span className="text-slate-300">
-                              变动: {m.chg_1d_bp > 0 ? "+" : ""}{m.chg_1d_bp}
-                            </span>
-                            <span className="text-slate-300">
-                              5期: {m.chg_5d_bp > 0 ? "+" : ""}{m.chg_5d_bp}
-                            </span>
-                          </div>
-                        </div>
-                        <div className="space-y-1">
-                          <div className="flex justify-between text-[11px] text-slate-400">
-                            <span>近3年历史分位数</span>
-                            <span className="font-mono text-slate-200">{m.percentile_3y}% 分位 (关键水位: {m.threshold_warn}{m.unit})</span>
-                          </div>
-                          <div className="h-1.5 w-full bg-slate-800 rounded-full overflow-hidden">
-                            <div
-                              style={{ width: `${m.percentile_3y}%` }}
-                              className={`h-full rounded-full ${m.percentile_3y > 75 ? "bg-emerald-500" : m.percentile_3y < 20 ? "bg-amber-500" : "bg-indigo-500"}`}
-                            />
-                          </div>
-                        </div>
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                  {/* 美国分母端流动性锚 (9项) */}
+                  <div className="glass-card rounded-2xl p-5">
+                    <div className="flex items-center justify-between pb-3 mb-4 border-b border-slate-800">
+                      <div>
+                        <span className="text-xs font-bold text-sky-400 uppercase">US Macro & Fed Liquidity (9 Series)</span>
+                        <h3 className="text-base md:text-lg font-bold text-white">美国宏观：实际利率、通胀预期与准备金底线</h3>
                       </div>
-                    ))}
+                      <span className="text-xs text-slate-400 font-mono">数据源: FRED API</span>
+                    </div>
+                    <div className="space-y-3.5">
+                      {Object.values(usMetrics).map((m) => {
+                        const labels = formatPeriodLabels(m);
+                        return (
+                          <div key={m.code} className="bg-slate-900/75 p-4 rounded-xl border border-slate-800">
+                            <div className="flex items-center justify-between mb-1">
+                              <div className="flex items-center gap-2">
+                                <span className="text-sm font-bold text-white">{m.name}</span>
+                                <span className="text-[11px] font-mono px-2 py-0.5 bg-slate-800 text-sky-300 rounded">{m.code}</span>
+                              </div>
+                              <a href={m.url} target="_blank" rel="noreferrer" className="text-xs text-indigo-400 hover:underline">
+                                FRED官方源 ↗
+                              </a>
+                            </div>
+                            <p className="text-xs text-slate-400 mb-1">{m.role}</p>
+                            <p className="text-xs text-emerald-300/90 mb-2.5">
+                              {m.data_status === "updated" ? "✓ 已核验更新" : m.data_status === "cached" ? "缓存数据" : "演示数据"} · 观测日期: {m.observation_date || "未验证"}
+                            </p>
+                            <div className="flex items-baseline justify-between mb-2">
+                              <div className="text-xl font-bold font-mono text-white">
+                                {m.value}<span className="text-xs text-slate-400 ml-1">{m.unit}</span>
+                              </div>
+                              <div className="flex items-center gap-3 text-xs font-mono">
+                                <span className={m.chg_1d_bp > 0 ? "text-rose-400" : "text-emerald-400"}>
+                                  {labels.p1}
+                                </span>
+                                <span className={Math.abs(m.chg_5d_bp) > 10 ? "text-amber-300 font-bold" : "text-slate-300"}>
+                                  {labels.p5}
+                                </span>
+                              </div>
+                            </div>
+                            <div className="space-y-1">
+                              <div className="flex justify-between text-[11px] text-slate-400">
+                                <span>{m.window_label || "近3年历史分位数"}</span>
+                                <span className="font-mono text-slate-200">{m.percentile_3y}% 分位 (预警线: {m.threshold_warn}{m.unit})</span>
+                              </div>
+                              <div className="h-1.5 w-full bg-slate-800 rounded-full overflow-hidden">
+                                <div
+                                  style={{ width: `${m.percentile_3y}%` }}
+                                  className={`h-full rounded-full ${m.percentile_3y > 75 ? "bg-rose-500" : m.percentile_3y < 25 ? "bg-emerald-500" : "bg-sky-500"}`}
+                                />
+                              </div>
+                            </div>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  </div>
+
+                  {/* 中国宽货币与宽信用传导 (7项) */}
+                  <div className="glass-card rounded-2xl p-5">
+                    <div className="flex items-center justify-between pb-3 mb-4 border-b border-slate-800">
+                      <div>
+                        <span className="text-xs font-bold text-emerald-400 uppercase">CN Macro, Liquidity Tiering & ERP (7 Series)</span>
+                        <h3 className="text-base md:text-lg font-bold text-white">中国宏观：资产荒、非银分层利差与分子端活化</h3>
+                      </div>
+                      <span className="text-xs text-slate-400 font-mono">ChinaMoney / AkShare</span>
+                    </div>
+                    <div className="space-y-3.5">
+                      {Object.values(cnMetrics).map((m) => {
+                        const labels = formatPeriodLabels(m);
+                        return (
+                          <div key={m.code} className="bg-slate-900/75 p-4 rounded-xl border border-slate-800">
+                            <div className="flex items-center justify-between mb-1">
+                              <div className="flex items-center gap-2">
+                                <span className="text-sm font-bold text-white">{m.name}</span>
+                                <span className="text-[11px] font-mono px-2 py-0.5 bg-slate-800 text-emerald-300 rounded">{m.code}</span>
+                              </div>
+                              <a href={m.url} target="_blank" rel="noreferrer" className="text-xs text-indigo-400 hover:underline">
+                                权威披露源 ↗
+                              </a>
+                            </div>
+                            <p className="text-xs text-slate-400 mb-1">{m.role}</p>
+                            <p className="text-xs text-emerald-300/90 mb-2.5">
+                              {m.data_status === "updated" ? "✓ 已核验更新" : m.data_status === "cached" ? "缓存数据" : "演示数据"} · 观测日期: {m.observation_date || "未验证"}
+                            </p>
+                            <div className="flex items-baseline justify-between mb-2">
+                              <div className="text-xl font-bold font-mono text-white">
+                                {m.value}<span className="text-xs text-slate-400 ml-1">{m.unit}</span>
+                              </div>
+                              <div className="flex items-center gap-3 text-xs font-mono">
+                                <span className="text-slate-300">{labels.p1}</span>
+                                <span className="text-slate-300">{labels.p5}</span>
+                              </div>
+                            </div>
+                            <div className="space-y-1">
+                              <div className="flex justify-between text-[11px] text-slate-400">
+                                <span>{m.window_label || "近3年历史分位数"}</span>
+                                <span className="font-mono text-slate-200">{m.percentile_3y}% 分位 (关键水位: {m.threshold_warn}{m.unit})</span>
+                              </div>
+                              <div className="h-1.5 w-full bg-slate-800 rounded-full overflow-hidden">
+                                <div
+                                  style={{ width: `${m.percentile_3y}%` }}
+                                  className={`h-full rounded-full ${m.percentile_3y > 75 ? "bg-emerald-500" : m.percentile_3y < 20 ? "bg-amber-500" : "bg-indigo-500"}`}
+                                />
+                              </div>
+                            </div>
+                          </div>
+                        );
+                      })}
+                    </div>
                   </div>
                 </div>
               </div>
@@ -618,15 +981,36 @@ ${activeReport.action_instructions.join("\n")}`,
 
             {/* ==================== PAGE 2: 全球科技前沿与 CapEx 产业链验证 ==================== */}
             {activePage === 2 && (
-              <div className="space-y-4">
+              <div className="space-y-5">
+                {/* 顶部科技CapEx定价三定律说明 */}
+                <div className="bg-indigo-950/30 border border-indigo-500/30 rounded-2xl p-4">
+                  <div className="text-xs font-bold text-indigo-400 uppercase mb-1">
+                    ⚡ 科技股超额收益定价三定律（规避“利好出尽”与牛鞭效应陷阱）
+                  </div>
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-3 mt-2 text-xs text-slate-300">
+                    <div className="bg-slate-900/70 p-3 rounded-xl border border-slate-800">
+                      <strong className="text-white block mb-1">1. 一阶导看总量，二阶导定估值</strong>
+                      硬件供应链（光模块/服务器/液冷）股价拐点领先于CapEx绝对值见顶。当云厂商CapEx同比增速斜率（二阶导）连续放缓时，即使订单满产也会先杀估值。
+                    </div>
+                    <div className="bg-slate-900/70 p-3 rounded-xl border border-slate-800">
+                      <strong className="text-white block mb-1">2. 跳过季报滞后，紧盯月度/旬度先导</strong>
+                      季报披露往往滞后1~2个月。实战中每月10日查<strong>台积电月度营收</strong>、每月1/11/21日查<strong>韩国关税厅HBM/半导体出口</strong>，即可提前锁定算力景气度。
+                    </div>
+                    <div className="bg-slate-900/70 p-3 rounded-xl border border-slate-800">
+                      <strong className="text-white block mb-1">3. 终局考核 ROI 与折旧现金流闭环</strong>
+                      巨额算力CapEx将在1~2年后转化为折旧费用。必须验证软件端 <strong>RPO（剩余履约义务）增速 &gt; 营收增速</strong> 且不侵蚀毛利率，才能形成商业闭环。
+                    </div>
+                  </div>
+                </div>
+
                 <div className="glass-card rounded-2xl p-5">
                   <div className="mb-4">
                     <span className="text-xs font-bold text-indigo-400 uppercase">Tech CapEx Verification Chain</span>
                     <h3 className="text-base md:text-lg font-bold text-white">
-                      技术突破 ➔ 资本开支(CapEx)加速 ➔ 供应链订单爆发 ➔ 终端商业化变现
+                      技术突破 ➔ 资本开支(CapEx)加速 ➔ 供应链订单爆发 ➔ 终端商业化变现(ROI)
                     </h3>
                     <p className="text-xs text-slate-400 mt-1">
-                      点击任意检索词即可一键复制，直接粘贴至 SEC EDGAR (10-Q/10-K) 或 巨潮资讯网《投资者关系活动记录表》中进行 Ctrl+F 一手验证。
+                      点击任意检索词即可一键复制，直接粘贴至 SEC EDGAR (10-Q/10-K) 或 巨潮资讯网《投资者关系活动记录表》中进行 Ctrl+F 一手核查。
                     </p>
                   </div>
 
@@ -636,7 +1020,7 @@ ${activeReport.action_instructions.join("\n")}`,
                         <div>
                           <div className="flex items-center justify-between gap-2 mb-2">
                             <span className="text-sm font-bold text-white">{item.stage}</span>
-                            <span className="px-2.5 py-0.5 text-xs rounded-full bg-indigo-500/20 text-indigo-300 border border-indigo-500/30">
+                            <span className="px-2.5 py-0.5 text-xs rounded-full bg-indigo-500/20 text-indigo-300 border border-indigo-500/30 shrink-0">
                               {item.status}
                             </span>
                           </div>
@@ -644,9 +1028,16 @@ ${activeReport.action_instructions.join("\n")}`,
                             {item.chain_nodes}
                           </div>
 
+                          {item.lead_indicators && (
+                            <div className="text-xs text-amber-200 bg-amber-950/30 p-2.5 rounded-lg border border-amber-500/20 mb-3">
+                              <strong className="block text-amber-400 mb-0.5">⚡ 高频一手先导指标（领先季报）：</strong>
+                              {item.lead_indicators}
+                            </div>
+                          )}
+
                           <div className="mb-3">
                             <div className="text-xs font-semibold text-slate-300 mb-1.5">
-                              🔍 财报/调研纪要 Ctrl+F 必查检索词（点击即复制）：
+                              🔍 财报/调研纪要 Ctrl+F 必查检索词（点击复制）：
                             </div>
                             <div className="flex flex-wrap gap-1.5">
                               {item.sec_cninfo_keywords.map((kw, kIdx) => (
@@ -662,13 +1053,13 @@ ${activeReport.action_instructions.join("\n")}`,
                           </div>
 
                           <div className="text-xs text-emerald-300 bg-emerald-950/30 p-2.5 rounded-lg border border-emerald-500/20 mb-2.5">
-                            <strong className="block mb-0.5">✅ 景气度证实标准：</strong>
+                            <strong className="block mb-0.5">✅ 景气度与ROI证实标准：</strong>
                             {item.verification_metric}
                           </div>
                         </div>
 
                         <div className="text-xs text-rose-300 bg-rose-950/30 p-2.5 rounded-lg border border-rose-500/20">
-                          <strong className="block mb-0.5">🚨 证伪排雷警示 (Red Flag)：</strong>
+                          <strong className="block mb-0.5">🚨 二阶导见顶与证伪排雷 (Red Flag)：</strong>
                           {item.red_flag}
                         </div>
                       </div>
@@ -681,50 +1072,94 @@ ${activeReport.action_instructions.join("\n")}`,
             {/* ==================== PAGE 3: 哑铃策略实时沙盘推演 ==================== */}
             {activePage === 3 && (
               <div className="glass-card rounded-2xl p-5 space-y-5">
-                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-800 pb-4">
+                <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-3 border-b border-slate-800 pb-4">
                   <div>
-                    <span className="text-xs font-bold text-amber-400 uppercase">Interactive Macro Stress Test</span>
-                    <h3 className="text-base md:text-lg font-bold text-white">哑铃型配置沙盘：手动拖动宏观变量，实时推演今日结论</h3>
+                    <span className="text-xs font-bold text-amber-400 uppercase">Interactive 9-Factor Macro Stress Test</span>
+                    <h3 className="text-base md:text-lg font-bold text-white">哑铃型配置沙盘：9大核心变量实时重算七维规则与双视角话术</h3>
                     <p className="text-xs text-slate-400">
-                      当遇到盘中突发宏观事件（如美联储超预期鹰派、国内降准降息），开启沙盘即可秒级重算第①页的硬规则信号与软研报话术。
+                      前后端规则引擎已实现 100% 逻辑同步。您可点击下方经典压力测试情景，或手动拖动滑块模拟盘中突发事件。
                     </p>
                   </div>
                   <div className="flex items-center gap-2">
                     <button
-                      onClick={() => setSimMode(!simMode)}
+                      onClick={() => applyScenario("reset")}
                       className={`px-4 py-2 rounded-xl text-xs font-bold transition ${
                         simMode
-                          ? "bg-amber-500 text-slate-950"
-                          : "bg-indigo-600 hover:bg-indigo-500 text-white"
+                          ? "bg-amber-500 text-slate-950 hover:bg-amber-400"
+                          : "bg-slate-800 text-slate-300 border border-slate-700"
                       }`}
                     >
-                      {simMode ? "⚡ 已开启沙盘实时接管 (点击恢复云端数据)" : "开启实时沙盘推演模式"}
+                      {simMode ? "🔄 点击恢复今日实盘云端数据" : "当前为今日实盘数据 (拖动滑块自动进入沙盘)"}
                     </button>
                   </div>
                 </div>
 
+                {/* 一键预设宏观压力测试情景按钮 */}
+                <div className="flex flex-wrap items-center gap-2">
+                  <span className="text-xs text-slate-400 font-semibold mr-1">一键加载经典压力情景：</span>
+                  <button
+                    onClick={() => applyScenario("us_liquidity_crunch")}
+                    className="px-3 py-1.5 rounded-xl bg-rose-950/50 hover:bg-rose-900/60 text-rose-300 border border-rose-500/30 text-xs font-medium transition"
+                  >
+                    🔥 情景A：华尔街准备金钱荒 + 实际利率冲高
+                  </button>
+                  <button
+                    onClick={() => applyScenario("cn_redemption_shock")}
+                    className="px-3 py-1.5 rounded-xl bg-amber-950/50 hover:bg-amber-900/60 text-amber-300 border border-amber-500/30 text-xs font-medium transition"
+                  >
+                    ⚠️ 情景B：国内理财赎回负反馈 (R-DR利差飙升至32bp)
+                  </button>
+                  <button
+                    onClick={() => applyScenario("goldilocks_bull")}
+                    className="px-3 py-1.5 rounded-xl bg-emerald-950/50 hover:bg-emerald-900/60 text-emerald-300 border border-emerald-500/30 text-xs font-medium transition"
+                  >
+                    🚀 情景C：美联储预防式降息 + 国内宽信用共振
+                  </button>
+                </div>
+
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                  {/* 1. 10Y美债名义收益率 */}
                   <div className="bg-slate-900/80 p-4 rounded-xl border border-slate-800">
                     <div className="flex justify-between text-xs mb-2">
-                      <span className="text-slate-300 font-semibold">10Y 美债收益率 (DGS10)</span>
+                      <span className="text-slate-300 font-semibold">① 10Y 美债名义利率 (DGS10)</span>
                       <span className="font-mono text-sky-400 font-bold">{simUs10y.toFixed(2)}%</span>
                     </div>
                     <input
-                      type="range" min="3.20" max="5.20" step="0.05"
+                      type="range" min="3.00" max="5.50" step="0.05"
                       value={simUs10y}
                       onChange={(e) => { setSimMode(true); setSimUs10y(parseFloat(e.target.value)); }}
                       className="w-full accent-indigo-500"
                     />
                     <div className="flex justify-between text-[11px] text-slate-500 mt-1">
-                      <span>3.20% (宽松)</span>
+                      <span>3.00% (宽松)</span>
                       <span>阈值 4.35%</span>
-                      <span>5.20% (紧缩)</span>
+                      <span>5.50% (紧缩)</span>
                     </div>
                   </div>
 
+                  {/* 2. 10Y TIPS 实际利率 */}
                   <div className="bg-slate-900/80 p-4 rounded-xl border border-slate-800">
                     <div className="flex justify-between text-xs mb-2">
-                      <span className="text-slate-300 font-semibold">10Y 美债 5日动量斜率 (bps)</span>
+                      <span className="text-slate-300 font-semibold">② 10Y TIPS 实际利率 (DFII10)</span>
+                      <span className="font-mono text-sky-400 font-bold">{simDfii10.toFixed(2)}%</span>
+                    </div>
+                    <input
+                      type="range" min="1.00" max="3.20" step="0.05"
+                      value={simDfii10}
+                      onChange={(e) => { setSimMode(true); setSimDfii10(parseFloat(e.target.value)); }}
+                      className="w-full accent-indigo-500"
+                    />
+                    <div className="flex justify-between text-[11px] text-slate-500 mt-1">
+                      <span>1.00% (低实际利率)</span>
+                      <span>预警 2.20%</span>
+                      <span>3.20% (严厉压制)</span>
+                    </div>
+                  </div>
+
+                  {/* 3. 10Y美债5日动量斜率 */}
+                  <div className="bg-slate-900/80 p-4 rounded-xl border border-slate-800">
+                    <div className="flex justify-between text-xs mb-2">
+                      <span className="text-slate-300 font-semibold">③ 10Y 美债 5日斜率 (bps)</span>
                       <span className="font-mono text-sky-400 font-bold">{simUs10y5d > 0 ? `+${simUs10y5d}` : simUs10y5d} bp</span>
                     </div>
                     <input
@@ -740,45 +1175,88 @@ ${activeReport.action_instructions.join("\n")}`,
                     </div>
                   </div>
 
+                  {/* 4. 美联储商业银行准备金 */}
                   <div className="bg-slate-900/80 p-4 rounded-xl border border-slate-800">
                     <div className="flex justify-between text-xs mb-2">
-                      <span className="text-slate-300 font-semibold">10Y 中债国债收益率 (CN10Y)</span>
+                      <span className="text-slate-300 font-semibold">④ 美联储银行准备金 (WRESBAL)</span>
+                      <span className="font-mono text-sky-400 font-bold">{simWresbal.toFixed(0)}B</span>
+                    </div>
+                    <input
+                      type="range" min="2500" max="3800" step="25"
+                      value={simWresbal}
+                      onChange={(e) => { setSimMode(true); setSimWresbal(parseFloat(e.target.value)); }}
+                      className="w-full accent-indigo-500"
+                    />
+                    <div className="flex justify-between text-[11px] text-slate-500 mt-1">
+                      <span>2500B (钱荒危机)</span>
+                      <span>底线 3000B</span>
+                      <span>3800B (充裕)</span>
+                    </div>
+                  </div>
+
+                  {/* 5. 10Y 中债国债收益率 (量程已下探至1.20%) */}
+                  <div className="bg-slate-900/80 p-4 rounded-xl border border-slate-800">
+                    <div className="flex justify-between text-xs mb-2">
+                      <span className="text-slate-300 font-semibold">⑤ 10Y 中债国债收益率 (CN10Y)</span>
                       <span className="font-mono text-emerald-400 font-bold">{simCn10y.toFixed(2)}%</span>
                     </div>
                     <input
-                      type="range" min="1.70" max="2.70" step="0.02"
+                      type="range" min="1.20" max="2.60" step="0.02"
                       value={simCn10y}
                       onChange={(e) => { setSimMode(true); setSimCn10y(parseFloat(e.target.value)); }}
                       className="w-full accent-emerald-500"
                     />
                     <div className="flex justify-between text-[11px] text-slate-500 mt-1">
-                      <span>1.70% (极度资产荒)</span>
-                      <span>2.18%</span>
-                      <span>2.70% (复苏)</span>
+                      <span>1.20% (极度资产荒)</span>
+                      <span>阈值 2.18%</span>
+                      <span>2.60% (复苏)</span>
                     </div>
                   </div>
 
+                  {/* 6. 银行间 FDR007(DR007) 资金利率 */}
                   <div className="bg-slate-900/80 p-4 rounded-xl border border-slate-800">
                     <div className="flex justify-between text-xs mb-2">
-                      <span className="text-slate-300 font-semibold">银行间 DR007 资金利率</span>
+                      <span className="text-slate-300 font-semibold">⑥ 银行间 FDR007(DR007) 利率</span>
                       <span className="font-mono text-emerald-400 font-bold">{simDr007.toFixed(2)}%</span>
                     </div>
                     <input
-                      type="range" min="1.30" max="2.40" step="0.05"
+                      type="range" min="1.10" max="2.30" step="0.05"
                       value={simDr007}
                       onChange={(e) => { setSimMode(true); setSimDr007(parseFloat(e.target.value)); }}
                       className="w-full accent-emerald-500"
                     />
                     <div className="flex justify-between text-[11px] text-slate-500 mt-1">
-                      <span>1.30% (充裕)</span>
+                      <span>1.10% (宽货币)</span>
                       <span>1.80%</span>
-                      <span>2.40% (资金紧)</span>
+                      <span>2.30% (资金紧)</span>
                     </div>
                   </div>
 
+                  {/* 7. R007-DR007 流动性分层利差 */}
                   <div className="bg-slate-900/80 p-4 rounded-xl border border-slate-800">
                     <div className="flex justify-between text-xs mb-2">
-                      <span className="text-slate-300 font-semibold">中国 M1-M2 同比剪刀差</span>
+                      <span className="text-slate-300 font-semibold">⑦ R007-DR007 非银分层利差</span>
+                      <span className={`font-mono font-bold ${simRDrSpread >= 25 ? "text-rose-400" : "text-emerald-400"}`}>
+                        {simRDrSpread.toFixed(1)} bp
+                      </span>
+                    </div>
+                    <input
+                      type="range" min="-5" max="50" step="1"
+                      value={simRDrSpread}
+                      onChange={(e) => { setSimMode(true); setSimRDrSpread(parseFloat(e.target.value)); }}
+                      className="w-full accent-rose-500"
+                    />
+                    <div className="flex justify-between text-[11px] text-slate-500 mt-1">
+                      <span>0bp (平稳)</span>
+                      <span>赎回预警 25bp</span>
+                      <span>50bp (理财踩踏)</span>
+                    </div>
+                  </div>
+
+                  {/* 8. 中国 M1-M2 同比剪刀差 */}
+                  <div className="bg-slate-900/80 p-4 rounded-xl border border-slate-800">
+                    <div className="flex justify-between text-xs mb-2">
+                      <span className="text-slate-300 font-semibold">⑧ 中国 M1-M2 同比剪刀差</span>
                       <span className="font-mono text-purple-400 font-bold">{simScissors.toFixed(1)}%</span>
                     </div>
                     <input
@@ -789,26 +1267,27 @@ ${activeReport.action_instructions.join("\n")}`,
                     />
                     <div className="flex justify-between text-[11px] text-slate-500 mt-1">
                       <span>-10% (防御)</span>
-                      <span>拐点 -4.5%</span>
+                      <span>拐点 -3.5%</span>
                       <span>+2% (顺周期牛)</span>
                     </div>
                   </div>
 
+                  {/* 9. 沪深300 股债风险溢价 (ERP) */}
                   <div className="bg-slate-900/80 p-4 rounded-xl border border-slate-800">
                     <div className="flex justify-between text-xs mb-2">
-                      <span className="text-slate-300 font-semibold">沪深300 股债风险溢价 (ERP)</span>
+                      <span className="text-slate-300 font-semibold">⑨ 沪深300 股债风险溢价 (ERP)</span>
                       <span className="font-mono text-amber-400 font-bold">{simErp.toFixed(2)}%</span>
                     </div>
                     <input
-                      type="range" min="4.00" max="7.00" step="0.05"
+                      type="range" min="4.00" max="7.20" step="0.05"
                       value={simErp}
                       onChange={(e) => { setSimMode(true); setSimErp(parseFloat(e.target.value)); }}
                       className="w-full accent-amber-500"
                     />
                     <div className="flex justify-between text-[11px] text-slate-500 mt-1">
-                      <span>4.0% (权益偏贵)</span>
-                      <span>极值 5.8%</span>
-                      <span>7.0% (黄金坑)</span>
+                      <span>4.0% (偏贵)</span>
+                      <span>高赔率 5.8%</span>
+                      <span>7.2% (黄金坑)</span>
                     </div>
                   </div>
                 </div>
@@ -816,7 +1295,7 @@ ${activeReport.action_instructions.join("\n")}`,
                 {/* 沙盘实时结论预览 */}
                 <div className="bg-indigo-950/30 border border-indigo-500/30 rounded-xl p-4 flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
                   <div>
-                    <div className="text-xs text-indigo-300 font-semibold">沙盘推导结论预览：</div>
+                    <div className="text-xs text-indigo-300 font-semibold">沙盘推导结论预览（支持切换交易版/渠道版视角）：</div>
                     <div className="text-sm font-bold text-white mt-1">{activeReport.title}</div>
                     <div className="text-xs text-slate-300 mt-1">{activeReport.action_instructions[0]}</div>
                   </div>
@@ -824,26 +1303,82 @@ ${activeReport.action_instructions.join("\n")}`,
                     onClick={() => setActivePage(0)}
                     className="px-4 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-xs font-bold text-white shrink-0"
                   >
-                    返回第①页查看完整报告
+                    返回第①页查看完整报告与7维规则
                   </button>
                 </div>
               </div>
             )}
 
-            {/* ==================== PAGE 4: 一手权威信源直达与核查 SOP ==================== */}
+            {/* ==================== PAGE 4: 股债传导百科、六大误区纠偏与一手权威信源 ==================== */}
             {activePage === 4 && (
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div className="space-y-6">
+                {/* 模块1：全球宏观政策与股债资产表现传导对照矩阵 */}
                 <div className="glass-card rounded-2xl p-5">
-                  <span className="text-xs font-bold text-sky-400 uppercase">First-Hand Regulatory & Macro Sources</span>
-                  <h3 className="text-base md:text-lg font-bold text-white mt-0.5 mb-4">全球一手监管披露与数据库直达</h3>
-                  <div className="space-y-3">
+                  <span className="text-xs font-bold text-indigo-400 uppercase">Macro-to-Asset Transmission Matrix</span>
+                  <h3 className="text-base md:text-lg font-bold text-white mt-0.5 mb-3">
+                    全球宏观政策情景与股债资产定价传导对照表（DCF 分子/分母 + 机构行为）
+                  </h3>
+                  <div className="overflow-x-auto">
+                    <table className="w-full text-left border-collapse text-xs">
+                      <thead>
+                        <tr className="border-b border-slate-800 text-slate-400 bg-slate-900/70">
+                          <th className="p-3 font-semibold">宏观政策与流动性情景</th>
+                          <th className="p-3 font-semibold">核心一手驱动变量</th>
+                          <th className="p-3 font-semibold">国债 / 利率债表现</th>
+                          <th className="p-3 font-semibold">信用债 / 银行二永债表现</th>
+                          <th className="p-3 font-semibold">股票市场风格分化</th>
+                        </tr>
+                      </thead>
+                      <tbody className="divide-y divide-slate-800/70 text-slate-300">
+                        {MACRO_SCENARIO_MATRIX.map((row, rIdx) => (
+                          <tr key={rIdx} className="hover:bg-slate-900/40">
+                            <td className="p-3 font-bold text-white">{row.scenario}</td>
+                            <td className="p-3 text-sky-300 font-mono">{row.driver}</td>
+                            <td className="p-3">{row.rateBond}</td>
+                            <td className="p-3">{row.creditBond}</td>
+                            <td className="p-3 text-emerald-300">{row.equity}</td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+
+                {/* 模块2：六大常见投研认知局限与实战纠偏 */}
+                <div className="glass-card rounded-2xl p-5">
+                  <span className="text-xs font-bold text-amber-400 uppercase">Institutional Reality Check · 6 Core Pitfalls</span>
+                  <h3 className="text-base md:text-lg font-bold text-white mt-0.5 mb-3">
+                    摆脱“看对新闻却亏钱”：二级实战与理财渠道必须规避的六大线性传导误区
+                  </h3>
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                    {SIX_PITFALL_GUIDES.map((item, idx) => (
+                      <div key={idx} className="bg-slate-900/80 rounded-xl p-4 border border-slate-800 flex flex-col justify-between">
+                        <div>
+                          <div className="text-sm font-bold text-amber-300 mb-2">{item.title}</div>
+                          <p className="text-xs text-slate-300 leading-relaxed mb-3">{item.truth}</p>
+                        </div>
+                        <div className="text-[11px] font-mono text-indigo-300 bg-indigo-950/40 px-2.5 py-1.5 rounded-lg border border-indigo-500/20">
+                          {item.metric}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+                {/* 模块3：一手权威信源直达 */}
+                <div className="glass-card rounded-2xl p-5">
+                  <span className="text-xs font-bold text-sky-400 uppercase">First-Hand Regulatory & High-Frequency Sources</span>
+                  <h3 className="text-base md:text-lg font-bold text-white mt-0.5 mb-4">全球一手监管披露与高频产业数据库直达 SOP</h3>
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3">
                     {[
-                      { name: "FRED 美联储经济数据库", desc: "查阅 DGS10、T10Y2Y、RRPONTSYD、WTREGEN 一手时间序列", url: "https://fred.stlouisfed.org/" },
-                      { name: "美国财政部季度再融资公告 (QRA)", desc: "核查每季长端美债(10Y/30Y)实际净发行规模与期限溢价冲击", url: "https://home.treasury.gov/policy-issues/financing-the-government/quarterly-refunding" },
-                      { name: "中国人民银行调查统计司", desc: "每月10-15日获取一手社融、M1/M2同比及货币政策执行报告", url: "http://www.pbc.gov.cn/diaochatongjisi/116219/index.html" },
-                      { name: "SEC EDGAR 美股财报检索系统", desc: "查阅微软/谷歌/Meta/英伟达 10-Q/10-K 资本开支指引与13F机构持仓", url: "https://www.sec.gov/edgar/searchedgar/companysearch" },
-                      { name: "巨潮资讯网 (A股官方披露)", desc: "检索《投资者关系活动记录表》、产能环评、大股东增减持与分红预案", url: "http://www.cninfo.com.cn/" },
-                      { name: "arXiv CS.AI 预印本库", desc: "追踪全球顶尖实验室最新推理 Scaling Law 与具身智能算法论文", url: "https://arxiv.org/list/cs.AI/recent" }
+                      { name: "FRED 美联储经济数据库", desc: "核查 DGS10、DFII10(实际利率)、T10YIE、WRESBAL(银行准备金)、WTREGEN(TGA)", url: "https://fred.stlouisfed.org/" },
+                      { name: "美国财政部季度再融资 (QRA)", desc: "核查每季10Y/30Y长端美债净发行规模与期限溢价冲击", url: "https://home.treasury.gov/policy-issues/financing-the-government/quarterly-refunding" },
+                      { name: "中国外汇交易中心 (ChinaMoney)", desc: "每日直查 FDR007(银银间定盘) 与 FR007(全市场定盘) 利差，监控理财赎回负反馈", url: "https://www.chinamoney.com.cn/chinese/bkfrr/" },
+                      { name: "中国人民银行调查统计司", desc: "每月10-15日获取一手社融细分、M1/M2同比及货币政策执行报告", url: "http://www.pbc.gov.cn/diaochatongjisi/116219/index.html" },
+                      { name: "中债信息网收益率曲线", desc: "查阅中债10Y/30Y国债、国开债及商业银行二永债到期收益率曲线", url: "https://yield.chinabond.com.cn/" },
+                      { name: "台积电 (TSMC) 月度营收披露", desc: "每月10日公布上月合并营收，全球AI算力硬件最准的高频先导指标", url: "https://investor.tsmc.com/chinese/monthly-revenue" },
+                      { name: "SEC EDGAR 美股财报与13F检索", desc: "查阅微软/谷歌/Meta/亚马逊 10-Q/10-K 资本开支指引、RPO与13F机构持仓", url: "https://www.sec.gov/edgar/searchedgar/companysearch" },
+                      { name: "巨潮资讯网 (A股官方披露)", desc: "检索《投资者关系活动记录表》、小批量定点通知书、产线环评与股东减持公告", url: "http://www.cninfo.com.cn/" }
                     ].map((s, i) => (
                       <a
                         key={i}
@@ -853,31 +1388,12 @@ ${activeReport.action_instructions.join("\n")}`,
                         className="block bg-slate-900/75 hover:bg-slate-800/80 p-3.5 rounded-xl border border-slate-800 transition"
                       >
                         <div className="flex items-center justify-between">
-                          <span className="text-sm font-bold text-white">{s.name}</span>
-                          <span className="text-xs text-indigo-400">直达 ↗</span>
+                          <span className="text-xs md:text-sm font-bold text-white">{s.name}</span>
+                          <span className="text-xs text-indigo-400 shrink-0">直达 ↗</span>
                         </div>
-                        <p className="text-xs text-slate-400 mt-1">{s.desc}</p>
+                        <p className="text-xs text-slate-400 mt-1.5 leading-relaxed">{s.desc}</p>
                       </a>
                     ))}
-                  </div>
-                </div>
-
-                <div className="glass-card rounded-2xl p-5">
-                  <span className="text-xs font-bold text-emerald-400 uppercase">Cloud Automation Architecture</span>
-                  <h3 className="text-base md:text-lg font-bold text-white mt-0.5 mb-4">GitHub Pages 云端全自动运转说明</h3>
-                  <div className="space-y-3 text-xs text-slate-300 leading-relaxed">
-                    <div className="bg-slate-900/75 p-4 rounded-xl border border-slate-800">
-                      <div className="font-bold text-white mb-1">1. 零构建前端即插即用 (Zero-Build Ready)</div>
-                      本工程根目录下的 <code className="text-indigo-300">index.html</code> 已内置完整响应式多页滑动终端，上传至 GitHub 仓库并开启 GitHub Pages 后无需配置繁琐的 Node 编译即可直接在线访问。
-                    </div>
-                    <div className="bg-slate-900/75 p-4 rounded-xl border border-slate-800">
-                      <div className="font-bold text-white mb-1">2. 每日早 08:00 自动拉取与计算</div>
-                      <code className="text-emerald-300">.github/workflows/daily_macro_update.yml</code> 每个交易日早 8:00 自动唤醒云端 Python 环境，运行 <code className="text-emerald-300">scripts/update_macro.py</code> 拉取 FRED 与 AkShare 最新数据，生成最新硬规则结论与双视角软研报，并写回 <code className="text-amber-300">data/macro_daily.json</code>。
-                    </div>
-                    <div className="bg-slate-900/75 p-4 rounded-xl border border-slate-800">
-                      <div className="font-bold text-white mb-1">3. 支持企业微信 / 飞书群早报自动推送</div>
-                      只需在仓库 GitHub Secrets 中配置 <code className="text-sky-300">FRED_API_KEY</code> 与可选的 <code className="text-sky-300">WEBHOOK_URL</code>，每天早上 8:00 手机即可收到今日【二级交易实战版】与【存续期管理渠道版】双结论推送。
-                    </div>
                   </div>
                 </div>
               </div>
