@@ -1,6 +1,6 @@
 {
   "meta": {
-    "updated_at": "2026-11-03 19:52:47 CST",
+    "updated_at": "2026-11-03 19:57:05 CST",
     "data_source": "FRED API + AkShare/Eastmoney; DR007/ERP demo; CapEx static",
     "market_regime": "规则推演（含未验证指标）",
     "regime_code": "US_TIGHT_CN_ASSET_FAMINE",
