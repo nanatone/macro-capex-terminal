@@ -1,0 +1,841 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>宏观流动性与科技 CapEx 股债传导原理手册（标注染色版）</title>
+  <style>
+    :root {
+      --bg-body: #090d16;
+      --bg-card: #111827;
+      --bg-card-alt: #0f172a;
+      --bg-code: #1e293b;
+      --text-main: #f1f5f9;
+      --text-muted: #94a3b8;
+      --border-color: #1e293b;
+      --border-highlight: #334155;
+
+      /* 五大核心语义标注色 */
+      --c-red: #fb7185;
+      --c-red-bg: rgba(244, 63, 94, 0.12);
+      --c-red-border: rgba(244, 63, 94, 0.38);
+
+      --c-green: #34d399;
+      --c-green-bg: rgba(16, 185, 129, 0.12);
+      --c-green-border: rgba(16, 185, 129, 0.38);
+
+      --c-amber: #fbbf24;
+      --c-amber-bg: rgba(245, 158, 11, 0.12);
+      --c-amber-border: rgba(245, 158, 11, 0.38);
+
+      --c-blue: #38bdf8;
+      --c-blue-bg: rgba(56, 189, 248, 0.12);
+      --c-blue-border: rgba(56, 189, 248, 0.38);
+
+      --c-purple: #c084fc;
+      --c-purple-bg: rgba(168, 85, 247, 0.12);
+      --c-purple-border: rgba(168, 85, 247, 0.38);
+    }
+
+    body.light-mode {
+      --bg-body: #f8fafc;
+      --bg-card: #ffffff;
+      --bg-card-alt: #f1f5f9;
+      --bg-code: #e2e8f0;
+      --text-main: #0f172a;
+      --text-muted: #475569;
+      --border-color: #e2e8f0;
+      --border-highlight: #cbd5e1;
+
+      --c-red: #e11d48;
+      --c-red-bg: #fff1f2;
+      --c-red-border: #fecdd3;
+
+      --c-green: #059669;
+      --c-green-bg: #ecfdf5;
+      --c-green-border: #a7f3d0;
+
+      --c-amber: #d97706;
+      --c-amber-bg: #fffbeb;
+      --c-amber-border: #fde68a;
+
+      --c-blue: #0284c7;
+      --c-blue-bg: #f0f9ff;
+      --c-blue-border: #bae6fd;
+
+      --c-purple: #7c3aed;
+      --c-purple-bg: #faf5ff;
+      --c-purple-border: #e9d5ff;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      background-color: var(--bg-body);
+      color: var(--text-main);
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+      line-height: 1.7;
+      transition: background-color 0.25s, color 0.25s;
+    }
+
+    a {
+      color: var(--c-blue);
+      text-decoration: none;
+    }
+    a:hover {
+      text-decoration: underline;
+    }
+
+    /* 顶部固定栏 */
+    .topbar {
+      position: sticky;
+      top: 0;
+      z-index: 50;
+      background: rgba(15, 23, 42, 0.88);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border-highlight);
+      padding: 12px 24px;
+    }
+    body.light-mode .topbar {
+      background: rgba(255, 255, 255, 0.92);
+    }
+    .topbar-inner {
+      max-width: 1360px;
+      margin: 0 auto;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+    }
+    .brand-title {
+      font-size: 18px;
+      font-weight: 800;
+      letter-spacing: -0.02em;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .brand-badge {
+      font-size: 12px;
+      padding: 2px 10px;
+      border-radius: 999px;
+      background: var(--c-blue-bg);
+      color: var(--c-blue);
+      border: 1px solid var(--c-blue-border);
+      font-weight: 600;
+    }
+    .toolbar-btns {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .btn {
+      cursor: pointer;
+      font-size: 12px;
+      font-weight: 600;
+      padding: 7px 14px;
+      border-radius: 10px;
+      border: 1px solid var(--border-highlight);
+      background: var(--bg-card);
+      color: var(--text-main);
+      transition: all 0.15s;
+    }
+    .btn:hover {
+      border-color: var(--c-blue);
+      color: var(--c-blue);
+    }
+    .btn-primary {
+      background: #4f46e5;
+      color: #ffffff;
+      border-color: #4338ca;
+    }
+    .btn-primary:hover {
+      background: #4338ca;
+      color: #ffffff;
+    }
+
+    /* 主体双栏布局 */
+    .layout {
+      max-width: 1360px;
+      margin: 24px auto 64px;
+      padding: 0 20px;
+      display: grid;
+      grid-template-columns: 260px 1fr;
+      gap: 28px;
+      align-items: start;
+    }
+    @media (max-width: 960px) {
+      .layout {
+        grid-template-columns: 1fr;
+      }
+      .sidebar {
+        position: static !important;
+      }
+    }
+
+    /* 左侧目录 */
+    .sidebar {
+      position: sticky;
+      top: 76px;
+      background: var(--bg-card);
+      border: 1px solid var(--border-highlight);
+      border-radius: 16px;
+      padding: 18px;
+    }
+    .sidebar-title {
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: var(--c-blue);
+      font-weight: 700;
+      margin-bottom: 10px;
+    }
+    .toc-list {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+    .toc-list a {
+      display: block;
+      font-size: 13px;
+      color: var(--text-muted);
+      padding: 6px 10px;
+      border-radius: 8px;
+      transition: all 0.15s;
+      font-weight: 500;
+    }
+    .toc-list a:hover {
+      background: var(--bg-card-alt);
+      color: var(--text-main);
+      text-decoration: none;
+    }
+
+    /* 颜色标注工具类 */
+    .t-red { color: var(--c-red); font-weight: 700; }
+    .t-green { color: var(--c-green); font-weight: 700; }
+    .t-amber { color: var(--c-amber); font-weight: 700; }
+    .t-blue { color: var(--c-blue); font-weight: 700; }
+    .t-purple { color: var(--c-purple); font-weight: 700; }
+
+    .tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      font-size: 12px;
+      font-weight: 700;
+      padding: 2px 9px;
+      border-radius: 999px;
+      line-height: 1.4;
+      vertical-align: middle;
+    }
+    .tag-red { background: var(--c-red-bg); color: var(--c-red); border: 1px solid var(--c-red-border); }
+    .tag-green { background: var(--c-green-bg); color: var(--c-green); border: 1px solid var(--c-green-border); }
+    .tag-amber { background: var(--c-amber-bg); color: var(--c-amber); border: 1px solid var(--c-amber-border); }
+    .tag-blue { background: var(--c-blue-bg); color: var(--c-blue); border: 1px solid var(--c-blue-border); }
+    .tag-purple { background: var(--c-purple-bg); color: var(--c-purple); border: 1px solid var(--c-purple-border); }
+
+    /* 章节卡片 */
+    .content {
+      display: flex;
+      flex-direction: column;
+      gap: 28px;
+    }
+    .section-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-highlight);
+      border-radius: 18px;
+      padding: 28px;
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.18);
+    }
+    body.light-mode .section-card {
+      box-shadow: 0 2px 12px rgba(15, 23, 42, 0.05);
+    }
+    .section-header {
+      border-bottom: 1px solid var(--border-highlight);
+      padding-bottom: 14px;
+      margin-bottom: 20px;
+    }
+    .section-eyebrow {
+      font-size: 12px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--c-blue);
+    }
+    .section-title {
+      font-size: 22px;
+      font-weight: 800;
+      margin-top: 4px;
+    }
+    h3 {
+      font-size: 17px;
+      font-weight: 700;
+      margin: 22px 0 10px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    p, li {
+      font-size: 14.5px;
+      color: var(--text-main);
+    }
+    ul, ol {
+      padding-left: 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+    code {
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+      font-size: 13px;
+      background: var(--bg-code);
+      padding: 2px 6px;
+      border-radius: 6px;
+      color: var(--c-blue);
+    }
+
+    /* 图例网格 */
+    .legend-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 12px;
+    }
+    .legend-box {
+      padding: 12px 14px;
+      border-radius: 12px;
+      font-size: 13px;
+    }
+
+    /* 染色公式框 */
+    .formula-box {
+      background: var(--bg-card-alt);
+      border: 1px solid var(--c-blue-border);
+      border-left: 4px solid var(--c-blue);
+      border-radius: 12px;
+      padding: 18px 20px;
+      margin: 14px 0;
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+      font-size: 15px;
+      overflow-x: auto;
+    }
+    .formula-title {
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--c-blue);
+      text-transform: uppercase;
+      margin-bottom: 8px;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "PingFang SC", sans-serif;
+    }
+
+    /* 信号拆解卡片组 */
+    .signal-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 14px;
+      margin-top: 12px;
+    }
+    .signal-card {
+      border-radius: 14px;
+      padding: 16px;
+      font-size: 13.5px;
+    }
+    .signal-card h4 {
+      font-size: 14.5px;
+      font-weight: 700;
+      margin-bottom: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .card-red { background: var(--c-red-bg); border: 1px solid var(--c-red-border); }
+    .card-green { background: var(--c-green-bg); border: 1px solid var(--c-green-border); }
+    .card-amber { background: var(--c-amber-bg); border: 1px solid var(--c-amber-border); }
+    .card-blue { background: var(--c-blue-bg); border: 1px solid var(--c-blue-border); }
+    .card-purple { background: var(--c-purple-bg); border: 1px solid var(--c-purple-border); }
+
+    /* 表格样式 */
+    .table-wrap {
+      overflow-x: auto;
+      margin: 14px 0;
+      border-radius: 12px;
+      border: 1px solid var(--border-highlight);
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 13.5px;
+      text-align: left;
+    }
+    th {
+      background: var(--bg-card-alt);
+      color: var(--text-muted);
+      font-weight: 700;
+      padding: 12px 14px;
+      border-bottom: 1px solid var(--border-highlight);
+    }
+    td {
+      padding: 12px 14px;
+      border-bottom: 1px solid var(--border-color);
+      vertical-align: top;
+    }
+    tr:last-child td {
+      border-bottom: none;
+    }
+
+    /* 传导链条流程图 */
+    .chain-flow {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 8px;
+      background: var(--bg-card-alt);
+      border: 1px dashed var(--c-red-border);
+      padding: 14px 16px;
+      border-radius: 12px;
+      margin: 12px 0;
+      font-size: 13.5px;
+      font-weight: 600;
+    }
+    .chain-step {
+      padding: 6px 12px;
+      border-radius: 8px;
+      background: var(--bg-card);
+      border: 1px solid var(--border-highlight);
+    }
+    .chain-arrow {
+      color: var(--c-red);
+      font-weight: 800;
+    }
+
+    @media print {
+      .topbar, .sidebar { display: none !important; }
+      .layout { display: block; margin: 0; padding: 0; }
+      .section-card { break-inside: avoid; margin-bottom: 20px; box-shadow: none; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- 顶部导航与工具栏 -->
+  <header class="topbar">
+    <div class="topbar-inner">
+      <div class="brand-title">
+        <span>🧭 宏观流动性与科技 CapEx 股债传导原理手册</span>
+        <span class="brand-badge">标注染色版 · Pro 7-Dim</span>
+      </div>
+      <div class="toolbar-btns">
+        <a href="./index.html" class="btn">📊 打开实时投研终端看板</a>
+        <button class="btn" onclick="document.body.classList.toggle('light-mode')">🌗 切换深色 / 浅色护眼模式</button>
+        <button class="btn btn-primary" onclick="window.print()">🖨️ 打印 / 导出 PDF</button>
+      </div>
+    </div>
+  </header>
+
+  <div class="layout">
+    <!-- 左侧悬浮目录 -->
+    <aside class="sidebar">
+      <div class="sidebar-title">目录导航 (Contents)</div>
+      <ul class="toc-list">
+        <li><a href="#sec-legend">🎨 五色标注体系图例</a></li>
+        <li><a href="#sec-cron">一、自动跑批机制与时刻表</a></li>
+        <li><a href="#sec-dcf">二、股债定价总公式 (DCF拆解)</a></li>
+        <li><a href="#sec-us">三、美国宏观与美联储流动性原理</a></li>
+        <li><a href="#sec-cn">四、中国宏观、理财赎回与跨市场</a></li>
+        <li><a href="#sec-capex">五、全球科技 CapEx 三定律与映射</a></li>
+        <li><a href="#sec-barbell">六、七维规则评分表与哑铃算法</a></li>
+      </ul>
+    </aside>
+
+    <!-- 右侧正文内容 -->
+    <main class="content">
+
+      <!-- 颜色图例卡片 -->
+      <section id="sec-legend" class="section-card">
+        <div class="section-header">
+          <div class="section-eyebrow">Semantic Color Annotation System</div>
+          <h2 class="section-title">🎨 全局五色语义标注体系说明</h2>
+        </div>
+        <div class="legend-grid">
+          <div class="legend-box card-red">
+            <div class="t-red">🔴 红色（Danger / 紧缩 / 风险预警）</div>
+            <p style="font-size:12.5px; margin-top:4px;">代表分母端实际利率上冲、银行准备金抽水、理财赎回踩踏或 CapEx 二阶导证伪信号（指令：<strong>增配防守、降久期、砍高Beta</strong>）。</p>
+          </div>
+          <div class="legend-box card-green">
+            <div class="t-green">🟢 绿色（Bullish / 宽松 / 景气证实）</div>
+            <p style="font-size:12.5px; margin-top:4px;">代表分母端实际利率回落、狭义资金充裕、宽信用激活或 CapEx 订单兑现（指令：<strong>增配硬科技进攻端或稳健吃票息</strong>）。</p>
+          </div>
+          <div class="legend-box card-amber">
+            <div class="t-amber">🟡 黄色（Warning / 震荡 / 临界观察）</div>
+            <p style="font-size:12.5px; margin-top:4px;">代表指标处于磨底期、中美利差倒挂约束或边际斜率待验证（指令：<strong>维持哑铃均衡配置、不赌单边贝塔</strong>）。</p>
+          </div>
+          <div class="legend-box card-blue">
+            <div class="t-blue">🔵 蓝色（Formula / 一手锚点指标）</div>
+            <p style="font-size:12.5px; margin-top:4px;">代表资产定价核心公式、美联储/中国央行资产负债表恒等式与一手官方数据库代码。</p>
+          </div>
+          <div class="legend-box card-purple">
+            <div class="t-purple">🟣 紫色（Tech CapEx / 产业映射）</div>
+            <p style="font-size:12.5px; margin-top:4px;">代表 AI 算力基建、Agent 软件商业化、具身智能产业链卡点与月度/旬度高频先导指标。</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- 第一章：自动跑批机制 -->
+      <section id="sec-cron" class="section-card">
+        <div class="section-header">
+          <div class="section-eyebrow">Section 01 · Automation & Batch Schedule</div>
+          <h2 class="section-title">一、 系统自动跑批机制与 16 项数据源时刻表</h2>
+        </div>
+
+        <h3>1. 是否所有数据都是自动跑批？</h3>
+        <p>本终端采用 <strong><span class="t-green">“动态宏观与估值指标 100% 全自动云端跑批”</span> + <span class="t-purple">“产业核查框架与百科静态内置”</span></strong> 的混合架构：</p>
+
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>终端页面模块</th>
+                <th>跑批属性</th>
+                <th>数据更新方式与底层运转逻辑</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><strong>① 双层决策</strong><br><span style="font-size:12px;color:var(--text-muted)">七维规则 + 哑铃仓位 + 双视角晨报</span></td>
+                <td><span class="tag tag-green">🟢 100% 全自动跑批</span></td>
+                <td>每日由云端 Python 脚本 <code>scripts/update_macro.py</code> 根据最新抓取的 16 项指标，自动重算 7 条硬规则红绿灯、哑铃四篮子配比及两份动态晨报话术。</td>
+              </tr>
+              <tr>
+                <td><strong>② 宏观脉冲</strong><br><span style="font-size:12px;color:var(--text-muted)">美国 9 项 + 中国 7 项一手指标</span></td>
+                <td><span class="tag tag-green">🟢 100% 全自动跑批</span></td>
+                <td>自动从 <span class="t-blue">美联储 FRED API</span> 与 <span class="t-blue">中国外汇交易中心 / AkShare</span> 拉取最新观测值，自动计算 1期/5期变化与近3年/1年历史分位数。</td>
+              </tr>
+              <tr>
+                <td><strong>③ 科技 CapEx</strong><br><span style="font-size:12px;color:var(--text-muted)">三阶段产业链与财报检索词</span></td>
+                <td><span class="tag tag-purple">🟣 静态核查方法论库</span></td>
+                <td>内置算力基建、Agent 商业化、具身智能三阶段卡点、高频先导指标日历与 SEC/巨潮 <code>Ctrl+F</code> 检索词（方法论框架无需每日变动，供财报季与月度核查一键复制）。</td>
+              </tr>
+              <tr>
+                <td><strong>④ 哑铃沙盘</strong><br><span style="font-size:12px;color:var(--text-muted)">9 变量压力测试</span></td>
+                <td><span class="tag tag-blue">🔵 实盘同步 + 实时重算</span></td>
+                <td>打开页面时自动加载云端最新跑批实盘初值；手动拖动滑块或点击预设情景时，由浏览器前端引擎毫秒级实时重算。</td>
+              </tr>
+              <tr>
+                <td><strong>⑤ 传导百科与信源</strong><br><span style="font-size:12px;color:var(--text-muted)">传导矩阵 + 六大误区 + 8大信源</span></td>
+                <td><span class="tag tag-blue">🔵 静态知识库与直达入口</span></td>
+                <td>内置全球宏观政策传导对照矩阵、六大线性传导误区纠偏与 8 大官方披露源一键直达链接。</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <h3>2. 什么时间跑批？为什么定在这个时间？</h3>
+        <ul>
+          <li>
+            <span class="t-green">⏰ 每日定时自动跑批时间</span>：工作流 <code>.github/workflows/daily_macro_update.yml</code> 设定为 <code>cron: '0 0 * * *'</code>，即 <strong>每天早上北京时间 <code>08:00</code>（UTC <code>00:00</code>）准时触发</strong>。
+            <br><span style="font-size:13px; color:var(--text-muted)">（注：受 GitHub Actions 全球公共队列整点排队影响，实际执行完成并刷新线上网页的时间通常在 <strong>北京时间 08:02 ~ 08:15 之间</strong>，正好赶在 A 股/港股与国内债市早盘开盘及分行晨会之前。）</span>
+          </li>
+          <li>
+            <span class="t-blue">⚡ 手动即时跑批</span>：若在交易日盘后或突发事件后需立即刷新，可随时在 GitHub 仓库 <code>Actions</code> 页面点击 <code>Run workflow</code>，约 <strong>60 秒</strong> 即可完成全量拉取与网页发布。
+          </li>
+          <li>
+            <span class="t-amber">📅 底层 16 项数据的官方发布时间对齐</span>：
+            <ul>
+              <li><span class="t-blue">美国 FRED 9 项指标</span>：美联储于美东时间下午 <code>16:15~17:00</code>（即<strong>北京时间次日凌晨 04:15~05:00</strong>）完成隔夜美债、TIPS 实际利率、ON RRP 等数据入库；每周四凌晨更新截至周三的 <code>TGA</code> 与 <code>WRESBAL</code>（商业银行准备金）。<strong>北京时间早 08:00 跑批，恰好能拿到最完整的隔夜美盘收盘数据！</strong></li>
+              <li><span class="t-blue">中国日频 6 项指标</span>（中债10Y/30Y、FDR007、R007-DR007、中美利差、沪深300 ERP）：均为最新交易日收盘定盘数据。</li>
+              <li><span class="t-blue">中国月频 1 项指标</span>（M1-M2 剪刀差）：人民银行于每月 <code>10~15 日</code> 发布上月金融统计数据，跑批脚本会自动检测并更新至最新月份。</li>
+            </ul>
+          </li>
+        </ul>
+      </section>
+
+      <!-- 第二章：DCF 总公式 -->
+      <section id="sec-dcf" class="section-card">
+        <div class="section-header">
+          <div class="section-eyebrow">Section 02 · Master Valuation Formula</div>
+          <h2 class="section-title">二、 股债资产定价总原理：DCF 分子/分母染色拆解</h2>
+        </div>
+
+        <p>一切股票与债券的价格波动，本质上都遵循 <strong>贴现现金流（DCF）模型</strong>。理解宏观政策与产业政策如何传导至资产价格，第一步就是把分子端与分母端的 4 个拆解项对号入座：</p>
+
+        <div class="formula-box">
+          <div class="formula-title">🔵 股债资产统一定价总公式（DCF 拆解）</div>
+          <div>
+            资产价值 <strong>P</strong> = ∑ [ <span class="t-green">CF<sub>t</sub>（分子端：企业盈利 / 自由现金流 / 固定票息）</span> ] ÷ [ 1 + <span class="t-blue">r<sub>real</sub>（实际无风险利率）</span> + <span class="t-amber">π<sup>e</sup>（隐含通胀预期）</span> + <span class="t-red">TP（期限溢价）</span> + <span class="t-purple">ERP / Credit Spread（股债/信用风险溢价）</span> ]<sup>t</sup>
+          </div>
+        </div>
+
+        <div class="signal-grid">
+          <div class="signal-card card-green">
+            <h4><span class="t-green">🟢 分子端（CF<sub>t</sub>）：决定趋势耐力</span></h4>
+            <p>• <strong>利率债</strong>：分子是固定票息（无弹性），价格 100% 由分母端利率决定。<br>
+               • <strong>信用债</strong>：分子是企业偿债现金流，受违约率影响。<br>
+               • <strong>股票</strong>：宏观上跟踪 <span class="t-blue">M1-M2 剪刀差与社融脉冲</span>（顺周期盈利），产业上跟踪 <span class="t-purple">科技巨头 CapEx 资本开支与供应链订单转化</span>。</p>
+          </div>
+          <div class="signal-card card-red">
+            <h4><span class="t-red">🔴 分母端（r<sub>f</sub> + TP + ERP）：决定估值与风格</span></h4>
+            <p>• <strong>久期越长的资产对分母越敏感</strong>：30Y 超长国债、远期现金流占比高但当期无利润的纯概念科技股，本质都是<strong>“超长久期资产”</strong>。<br>
+               • 一旦分母端的 <span class="t-red">实际利率（DFII10）或期限溢价（TP）跳升</span>，这类资产首当其冲遭受杀估值。</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- 第三章：美国宏观与流动性 -->
+      <section id="sec-us" class="section-card">
+        <div class="section-header">
+          <div class="section-eyebrow">Section 03 · US Macro & Fed Liquidity Transmission</div>
+          <h2 class="section-title">三、 美国宏观政策与美元流动性传导原理（全球分母总锚）</h2>
+        </div>
+
+        <h3>原理 ①：名义美债 = 实际利率 + 通胀预期（破解“美债跌科技股却崩”的盲区）</h3>
+        <div class="formula-box">
+          <div class="formula-title">🔵 美债收益率费雪拆解恒等式（对应系统规则 1）</div>
+          <div>
+            <span class="t-blue">DGS10（10Y美债名义利率 4.94%）</span> = <span class="t-red">DFII10（10Y TIPS实际利率 2.60%）</span> + <span class="t-amber">T10YIE（10Y盈亏平衡通胀预期 2.29%）</span>
+          </div>
+        </div>
+
+        <div class="signal-grid">
+          <div class="signal-card card-red">
+            <h4>
+              <span class="t-red">🔴 实际利率承压</span>
+              <span class="tag tag-red">防守 +8%</span>
+            </h4>
+            <p><strong>触发条件</strong>：<code>DGS10 &ge; 4.35%</code> 或 <code>DFII10 &ge; 2.20%</code> 或 <code>5日 &ge; +12bp</code>。<br>
+            <strong>传导机制</strong>：当 10Y 实际利率高达 2.60% 时，哪怕名义美债短线回落几个 bp，高昂的真实无风险贴现率依然严厉压制纯概念成长股估值；海外债久期须控制在短端。</p>
+          </div>
+          <div class="signal-card card-red">
+            <h4>
+              <span class="t-red">🔴 衰退通缩交易（关键纠偏！）</span>
+              <span class="tag tag-red">防守 +6%</span>
+            </h4>
+            <p><strong>触发条件</strong>：<code>DGS10 &le; 3.90%</code> 但 <code>T10YIE &lt; 1.90%</code>。<br>
+            <strong>传导机制</strong>：此时美债利率下行并非美联储温和宽松，而是经济硬着陆恐慌导致<strong>通胀预期（T10YIE）坍塌</strong>！分子端企业盈利下修快于分母端，表现为<strong>“美债大涨、美股暴跌”</strong>。</p>
+          </div>
+          <div class="signal-card card-green">
+            <h4>
+              <span class="t-green">🟢 分母实质宽松</span>
+              <span class="tag tag-green">防守 -8% (进攻+8%)</span>
+            </h4>
+            <p><strong>触发条件</strong>：<code>DGS10 &le; 3.90%</code> 且 <code>5日 &le; -5bp</code> 且 <code>T10YIE &ge; 1.90%</code>。<br>
+            <strong>传导机制</strong>：通胀预期稳定（软着陆），由预防式降息带动实际利率温和回落 &rarr; <strong>股债双牛，纳指、港股科技与硬科技成长估值扩张</strong>。</p>
+          </div>
+        </div>
+
+        <h3>原理 ②：美联储负债端恒等式与商业银行准备金生死线</h3>
+        <div class="formula-box">
+          <div class="formula-title">🔵 美联储资产负债表流动性恒等式（对应系统规则 2）</div>
+          <div>
+            &Delta; <span class="t-blue">WRESBAL（商业银行准备金）</span> = &Delta; Fed总资产（QE/QT） &minus; &Delta; <span class="t-red">TGA（财政部一般账户）</span> &minus; &Delta; <span class="t-green">ON RRP（隔夜逆回购蓄水池）</span> &minus; &Delta; 流通中现金
+          </div>
+        </div>
+        <ul>
+          <li><span class="t-green">🟢 缓冲期（2023–2024年）</span>：当 <code>ON RRP</code> 拥有 2 万亿美元余额时，美联储 QT 缩表或财政部发债回补 <code>TGA</code>，抽走的是货币基金存在 <code>ON RRP</code> 里的超额闲钱，商业银行准备金毫发无损。</li>
+          <li><span class="t-red">🔴 临界危险期（当前实盘状态：防守 +6%）</span>：今日实盘 <code>ON RRP</code> 仅剩 <strong><code>5.09B</code>（蓄水池彻底耗尽）</strong>，而财政部 <code>TGA</code> 高达 <strong><code>999.73B</code></strong>！这意味着此后财政部每发债抽水 1 美元、美联储每缩表 1 美元，都会 <strong>1:1 直接抽干商业银行准备金（当前 <code>WRESBAL</code> 已跌至 <code>2893.77B</code>，跌破 <code>3000B</code> 充裕线）</strong>。一旦准备金稀缺，华尔街回购利率 <code>SOFR</code> 跳升至 <code>IORB</code> 之上，触发高收益债利差（<code>HY OAS</code>）走阔与高 Beta 股票去杠杆波动。</li>
+        </ul>
+      </section>
+
+      <!-- 第四章：中国宏观与理财赎回 -->
+      <section id="sec-cn" class="section-card">
+        <div class="section-header">
+          <div class="section-eyebrow">Section 04 · China Macro, Wealth Redemption & Cross-Border FX</div>
+          <h2 class="section-title">四、 中国宏观、理财赎回负反馈与跨市场传导原理</h2>
+        </div>
+
+        <h3>原理 ③：中美 10Y 利差与跨境汇率约束（对应系统规则 3）</h3>
+        <ul>
+          <li><span class="t-blue">🔵 核心指标</span>：<code>中美10Y利差 = CN10Y（1.62%） - US10Y（4.94%） = -3.28%</code>（倒挂 328bp）。</li>
+          <li><span class="t-amber">🟡 深度倒挂约束（利差 &le; -2.20%，防守 +4%）</span>：倒挂过深时，为稳住离岸人民币汇率（<code>USD/CNH</code>）并防范跨境套息外流，国内央行大幅调降政策利率的空间受制；同时压制离岸港股分母端外资回流。权益配置宜偏重<strong>内需自主可控与 A 股红利底仓</strong>。</li>
+          <li><span class="t-green">🟢 利差收敛共振（利差 &ge; -1.20%，防守 -4%）</span>：汇率约束解除，外资回流新兴市场，港股科技与 A 股核心资产迎来双击。</li>
+        </ul>
+
+        <h3>原理 ④：国内宽货币与低利率“资产荒”象限（对应系统规则 4）</h3>
+        <ul>
+          <li><span class="t-green">🟢 低利率资产荒延续（<code>CN10Y &le; 2.18%</code> 且 <code>FDR007 &le; 1.80%</code>，防守 +5%）</span>：狭义资金面宽松（今日 <code>FDR007</code> 仅 <code>1.35%</code>），实体信贷需求偏弱导致资金淤积。险资（OCI 账户）与固收资金面临严重欠配压力，倒逼增配<strong>央国企高股息红利低波（水电、运营商、国有大行）</strong>与<strong>中短久期高等级信用债</strong>。</li>
+          <li><span class="t-amber">🟡 极低利率下的 30Y 久期防拥挤警示（当 <code>CN10Y &le; 1.75%</code> 时激活）</span>：当前 10Y 中债已处 <code>1.62%</code>（近 3 年 1% 极低分位），30Y 超长债（<code>2.05%</code>）票息保护极薄，对超长期特别国债集中发行供给高度敏感。<strong>严禁盲目拉长 30Y 久期博弈资本利得，必须用 1~3 年高等级信用债吃票息替代超长债</strong>。</li>
+        </ul>
+
+        <h3>原理 ⑤：【理财渠道核心】机构行为与“银行理财预防性赎回负反馈”（对应系统规则 5）</h3>
+        <div class="formula-box">
+          <div class="formula-title">🔵 银行间非银流动性分层利差公式（直连中国外汇交易中心 CSV）</div>
+          <div>
+            <span class="t-blue">R007 - DR007 分层利差（bp）</span> = [ <span class="t-amber">FR007（全市场含非银7天回购定盘利率）</span> &minus; <span class="t-green">FDR007（存款类银行7天回购定盘利率）</span> ] &times; 100
+          </div>
+        </div>
+        <p>国内债市近年最剧烈的净值回撤（如 2022 年底、2024 年 9–10 月），并非因为企业违约，而是因为<strong>机构赎回负反馈踩踏</strong>：</p>
+
+        <div class="chain-flow">
+          <span class="chain-step">① 长债供给冲击或股市暴涨抽水</span>
+          <span class="chain-arrow">&rarr;</span>
+          <span class="chain-step">② 纯债/固收+理财净值微跌</span>
+          <span class="chain-arrow">&rarr;</span>
+          <span class="chain-step">③ 渠道散户恐慌赎回理财/债基</span>
+          <span class="chain-arrow">&rarr;</span>
+          <span class="chain-step t-red">④ 非银缺钱（R007-DR007 &ge; 25bp）</span>
+          <span class="chain-arrow">&rarr;</span>
+          <span class="chain-step t-red">⑤ 理财子被迫抛售高流动性银行二永债与存单</span>
+          <span class="chain-arrow">&rarr;</span>
+          <span class="chain-step t-red">⑥ 信用利差无差别飙升、净值加速下跌</span>
+        </div>
+
+        <div class="signal-grid">
+          <div class="signal-card card-red">
+            <h4>
+              <span class="t-red">🔴 赎回负反馈预警（&ge; 25bp）</span>
+              <span class="tag tag-red">防守 +5%</span>
+            </h4>
+            <p>非银与理财子资金面显著趋紧，立即降杠杆、砍掉银行二级资本债/永续债（二永债）久期，并第一时间向分行渠道下发防赎回客户安抚话术。</p>
+          </div>
+          <div class="signal-card card-green">
+            <h4>
+              <span class="t-green">🟢 非银无赎回压力（&lt; 15bp，今日 5.0bp）</span>
+              <span class="tag tag-green">防守 -2%</span>
+            </h4>
+            <p>银行向非银流动性传导极其顺畅，理财与债基规模稳定，1~3 年高等级信用债吃票息套息环境非常安全。</p>
+          </div>
+        </div>
+
+        <h3>原理 ⑥：国内分子端宽信用拐点（新口径 M1-M2 剪刀差水平+斜率双重验证，对应规则 6）</h3>
+        <ul>
+          <li><span class="t-amber">🟡 新口径 M1 纠偏</span>：人民银行自 2025 年起将个人活期存款与支付机构备付金纳入新 M1，不能再机械套用旧口径阈值（<code>-4.5%</code>）无脑重仓顺周期。</li>
+          <li><span class="t-green">🟢 宽信用主动修复（<code>M1-M2 &gt; -3.5%</code> 或 <code>M1-M2 &gt; -4.8% 且月环比 &gt; 0</code>，防守 -10%）</span>：企业活期存款与财政实物工作量同步活化，由纯红利防御大幅切换至顺周期核心资产与港股弹性标的。</li>
+          <li><span class="t-amber">🟡 剪刀差磨底待验证（如今日 <code>-4.0%</code>，但月环比 <code>-0.6pct &le; 0</code>，防守 +2%）</span>：尚未形成连续上行斜率，维持哑铃配置等待社融企业中长期贷款验证。</li>
+        </ul>
+
+        <h3>原理 ⑦：A 股股债性价比标尺（沪深 300 隐含风险溢价 ERP，对应规则 7）</h3>
+        <div class="formula-box">
+          <div class="formula-title">🔵 股债风险溢价（Equity Risk Premium）计算公式</div>
+          <div>
+            <span class="t-blue">沪深300 ERP（今日 6.25%）</span> = [ 1 &divide; <span class="t-green">沪深300 PE<sub>TTM</sub>（滚动市盈率）</span> ] &minus; <span class="t-blue">CN10Y（10年期国债收益率 1.62%）</span>
+          </div>
+        </div>
+        <p>当 <code>ERP &ge; 5.80%</code> 时（<span class="tag tag-green">🟢 高性价比赔率区，防守 -6%</span>），由于无风险国债利率处于 1.62% 历史极低位，股票盈利收益率相对国债溢价超过 625bp，指数向下空间被封锁，宜通过哑铃进攻端积极布局硬科技板块。</p>
+      </section>
+
+      <!-- 第五章：科技 CapEx -->
+      <section id="sec-capex" class="section-card">
+        <div class="section-header">
+          <div class="section-eyebrow">Section 05 · Global Tech CapEx & ROI Verification</div>
+          <h2 class="section-title">五、 全球科技产业 CapEx 映射原理（一阶导、二阶导与 ROI 闭环）</h2>
+        </div>
+
+        <p>科技股超额收益主线遵循：<span class="t-purple">🟣 技术突破 &rarr; 资本开支（CapEx）加速 &rarr; 供应链订单爆发 &rarr; 终端商业化变现（ROI）</span>。实战中必须掌握以下<strong>三大定价定律</strong>：</p>
+
+        <div class="signal-grid">
+          <div class="signal-card card-purple">
+            <h4><span class="t-purple">🟣 定律一：一阶导看业绩，二阶导定估值</span></h4>
+            <p>光模块（800G/1.6T）、HBM、液冷等硬件股的估值（PE）锚定在北美四大云厂商（MSFT/GOOG/META/AMZN）<strong>季度 CapEx 同比增速的边际斜率（二阶导 &Delta;g）</strong>。<br>
+            <span class="t-red">🚨 排雷红线</span>：当 CapEx 绝对额创新高但同比增速从 +60% 连续放缓至 +30% 时，硬件股会提前杀估值。</p>
+          </div>
+          <div class="signal-card card-blue">
+            <h4><span class="t-blue">🔵 定律二：用月度/旬度先导指标抢跑季报</span></h4>
+            <p>季报披露滞后 1~2 个月。一手高频跟踪：<br>
+            • <strong>每月 10 日</strong>：查 <span class="t-blue">台积电（TSMC）月度合并营收</span> 同比/环比（全球 AI 算力最准月度晴雨表）。<br>
+            • <strong>每月 1 / 11 / 21 日</strong>：查 <span class="t-blue">韩国关税厅前 10/20 日半导体与 HBM 出口额</span>。</p>
+          </div>
+          <div class="signal-card card-green">
+            <h4><span class="t-green">🟢 定律三：终局考核 ROI 与折旧覆盖闭环</span></h4>
+            <p>云厂商巨额 CapEx 将在 1~3 年内转化为巨额<strong>折旧摊销费用</strong>。<br>
+            <span class="t-green">✅ 证实标准</span>：软件与 Agent 企业财报中的 <strong>RPO（剩余履约义务）增速必须连续超越当期营收增速 &gt; 5pct</strong>，且销售毛利率不因算力租赁成本恶化。</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- 第六章：七维评分与哑铃算法 -->
+      <section id="sec-barbell" class="section-card">
+        <div class="section-header">
+          <div class="section-eyebrow">Section 06 · 7-Dimension Scoring & Barbell Algorithm</div>
+          <h2 class="section-title">六、 七维规则引擎评分矩阵与哑铃策略精确算法</h2>
+        </div>
+
+        <p>系统以 <strong>中性防守权重 <code>50%</code></strong> 为基准起点，每日根据 7 大规则触发状态进行动态加减分：</p>
+
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>规则编号与传导维度</th>
+                <th><span class="t-red">🔴 紧缩/风险信号（加防守）</span></th>
+                <th><span class="t-amber">🟡 震荡/观察信号</span></th>
+                <th><span class="t-green">🟢 宽松/进攻信号（加进攻）</span></th>
+                <th>今日实盘状态与权重调整</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><strong>① 海外分母端与实际利率拆解</strong></td>
+                <td>实际利率承压 <code>+8%</code><br>衰退通缩交易 <code>+6%</code></td>
+                <td>分母区间震荡 <code>0%</code></td>
+                <td>分母实质宽松 <code>-8%</code></td>
+                <td><span class="tag tag-amber">🟡 实际利率承压 (2.60%)</span> <strong>+8%</strong></td>
+              </tr>
+              <tr>
+                <td><strong>② 美元狭义流动性与准备金底线</strong></td>
+                <td>准备金逼近临界 <code>+6%</code></td>
+                <td>准备金供需平衡 <code>0%</code></td>
+                <td>美元流动性充裕 <code>-4%</code></td>
+                <td><span class="tag tag-red">🔴 准备金破3000B (2893.77B)</span> <strong>+6%</strong></td>
+              </tr>
+              <tr>
+                <td><strong>③ 中美利差与跨境汇率约束</strong></td>
+                <td>深度倒挂约束 <code>+4%</code></td>
+                <td>利差温和倒挂 <code>0%</code></td>
+                <td>利差收敛共振 <code>-4%</code></td>
+                <td><span class="tag tag-amber">🟡 深度倒挂 (-3.28%)</span> <strong>+4%</strong></td>
+              </tr>
+              <tr>
+                <td><strong>④ 国内宽货币与资产荒象限</strong></td>
+                <td>债市久期防回调 <code>-4%</code></td>
+                <td>票息筑底 <code>0%</code></td>
+                <td>资产荒延续 <code>+5%</code></td>
+                <td><span class="tag tag-green">🟢 资产荒延续 (1.62%)</span> <strong>+5%</strong></td>
+              </tr>
+              <tr>
+                <td><strong>⑤ 理财赎回负反馈与非银分层</strong></td>
+                <td>赎回负反馈预警 <code>+5%</code></td>
+                <td>非银资金边际收敛 <code>+2%</code></td>
+                <td>非银无赎回压力 <code>-2%</code></td>
+                <td><span class="tag tag-green">🟢 无赎回压力 (5.0bp)</span> <strong>-2%</strong></td>
+              </tr>
+              <tr>
+                <td><strong>⑥ 国内分子端宽信用与M1活化</strong></td>
+                <td>分子端收缩防御 <code>+5%</code></td>
+                <td>剪刀差磨底待验证 <code>+2%</code></td>
+                <td>宽信用主动修复 <code>-10%</code></td>
+                <td><span class="tag tag-amber">🟡 磨底待验证 (-4.0%)</span> <strong>+2%</strong></td>
+              </tr>
+              <tr>
+                <td><strong>⑦ A股股债性价比 (沪深300 ERP)</strong></td>
+                <td>风险溢价偏薄 <code>+6%</code></td>
+                <td>估值性价比均衡 <code>0%</code></td>
+                <td>高性价比赔率区 <code>-6%</code></td>
+                <td><span class="tag tag-green">🟢 高性价比区 (6.25%)</span> <strong>-6%</strong></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="formula-box">
+          <div class="formula-title">🔵 哑铃总仓位风控锁定与四子篮子拆分算法</div>
+          <div>
+            1. <strong>防守端总权重 W<sub>def</sub></strong> = RoundTo5( clamp( 50% + &sum;&Delta;w<sub>i</sub>, 35%, 75% ) )<br>
+            &nbsp;&nbsp;&nbsp;&rarr; 今日实盘推导：<code>50% + 8% + 6% + 4% + 5% - 2% + 2% - 6% = 67%</code> &rArr; 按5%步长取整锁定为 <span class="t-green">防守端 65%</span> : <span class="t-purple">进攻端 35%</span><br><br>
+            2. <strong>四个子资产篮子精确拆分比例</strong>：<br>
+            &nbsp;&nbsp;&nbsp;• <span class="t-green">🛡️ 防御篮子 1（中短久期利率债/高等级信用债）</span> = RoundTo5( W<sub>def</sub> &times; 0.58 ) = <strong>40%</strong><br>
+            &nbsp;&nbsp;&nbsp;• <span class="t-green">🛡️ 防御篮子 2（央国企高股息红利低波）</span> = W<sub>def</sub> &minus; 防御篮子 1 = <strong>25%</strong><br>
+            &nbsp;&nbsp;&nbsp;• <span class="t-purple">🚀 进攻篮子 3（全球AI算力基建与国产卡点供应链）</span> = RoundTo5( W<sub>off</sub> &times; 0.62 ) = <strong>20%</strong><br>
+            &nbsp;&nbsp;&nbsp;• <span class="t-purple">🚀 进攻篮子 4（AI Agent商业化与具身智能核心部件）</span> = W<sub>off</sub> &minus; 进攻篮子 3 = <strong>15%</strong>
+          </div>
+        </div>
+      </section>
+
+    </main>
+  </div>
+
+</body>
+</html>

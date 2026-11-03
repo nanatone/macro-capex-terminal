@@ -51,6 +51,7 @@ jobs:
         run: |
           mkdir -p _site/data
           cp index.html _site/
+          cp guide.html _site/
           cp data/macro_daily.json _site/data/
       - uses: actions/upload-pages-artifact@v3
         with:
