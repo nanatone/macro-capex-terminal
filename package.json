@@ -1,0 +1,10 @@
+{
+  "name": "macro-capex-terminal",
+  "version": "2.0.0",
+  "private": true,
+  "description": "宏观流动性与科技CapEx一手数据追踪看板（双层决策引擎 + GitHub Pages 全自动更新版）",
+  "scripts": {
+    "update-data": "python scripts/update_macro.py",
+    "serve": "python -m http.server 8080"
+  }
+}

@@ -1,0 +1,302 @@
+{
+  "meta": {
+    "updated_at": "2026-11-03 19:52:47 CST",
+    "data_source": "FRED API + AkShare/Eastmoney; DR007/ERP demo; CapEx static",
+    "market_regime": "规则推演（含未验证指标）",
+    "regime_code": "US_TIGHT_CN_ASSET_FAMINE",
+    "data_quality_note": "未在本次获取：银行间7天质押式回购 (DR007)、沪深300股债风险溢价 (ERP)。CapEx 为静态核查框架；研报为规则模板。变化列按最近1/5期观测计算，周频/月频不代表日变动。"
+  },
+  "metrics": {
+    "us": {
+      "dgs10": {
+        "name": "10Y 美债收益率",
+        "code": "DGS10",
+        "value": 4.94,
+        "unit": "%",
+        "chg_1d_bp": -4.0,
+        "chg_5d_bp": -6.0,
+        "percentile_3y": 95,
+        "threshold_warn": 4.35,
+        "role": "DCF分母端：全球无风险利率锚",
+        "url": "https://fred.stlouisfed.org/series/DGS10",
+        "data_status": "updated",
+        "observation_date": "2026-10-30"
+      },
+      "t10y2y": {
+        "name": "10Y-2Y 美债期限利差",
+        "code": "T10Y2Y",
+        "value": 0.32,
+        "unit": "%",
+        "chg_1d_bp": -6.0,
+        "chg_5d_bp": 0.0,
+        "percentile_3y": 46,
+        "threshold_warn": 0.5,
+        "role": "衰退预期与长端期限溢价(Term Premium)",
+        "url": "https://fred.stlouisfed.org/series/T10Y2Y",
+        "data_status": "updated",
+        "observation_date": "2026-11-02"
+      },
+      "effr": {
+        "name": "联邦基金有效利率",
+        "code": "EFFR",
+        "value": 3.88,
+        "unit": "%",
+        "chg_1d_bp": 0.0,
+        "chg_5d_bp": 0.0,
+        "percentile_3y": 27,
+        "threshold_warn": 5.0,
+        "role": "短端资金成本基准",
+        "url": "https://fred.stlouisfed.org/series/EFFR",
+        "data_status": "updated",
+        "observation_date": "2026-10-30"
+      },
+      "rrp": {
+        "name": "美联储隔夜逆回购 (ON RRP)",
+        "code": "RRPONTSYD",
+        "value": 5.09,
+        "unit": "十亿美元",
+        "chg_1d_bp": 0.7,
+        "chg_5d_bp": 4.9,
+        "percentile_3y": 29,
+        "threshold_warn": 200.0,
+        "role": "美元狭义超额流动性缓冲垫",
+        "url": "https://fred.stlouisfed.org/series/RRPONTSYD",
+        "data_status": "updated",
+        "observation_date": "2026-11-02"
+      },
+      "tga": {
+        "name": "美国财政部一般账户 (TGA)",
+        "code": "WTREGEN",
+        "value": 999.73,
+        "unit": "十亿美元",
+        "chg_1d_bp": 47.7,
+        "chg_5d_bp": 22.6,
+        "percentile_3y": 99,
+        "threshold_warn": 850.0,
+        "role": "财政发债抽水(>800B偏紧)与投放指标",
+        "url": "https://fred.stlouisfed.org/series/WTREGEN",
+        "data_status": "updated",
+        "observation_date": "2026-10-28"
+      }
+    },
+    "cn": {
+      "cn10y": {
+        "name": "10Y 中债国债收益率",
+        "code": "CN10Y",
+        "value": 1.62,
+        "unit": "%",
+        "chg_1d_bp": -1.3,
+        "chg_5d_bp": -0.5,
+        "percentile_3y": 1,
+        "threshold_warn": 2.15,
+        "role": "DCF分母端：国内无风险利率与资产荒温度计",
+        "url": "https://yield.chinabond.com.cn/",
+        "data_status": "updated",
+        "observation_date": "2026-11-03"
+      },
+      "cn30y": {
+        "name": "30Y 超长国债收益率",
+        "code": "CN30Y",
+        "value": 2.05,
+        "unit": "%",
+        "chg_1d_bp": -1.5,
+        "chg_5d_bp": 1.0,
+        "percentile_3y": 23,
+        "threshold_warn": 2.35,
+        "role": "险资欠配压力与超长期特别国债供需锚",
+        "url": "https://yield.chinabond.com.cn/",
+        "data_status": "updated",
+        "observation_date": "2026-11-03"
+      },
+      "dr007": {
+        "name": "银行间7天质押式回购 (DR007)",
+        "code": "DR007",
+        "value": 1.62,
+        "unit": "%",
+        "chg_1d_bp": -3.0,
+        "chg_5d_bp": -8.0,
+        "percentile_3y": 19,
+        "threshold_warn": 1.85,
+        "role": "银行间狭义资金面松紧核心指标",
+        "url": "https://www.chinamoney.com.cn/",
+        "data_status": "demo"
+      },
+      "m1_m2_diff": {
+        "name": "M1 - M2 同比剪刀差",
+        "code": "M1-M2",
+        "value": -4.0,
+        "unit": "%",
+        "chg_1d_bp": -0.6,
+        "chg_5d_bp": -0.6,
+        "percentile_3y": 58,
+        "threshold_warn": -3.0,
+        "role": "DCF分子端：实体企业资金活化与宽信用成色",
+        "url": "http://www.pbc.gov.cn/diaochatongjisi/116219/index.html",
+        "data_status": "updated",
+        "observation_date": "2026年09月份"
+      },
+      "erp_csi300": {
+        "name": "沪深300股债风险溢价 (ERP)",
+        "code": "CSI300_ERP",
+        "value": 6.15,
+        "unit": "%",
+        "chg_1d_bp": 4.0,
+        "chg_5d_bp": 11.0,
+        "percentile_3y": 86,
+        "threshold_warn": 5.5,
+        "role": "股债性价比标尺(>6.0%权益极具配置性价比)",
+        "url": "https://www.csindex.com.cn/",
+        "data_status": "demo"
+      }
+    }
+  },
+  "decision_engine": {
+    "hard_rules": [
+      {
+        "id": "RULE_US_RATE_SLOPE",
+        "dimension": "海外分母端斜率预警",
+        "status": "warning",
+        "status_label": "斜率承压",
+        "trigger_condition": "10Y美债 >= 4.35% 或 5期上行 >= 12bp",
+        "current_reading": "4.94% (5日 -6.0bp | 3年95%分位)",
+        "action_instruction": "美债长端受期限溢价与发债供给扰动上冲过快，压制远期现金流占比高但无当期业绩的纯概念成长股；海外久期宜控制在短端。"
+      },
+      {
+        "id": "RULE_US_LIQUIDITY_BUFFER",
+        "dimension": "美元狭义流动性缓冲",
+        "status": "danger",
+        "status_label": "缓冲偏薄",
+        "trigger_condition": "ON RRP < 2000亿美元 且 TGA > 7500亿美元",
+        "current_reading": "RRP 5.09B (29%分位) / TGA 999.73B",
+        "action_instruction": "隔夜逆回购蓄水池接近耗尽，叠加财政部TGA账户回补抽水，警惕美股高收益债与高Beta小盘股波动放大。"
+      },
+      {
+        "id": "RULE_CN_ASSET_FAMINE",
+        "dimension": "国内资产荒与利率象限",
+        "status": "bullish",
+        "status_label": "资产荒延续",
+        "trigger_condition": "10Y中债 < 2.18% 且 DR007 < 1.80%",
+        "current_reading": "10Y中债 1.62% (1%分位) / DR007 1.62%",
+        "action_instruction": "狭义资金面维持宽松，长端利率处于历史极低分位，固收与险资欠配压力显著，高股息红利低波与中短久期高等级信用债安全垫极厚。"
+      },
+      {
+        "id": "RULE_CN_CREDIT_PULSE",
+        "dimension": "国内分子端宽信用拐点",
+        "status": "bullish",
+        "status_label": "宽信用修复",
+        "trigger_condition": "M1-M2剪刀差 > -4.5% 触发顺周期进攻",
+        "current_reading": "M1-M2剪刀差 -4.0% (环比 -0.6pct)",
+        "action_instruction": "企业活期存款明显活化，财政刺激向实体订单传导顺畅，建议由纯红利防御向顺周期核心资产及港股弹性标的切换。"
+      },
+      {
+        "id": "RULE_EQUITY_ERP_VALUATION",
+        "dimension": "A股股债性价比 (ERP)",
+        "status": "bullish",
+        "status_label": "高性价比区",
+        "trigger_condition": "沪深300 ERP > 5.8% (近3年 >80%分位)",
+        "current_reading": "ERP 6.15% (近3年 86%分位)",
+        "action_instruction": "无风险利率下行推升权益资产隐含风险溢价至历史高位，向下空间已被封锁，宜通过哑铃策略进攻端积极布局具备CapEx订单兑现的硬科技板块。"
+      }
+    ],
+    "barbell_allocation": {
+      "defense_total": 55,
+      "offense_total": 45,
+      "breakdown": [
+        {
+          "bucket": "防御端：中短久期利率债/高等级信用债",
+          "weight": 30,
+          "tag": "流动性底仓",
+          "rationale": "DR007报1.62%保障票息套息空间，规避30Y超长债在财政发债窗口期的供给波动。"
+        },
+        {
+          "bucket": "防御端：央国企高股息红利低波",
+          "weight": 25,
+          "tag": "类债替代锚",
+          "rationale": "10Y国债1.62%背景下，股息率>4.5%且自由现金流充裕的水电、运营商、银行具备强险资配置支撑。"
+        },
+        {
+          "bucket": "进攻端：全球AI算力基建与国产卡点供应链",
+          "weight": 30,
+          "tag": "CapEx硬逻辑",
+          "rationale": "紧盯北美云厂商季度CapEx指引与台积电CoWoS/800G-1.6T光模块/液冷排产，业绩确定性对冲分母端扰动。"
+        },
+        {
+          "bucket": "进攻端：AI Agent商业化与具身智能核心部件",
+          "weight": 15,
+          "tag": "高弹性期权",
+          "rationale": "围绕推理侧Scaling Law成本下降与人形机器人丝杠/传感器小批量定点，结合板块量价共振逢低卡位。"
+        }
+      ]
+    },
+    "soft_reports": {
+      "trading_perspective": {
+        "title": "【二级市场实战晨报】10Y美债报4.94%、中债1.62%，执行“55%红利短债 + 45%CapEx硬科技”哑铃配置",
+        "core_marginal_change": "【数据状态】未在本次获取：银行间7天质押式回购 (DR007)、沪深300股债风险溢价 (ERP)。CapEx 为静态核查框架；研报为规则模板。变化列按最近1/5期观测计算，周频/月频不代表日变动。\n隔夜10Y美债收益率最新报4.94%（5日变动-6.0bp，处近3年95%分位），美联储ON RRP余额为5.09B；国内10Y国债报1.62%（近3年1%极低分位），DR007报1.62%，沪深300 ERP达6.15%（86%分位）。",
+        "transmission_logic": "1. 海外分母端：10Y美债5日变动-6.0bp，对缺乏当期现金流支撑的海外纯概念成长股形成估值约束；\n2. 国内资金与分子端：DR007（1.62%）维持偏松而M1-M2剪刀差（-4.0%）尚在磨底，‘资产荒’逻辑未被证伪，高股息红利与短久期债券依然具备极强配置底仓属性；\n3. 产业CapEx映射：ERP处于86%历史高位区封锁指数下行空间，超额收益聚焦于北美云厂商CapEx验证通过的算力基建及国内具身智能定点突破。",
+        "action_instructions": [
+          "【仓位与配比】今日量化规则引擎锁定哑铃配比为 防守端 55% : 进攻端 45%。",
+          "【进攻端选股过滤】重点筛选北美云厂商CapEx映射链（1.6T光模块、HBM配套、数据中心液冷）及北交所/科创板中具备行星滚柱丝杠、六维力传感器实质送样订单的板块共振标的。",
+          "【债券久期管理】10Y国债处于1.62%（1%分位），新增固收仓位以1-3年期高等级信用债与存单替代30Y超长债博弈。"
+        ]
+      },
+      "wealth_perspective": {
+        "title": "【存续期管理与渠道陪伴话术】10Y国债1.62%低利率环境下，固收+与纯债产品归因及分行沟通要点",
+        "core_marginal_change": "【数据状态】未在本次获取：银行间7天质押式回购 (DR007)、沪深300股债风险溢价 (ERP)。CapEx 为静态核查框架；研报为规则模板。变化列按最近1/5期观测计算，周频/月频不代表日变动。\n当前银行间资金面保持平稳（DR007报1.62%，10年期国债收益率处于1.62%历史1%低分位区间），海外10Y美债报4.94%（5日变动-6.0bp），全球股债资产呈现‘内稳外波’特征。",
+        "transmission_logic": "1. 【债市存续期归因】：短端资金面稳固保障了产品基础票息；长端（10Y/30Y）在历史极低收益率分位（1%分位）下对财政发债供给与止盈盘较为敏感，微幅净值波动属于正常久期呼吸，并非货币政策转向；\n2. 【含权产品/固收+归因】：国内股债风险溢价（ERP 6.15%）处于近三年86%的高性价比区间，产品通过“55%高股息短债底仓 + 45%高景气硬科技”对冲了单一资产波动。",
+        "action_instructions": [
+          "【纯固收客户安抚话术】：“当前央行呵护流动性态度明确（DR007仅1.62%），近期净值小幅波动主要是长端国债在历史低利率区间的正常交易扰动。我们产品以中短久期高等级信用债筑底吃票息，建议坚定持有获取时间复利。”",
+          "【分行RM配置转化建议】：针对存量到期或闲置资金客户，推荐按照“55%短债/红利底仓 + 45%硬科技固收+”构建哑铃型组合，兼顾低波稳健与产业升级弹性。",
+          "【预警阈值跟踪】：持续监控10Y国债2.25%与DR007 1.90%两条风控线，未触及前维持存续产品“持仓待涨”评级。"
+        ]
+      }
+    }
+  },
+  "capex_tracker": [
+    {
+      "stage": "第一阶段：算力与硬件基建 (先导指标)",
+      "status": "高景气兑现期",
+      "badge_color": "emerald",
+      "chain_nodes": "台积电CoWoS先进封装 ➔ HBM3e/HBM4存储 ➔ 800G/1.6T光模块 ➔ AIDC液冷与电力设备",
+      "sec_cninfo_keywords": [
+        "Purchases of property and equipment",
+        "CoWoS capacity allocation",
+        "800G/1.6T transceivers",
+        "Liquid cooling",
+        "合同负债",
+        "在建工程"
+      ],
+      "verification_metric": "北美四大云厂商(MSFT/GOOG/META/AMZN)季度CapEx同比增速 > 35%，且台积电法说会维持AI营收CAGR指引。",
+      "red_flag": "云厂商下调下季度CapEx指引，或光模块/服务器ODM厂商存货周转天数连续两个季度异常攀升。"
+    },
+    {
+      "stage": "第二阶段：模型架构与Agent商业化 (中期演进)",
+      "status": "分化验证期",
+      "badge_color": "blue",
+      "chain_nodes": "Reasoning推理期扩展 ➔ 端侧轻量化模型 ➔ 企业级AI Agent工作流 ➔ 垂直行业SaaS增收",
+      "sec_cninfo_keywords": [
+        "Remaining Performance Obligations (RPO)",
+        "AI Copilot seat adoption",
+        "Inference token volume",
+        "ARR增速",
+        "研发费用资本化率"
+      ],
+      "verification_metric": "软件企业RPO（剩余履约义务）增速连续超越营收增速，AI附加功能带来ARPU值实质提升 > 15%。",
+      "red_flag": "空有Token调用量暴增但客户留存率低，毛利率因算力租赁成本过高而持续恶化。"
+    },
+    {
+      "stage": "第三阶段：具身智能与人形机器人 (长周期空间)",
+      "status": "0到1定点突破期",
+      "badge_color": "purple",
+      "chain_nodes": "多模态端到端控制算法 ➔ 行星滚柱丝杠 ➔ 谐波减速器 ➔ 六维力传感器与空心杯电机",
+      "sec_cninfo_keywords": [
+        "行星滚柱丝杠",
+        "六维力传感器",
+        "客户送样验证",
+        "小批量定点通知书",
+        "投资者关系活动记录表"
+      ],
+      "verification_metric": "头部主机厂进入千台级产线实训，国内核心零部件厂商在巨潮资讯网披露正式定点公告与专用产线环评。",
+      "red_flag": "仅停留在框架战略合作协议、无实质研发设备投入、主业现金流恶化且大股东高位减持。"
+    }
+  ]
+}

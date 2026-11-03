@@ -1,0 +1,60 @@
+name: Daily Macro & CapEx Intelligence Auto-Update
+
+on:
+  schedule:
+    # Daily 08:00 Asia/Shanghai. GitHub scheduled runs can be delayed.
+    - cron: '0 0 * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pages: write
+  id-token: write
+
+concurrency:
+  group: macro-capex-pages
+  cancel-in-progress: false
+
+jobs:
+  update-macro-data:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: pip
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+      - name: Verify data regressions
+        run: python -m unittest discover -s tests -v
+      - name: Update macro data and reports
+        env:
+          FRED_API_KEY: ${{ secrets.FRED_API_KEY }}
+          WEBHOOK_URL: ${{ secrets.WEBHOOK_URL }}
+        run: python scripts/update_macro.py
+      - name: Commit updated data
+        run: |
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git config user.name "Macro-CapEx-Bot"
+          git add data/macro_daily.json
+          if ! git diff --staged --quiet; then
+            git commit -m "chore(data): update macro readings and reports"
+            git push
+          fi
+      - uses: actions/configure-pages@v5
+      - name: Stage public site
+        run: |
+          mkdir -p _site/data
+          cp index.html _site/
+          cp data/macro_daily.json _site/data/
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: _site
+      - name: Deploy updated site
+        id: deployment
+        uses: actions/deploy-pages@v4
