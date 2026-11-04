@@ -3,69 +3,86 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>宏观流动性与科技 CapEx 股债传导原理手册（标注染色版）</title>
+  <title>宏观流动性与科技 CapEx 股债传导原理手册（护眼大字染色版）</title>
   <style>
     :root {
-      --bg-body: #090d16;
-      --bg-card: #111827;
-      --bg-card-alt: #0f172a;
-      --bg-code: #1e293b;
-      --text-main: #f1f5f9;
-      --text-muted: #94a3b8;
-      --border-color: #1e293b;
-      --border-highlight: #334155;
+      /* 默认：暖米羊皮纸护眼配色（Warm Ivory Eye-Care） */
+      --bg-body: #F4F1EA;
+      --bg-card: #FCFBF7;
+      --bg-card-alt: #EFECE3;
+      --bg-code: #E6E1D5;
+      --text-main: #1C2430;
+      --text-muted: #475569;
+      --border-color: #DCD6C8;
+      --border-highlight: #C7BFAEE0;
 
-      /* 五大核心语义标注色 */
-      --c-red: #fb7185;
-      --c-red-bg: rgba(244, 63, 94, 0.12);
-      --c-red-border: rgba(244, 63, 94, 0.38);
+      /* 高对比柔和护眼五色语义体系 */
+      --c-red: #B91C1C;
+      --c-red-bg: #FEE2E2;
+      --c-red-border: #FCA5A5;
 
-      --c-green: #34d399;
-      --c-green-bg: rgba(16, 185, 129, 0.12);
-      --c-green-border: rgba(16, 185, 129, 0.38);
+      --c-green: #047857;
+      --c-green-bg: #D1FAE5;
+      --c-green-border: #6EE7B7;
 
-      --c-amber: #fbbf24;
-      --c-amber-bg: rgba(245, 158, 11, 0.12);
-      --c-amber-border: rgba(245, 158, 11, 0.38);
+      --c-amber: #B45309;
+      --c-amber-bg: #FEF3C7;
+      --c-amber-border: #FCD34D;
 
-      --c-blue: #38bdf8;
-      --c-blue-bg: rgba(56, 189, 248, 0.12);
-      --c-blue-border: rgba(56, 189, 248, 0.38);
+      --c-blue: #0369A1;
+      --c-blue-bg: #E0F2FE;
+      --c-blue-border: #7DD3FC;
 
-      --c-purple: #c084fc;
-      --c-purple-bg: rgba(168, 85, 247, 0.12);
-      --c-purple-border: rgba(168, 85, 247, 0.38);
+      --c-purple: #6D28D9;
+      --c-purple-bg: #EDE9FE;
+      --c-purple-border: #C4B5FD;
+
+      /* 全局字号缩放倍率（默认已扩大一倍） */
+      --font-scale: 1;
     }
 
-    body.light-mode {
-      --bg-body: #f8fafc;
-      --bg-card: #ffffff;
-      --bg-card-alt: #f1f5f9;
-      --bg-code: #e2e8f0;
-      --text-main: #0f172a;
-      --text-muted: #475569;
-      --border-color: #e2e8f0;
-      --border-highlight: #cbd5e1;
+    /* 豆沙绿护眼配色（Soft Sage Green Eye-Care） */
+    body.theme-green {
+      --bg-body: #E3EDE6;
+      --bg-card: #F2F7F4;
+      --bg-card-alt: #D7E5DC;
+      --bg-code: #C8DBD0;
+      --text-main: #16261E;
+      --text-muted: #3B5246;
+      --border-color: #BDD1C5;
+      --border-highlight: #9AB8A6;
+    }
 
-      --c-red: #e11d48;
-      --c-red-bg: #fff1f2;
-      --c-red-border: #fecdd3;
+    /* 夜间深色模式（可选） */
+    body.theme-dark {
+      --bg-body: #111827;
+      --bg-card: #1E293B;
+      --bg-card-alt: #0F172A;
+      --bg-code: #334155;
+      --text-main: #F1F5F9;
+      --text-muted: #CBD5E1;
+      --border-color: #334155;
+      --border-highlight: #475569;
 
-      --c-green: #059669;
-      --c-green-bg: #ecfdf5;
-      --c-green-border: #a7f3d0;
+      --c-red: #FDA4AF;
+      --c-red-bg: rgba(244, 63, 94, 0.18);
+      --c-red-border: rgba(244, 63, 94, 0.45);
 
-      --c-amber: #d97706;
-      --c-amber-bg: #fffbeb;
-      --c-amber-border: #fde68a;
+      --c-green: #6EE7B7;
+      --c-green-bg: rgba(16, 185, 129, 0.18);
+      --c-green-border: rgba(16, 185, 129, 0.45);
 
-      --c-blue: #0284c7;
-      --c-blue-bg: #f0f9ff;
-      --c-blue-border: #bae6fd;
+      --c-amber: #FCD34D;
+      --c-amber-bg: rgba(245, 158, 11, 0.18);
+      --c-amber-border: rgba(245, 158, 11, 0.45);
 
-      --c-purple: #7c3aed;
-      --c-purple-bg: #faf5ff;
-      --c-purple-border: #e9d5ff;
+      --c-blue: #7DD3FC;
+      --c-blue-bg: rgba(56, 189, 248, 0.18);
+      --c-blue-border: rgba(56, 189, 248, 0.45);
+
+      --c-purple: #D8B4FE;
+      --c-purple-bg: rgba(168, 85, 247, 0.18);
+      --c-purple-border: rgba(168, 85, 247, 0.45);
     }
 
     * {
@@ -77,8 +94,9 @@
     body {
       background-color: var(--bg-body);
       color: var(--text-main);
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
-      line-height: 1.7;
+      font-family: "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      font-size: calc(24px * var(--font-scale));
+      line-height: 1.85;
       transition: background-color 0.25s, color 0.25s;
     }
 
@@ -90,58 +108,58 @@
       text-decoration: underline;
     }
 
-    /* 顶部固定栏 */
+    /* 顶部固定护眼工具栏 */
     .topbar {
       position: sticky;
       top: 0;
       z-index: 50;
-      background: rgba(15, 23, 42, 0.88);
-      backdrop-filter: blur(12px);
-      border-bottom: 1px solid var(--border-highlight);
-      padding: 12px 24px;
-    }
-    body.light-mode .topbar {
-      background: rgba(255, 255, 255, 0.92);
+      background: var(--bg-card);
+      border-bottom: 2px solid var(--border-color);
+      padding: 16px 28px;
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.06);
     }
     .topbar-inner {
-      max-width: 1360px;
+      max-width: 1600px;
       margin: 0 auto;
       display: flex;
       flex-wrap: wrap;
       align-items: center;
       justify-content: space-between;
-      gap: 12px;
+      gap: 16px;
     }
     .brand-title {
-      font-size: 18px;
+      font-size: calc(28px * var(--font-scale));
       font-weight: 800;
-      letter-spacing: -0.02em;
+      letter-spacing: -0.01em;
       display: flex;
       align-items: center;
-      gap: 10px;
+      flex-wrap: wrap;
+      gap: 12px;
+      color: var(--text-main);
     }
     .brand-badge {
-      font-size: 12px;
-      padding: 2px 10px;
+      font-size: calc(18px * var(--font-scale));
+      padding: 4px 14px;
       border-radius: 999px;
-      background: var(--c-blue-bg);
-      color: var(--c-blue);
-      border: 1px solid var(--c-blue-border);
-      font-weight: 600;
+      background: var(--c-green-bg);
+      color: var(--c-green);
+      border: 2px solid var(--c-green-border);
+      font-weight: 700;
     }
     .toolbar-btns {
       display: flex;
+      flex-wrap: wrap;
       align-items: center;
-      gap: 8px;
+      gap: 10px;
     }
     .btn {
       cursor: pointer;
-      font-size: 12px;
-      font-weight: 600;
-      padding: 7px 14px;
-      border-radius: 10px;
-      border: 1px solid var(--border-highlight);
-      background: var(--bg-card);
+      font-size: calc(18px * var(--font-scale));
+      font-weight: 700;
+      padding: 10px 18px;
+      border-radius: 12px;
+      border: 2px solid var(--border-color);
+      background: var(--bg-card-alt);
       color: var(--text-main);
       transition: all 0.15s;
     }
@@ -150,26 +168,26 @@
       color: var(--c-blue);
     }
     .btn-primary {
-      background: #4f46e5;
+      background: #047857;
       color: #ffffff;
-      border-color: #4338ca;
+      border-color: #065f46;
     }
     .btn-primary:hover {
-      background: #4338ca;
+      background: #065f46;
       color: #ffffff;
     }
 
-    /* 主体双栏布局 */
+    /* 主体双栏布局（更宽敞的大字阅读版面） */
     .layout {
-      max-width: 1360px;
-      margin: 24px auto 64px;
-      padding: 0 20px;
+      max-width: 1600px;
+      margin: 32px auto 80px;
+      padding: 0 28px;
       display: grid;
-      grid-template-columns: 260px 1fr;
-      gap: 28px;
+      grid-template-columns: 340px 1fr;
+      gap: 36px;
       align-items: start;
     }
-    @media (max-width: 960px) {
+    @media (max-width: 1180px) {
       .layout {
         grid-template-columns: 1fr;
       }
@@ -178,211 +196,229 @@
       }
     }
 
-    /* 左侧目录 */
+    /* 左侧大字目录 */
     .sidebar {
       position: sticky;
-      top: 76px;
+      top: 98px;
       background: var(--bg-card);
-      border: 1px solid var(--border-highlight);
-      border-radius: 16px;
-      padding: 18px;
+      border: 2px solid var(--border-color);
+      border-radius: 20px;
+      padding: 24px;
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.04);
     }
     .sidebar-title {
-      font-size: 12px;
+      font-size: calc(20px * var(--font-scale));
       text-transform: uppercase;
-      letter-spacing: 0.06em;
+      letter-spacing: 0.05em;
       color: var(--c-blue);
-      font-weight: 700;
-      margin-bottom: 10px;
+      font-weight: 800;
+      margin-bottom: 14px;
+      padding-bottom: 10px;
+      border-bottom: 2px solid var(--border-color);
     }
     .toc-list {
       list-style: none;
       display: flex;
       flex-direction: column;
-      gap: 6px;
+      gap: 10px;
     }
     .toc-list a {
       display: block;
-      font-size: 13px;
-      color: var(--text-muted);
-      padding: 6px 10px;
-      border-radius: 8px;
+      font-size: calc(20px * var(--font-scale));
+      color: var(--text-main);
+      padding: 10px 14px;
+      border-radius: 12px;
       transition: all 0.15s;
-      font-weight: 500;
+      font-weight: 600;
     }
     .toc-list a:hover {
-      background: var(--bg-card-alt);
-      color: var(--text-main);
+      background: var(--c-blue-bg);
+      color: var(--c-blue);
       text-decoration: none;
     }
 
     /* 颜色标注工具类 */
-    .t-red { color: var(--c-red); font-weight: 700; }
-    .t-green { color: var(--c-green); font-weight: 700; }
-    .t-amber { color: var(--c-amber); font-weight: 700; }
-    .t-blue { color: var(--c-blue); font-weight: 700; }
-    .t-purple { color: var(--c-purple); font-weight: 700; }
+    .t-red { color: var(--c-red); font-weight: 800; }
+    .t-green { color: var(--c-green); font-weight: 800; }
+    .t-amber { color: var(--c-amber); font-weight: 800; }
+    .t-blue { color: var(--c-blue); font-weight: 800; }
+    .t-purple { color: var(--c-purple); font-weight: 800; }
 
     .tag {
       display: inline-flex;
       align-items: center;
-      gap: 4px;
-      font-size: 12px;
-      font-weight: 700;
-      padding: 2px 9px;
+      gap: 6px;
+      font-size: calc(20px * var(--font-scale));
+      font-weight: 800;
+      padding: 4px 14px;
       border-radius: 999px;
       line-height: 1.4;
       vertical-align: middle;
     }
-    .tag-red { background: var(--c-red-bg); color: var(--c-red); border: 1px solid var(--c-red-border); }
-    .tag-green { background: var(--c-green-bg); color: var(--c-green); border: 1px solid var(--c-green-border); }
-    .tag-amber { background: var(--c-amber-bg); color: var(--c-amber); border: 1px solid var(--c-amber-border); }
-    .tag-blue { background: var(--c-blue-bg); color: var(--c-blue); border: 1px solid var(--c-blue-border); }
-    .tag-purple { background: var(--c-purple-bg); color: var(--c-purple); border: 1px solid var(--c-purple-border); }
+    .tag-red { background: var(--c-red-bg); color: var(--c-red); border: 2px solid var(--c-red-border); }
+    .tag-green { background: var(--c-green-bg); color: var(--c-green); border: 2px solid var(--c-green-border); }
+    .tag-amber { background: var(--c-amber-bg); color: var(--c-amber); border: 2px solid var(--c-amber-border); }
+    .tag-blue { background: var(--c-blue-bg); color: var(--c-blue); border: 2px solid var(--c-blue-border); }
+    .tag-purple { background: var(--c-purple-bg); color: var(--c-purple); border: 2px solid var(--c-purple-border); }
 
     /* 章节卡片 */
     .content {
       display: flex;
       flex-direction: column;
-      gap: 28px;
+      gap: 36px;
     }
     .section-card {
       background: var(--bg-card);
-      border: 1px solid var(--border-highlight);
-      border-radius: 18px;
-      padding: 28px;
-      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.18);
-    }
-    body.light-mode .section-card {
-      box-shadow: 0 2px 12px rgba(15, 23, 42, 0.05);
+      border: 2px solid var(--border-color);
+      border-radius: 24px;
+      padding: 36px 40px;
+      box-shadow: 0 6px 20px rgba(0, 0, 0, 0.05);
     }
     .section-header {
-      border-bottom: 1px solid var(--border-highlight);
-      padding-bottom: 14px;
-      margin-bottom: 20px;
+      border-bottom: 2px solid var(--border-color);
+      padding-bottom: 18px;
+      margin-bottom: 26px;
     }
     .section-eyebrow {
-      font-size: 12px;
-      font-weight: 700;
+      font-size: calc(18px * var(--font-scale));
+      font-weight: 800;
       text-transform: uppercase;
-      letter-spacing: 0.08em;
+      letter-spacing: 0.06em;
       color: var(--c-blue);
     }
     .section-title {
-      font-size: 22px;
-      font-weight: 800;
-      margin-top: 4px;
+      font-size: calc(36px * var(--font-scale));
+      font-weight: 900;
+      margin-top: 6px;
+      line-height: 1.35;
     }
     h3 {
-      font-size: 17px;
-      font-weight: 700;
-      margin: 22px 0 10px;
+      font-size: calc(28px * var(--font-scale));
+      font-weight: 800;
+      margin: 30px 0 16px;
       display: flex;
       align-items: center;
-      gap: 8px;
-    }
-    p, li {
-      font-size: 14.5px;
+      gap: 10px;
+      line-height: 1.4;
       color: var(--text-main);
     }
+    p, li {
+      font-size: calc(24px * var(--font-scale));
+      color: var(--text-main);
+      line-height: 1.85;
+    }
     ul, ol {
-      padding-left: 20px;
+      padding-left: 32px;
       display: flex;
       flex-direction: column;
-      gap: 8px;
+      gap: 14px;
     }
     code {
       font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
-      font-size: 13px;
+      font-size: calc(21px * var(--font-scale));
+      font-weight: 700;
       background: var(--bg-code);
-      padding: 2px 6px;
-      border-radius: 6px;
+      padding: 3px 10px;
+      border-radius: 8px;
       color: var(--c-blue);
     }
 
     /* 图例网格 */
     .legend-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-      gap: 12px;
+      grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+      gap: 18px;
     }
     .legend-box {
-      padding: 12px 14px;
-      border-radius: 12px;
-      font-size: 13px;
+      padding: 20px 22px;
+      border-radius: 16px;
+      font-size: calc(22px * var(--font-scale));
+    }
+    .legend-box p {
+      font-size: calc(21px * var(--font-scale));
+      margin-top: 8px;
+      line-height: 1.7;
     }
 
     /* 染色公式框 */
     .formula-box {
       background: var(--bg-card-alt);
-      border: 1px solid var(--c-blue-border);
-      border-left: 4px solid var(--c-blue);
-      border-radius: 12px;
-      padding: 18px 20px;
-      margin: 14px 0;
+      border: 2px solid var(--c-blue-border);
+      border-left: 8px solid var(--c-blue);
+      border-radius: 16px;
+      padding: 24px 28px;
+      margin: 20px 0;
       font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
-      font-size: 15px;
+      font-size: calc(24px * var(--font-scale));
+      font-weight: 700;
+      line-height: 1.75;
       overflow-x: auto;
     }
     .formula-title {
-      font-size: 12px;
-      font-weight: 700;
+      font-size: calc(20px * var(--font-scale));
+      font-weight: 800;
       color: var(--c-blue);
       text-transform: uppercase;
-      margin-bottom: 8px;
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "PingFang SC", sans-serif;
+      margin-bottom: 10px;
+      font-family: "PingFang SC", "Microsoft YaHei", sans-serif;
     }
 
     /* 信号拆解卡片组 */
     .signal-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-      gap: 14px;
-      margin-top: 12px;
+      grid-template-columns: repeat(auto-fit, minmax(360px, 1fr));
+      gap: 20px;
+      margin-top: 18px;
     }
     .signal-card {
-      border-radius: 14px;
-      padding: 16px;
-      font-size: 13.5px;
+      border-radius: 18px;
+      padding: 24px 26px;
     }
     .signal-card h4 {
-      font-size: 14.5px;
-      font-weight: 700;
-      margin-bottom: 8px;
+      font-size: calc(25px * var(--font-scale));
+      font-weight: 800;
+      margin-bottom: 12px;
       display: flex;
+      flex-wrap: wrap;
       align-items: center;
       justify-content: space-between;
+      gap: 8px;
     }
-    .card-red { background: var(--c-red-bg); border: 1px solid var(--c-red-border); }
-    .card-green { background: var(--c-green-bg); border: 1px solid var(--c-green-border); }
-    .card-amber { background: var(--c-amber-bg); border: 1px solid var(--c-amber-border); }
-    .card-blue { background: var(--c-blue-bg); border: 1px solid var(--c-blue-border); }
-    .card-purple { background: var(--c-purple-bg); border: 1px solid var(--c-purple-border); }
+    .signal-card p {
+      font-size: calc(22px * var(--font-scale));
+      line-height: 1.75;
+    }
+    .card-red { background: var(--c-red-bg); border: 2px solid var(--c-red-border); }
+    .card-green { background: var(--c-green-bg); border: 2px solid var(--c-green-border); }
+    .card-amber { background: var(--c-amber-bg); border: 2px solid var(--c-amber-border); }
+    .card-blue { background: var(--c-blue-bg); border: 2px solid var(--c-blue-border); }
+    .card-purple { background: var(--c-purple-bg); border: 2px solid var(--c-purple-border); }
 
     /* 表格样式 */
     .table-wrap {
       overflow-x: auto;
-      margin: 14px 0;
-      border-radius: 12px;
-      border: 1px solid var(--border-highlight);
+      margin: 20px 0;
+      border-radius: 16px;
+      border: 2px solid var(--border-color);
     }
     table {
       width: 100%;
       border-collapse: collapse;
-      font-size: 13.5px;
+      font-size: calc(22px * var(--font-scale));
       text-align: left;
     }
     th {
       background: var(--bg-card-alt);
-      color: var(--text-muted);
-      font-weight: 700;
-      padding: 12px 14px;
-      border-bottom: 1px solid var(--border-highlight);
+      color: var(--text-main);
+      font-weight: 800;
+      padding: 18px 20px;
+      border-bottom: 2px solid var(--border-color);
     }
     td {
-      padding: 12px 14px;
+      padding: 18px 20px;
       border-bottom: 1px solid var(--border-color);
       vertical-align: top;
+      line-height: 1.7;
     }
     tr:last-child td {
       border-bottom: none;
@@ -393,62 +429,79 @@
       display: flex;
       flex-wrap: wrap;
       align-items: center;
-      gap: 8px;
+      gap: 12px;
       background: var(--bg-card-alt);
-      border: 1px dashed var(--c-red-border);
-      padding: 14px 16px;
-      border-radius: 12px;
-      margin: 12px 0;
-      font-size: 13.5px;
-      font-weight: 600;
+      border: 2px dashed var(--c-red-border);
+      padding: 20px 24px;
+      border-radius: 16px;
+      margin: 18px 0;
+      font-size: calc(22px * var(--font-scale));
+      font-weight: 700;
     }
     .chain-step {
-      padding: 6px 12px;
-      border-radius: 8px;
+      padding: 10px 16px;
+      border-radius: 12px;
       background: var(--bg-card);
-      border: 1px solid var(--border-highlight);
+      border: 2px solid var(--border-color);
     }
     .chain-arrow {
       color: var(--c-red);
-      font-weight: 800;
+      font-weight: 900;
+      font-size: calc(26px * var(--font-scale));
     }
 
     @media print {
       .topbar, .sidebar { display: none !important; }
       .layout { display: block; margin: 0; padding: 0; }
-      .section-card { break-inside: avoid; margin-bottom: 20px; box-shadow: none; }
+      .section-card { break-inside: avoid; margin-bottom: 24px; box-shadow: none; }
     }
   </style>
+  <script>
+    function setTheme(themeName) {
+      document.body.classList.remove('theme-green', 'theme-dark');
+      if (themeName) document.body.classList.add(themeName);
+    }
+    function adjustFont(delta) {
+      const root = document.documentElement;
+      const current = parseFloat(getComputedStyle(root).getPropertyValue('--font-scale')) || 1;
+      const next = Math.min(1.5, Math.max(0.75, +(current + delta).toFixed(2)));
+      root.style.setProperty('--font-scale', next);
+    }
+  </script>
 </head>
 <body>
 
-  <!-- 顶部导航与工具栏 -->
+  <!-- 顶部导航与护眼工具栏 -->
   <header class="topbar">
     <div class="topbar-inner">
       <div class="brand-title">
-        <span>🧭 宏观流动性与科技 CapEx 股债传导原理手册</span>
-        <span class="brand-badge">标注染色版 · Pro 7-Dim</span>
+        <span>🧭 宏观与科技 CapEx 股债传导原理手册</span>
+        <span class="brand-badge">护眼大字版 · 2x 放大</span>
       </div>
       <div class="toolbar-btns">
         <a href="./index.html" class="btn">📊 打开实时投研终端看板</a>
-        <button class="btn" onclick="document.body.classList.toggle('light-mode')">🌗 切换深色 / 浅色护眼模式</button>
+        <button class="btn" onclick="setTheme('')">🌾 暖米纸护眼</button>
+        <button class="btn" onclick="setTheme('theme-green')">🌿 豆沙绿护眼</button>
+        <button class="btn" onclick="setTheme('theme-dark')">🌙 深色模式</button>
+        <button class="btn" onclick="adjustFont(-0.1)">A- 缩小字号</button>
+        <button class="btn" onclick="adjustFont(0.1)">A+ 继续放大</button>
         <button class="btn btn-primary" onclick="window.print()">🖨️ 打印 / 导出 PDF</button>
       </div>
     </div>
   </header>
 
   <div class="layout">
-    <!-- 左侧悬浮目录 -->
+    <!-- 左侧悬浮大字目录 -->
     <aside class="sidebar">
-      <div class="sidebar-title">目录导航 (Contents)</div>
+      <div class="sidebar-title">📖 章节目录导航</div>
       <ul class="toc-list">
-        <li><a href="#sec-legend">🎨 五色标注体系图例</a></li>
+        <li><a href="#sec-legend">🎨 五色语义标注图例</a></li>
         <li><a href="#sec-cron">一、自动跑批机制与时刻表</a></li>
-        <li><a href="#sec-dcf">二、股债定价总公式 (DCF拆解)</a></li>
-        <li><a href="#sec-us">三、美国宏观与美联储流动性原理</a></li>
-        <li><a href="#sec-cn">四、中国宏观、理财赎回与跨市场</a></li>
-        <li><a href="#sec-capex">五、全球科技 CapEx 三定律与映射</a></li>
-        <li><a href="#sec-barbell">六、七维规则评分表与哑铃算法</a></li>
+        <li><a href="#sec-dcf">二、股债定价总公式 (DCF)</a></li>
+        <li><a href="#sec-us">三、美国宏观与美联储流动性</a></li>
+        <li><a href="#sec-cn">四、中国宏观与理财赎回预警</a></li>
+        <li><a href="#sec-capex">五、全球科技 CapEx 三定律</a></li>
+        <li><a href="#sec-barbell">六、七维评分表与哑铃算法</a></li>
       </ul>
     </aside>
 
@@ -464,23 +517,23 @@
         <div class="legend-grid">
           <div class="legend-box card-red">
             <div class="t-red">🔴 红色（Danger / 紧缩 / 风险预警）</div>
-            <p style="font-size:12.5px; margin-top:4px;">代表分母端实际利率上冲、银行准备金抽水、理财赎回踩踏或 CapEx 二阶导证伪信号（指令：<strong>增配防守、降久期、砍高Beta</strong>）。</p>
+            <p>代表分母端实际利率上冲、银行准备金抽水、理财赎回踩踏或 CapEx 二阶导证伪信号（指令：<strong>增配防守、降久期、砍高Beta</strong>）。</p>
           </div>
           <div class="legend-box card-green">
             <div class="t-green">🟢 绿色（Bullish / 宽松 / 景气证实）</div>
-            <p style="font-size:12.5px; margin-top:4px;">代表分母端实际利率回落、狭义资金充裕、宽信用激活或 CapEx 订单兑现（指令：<strong>增配硬科技进攻端或稳健吃票息</strong>）。</p>
+            <p>代表分母端实际利率回落、狭义资金充裕、宽信用激活或 CapEx 订单兑现（指令：<strong>增配硬科技进攻端或稳健吃票息</strong>）。</p>
           </div>
           <div class="legend-box card-amber">
-            <div class="t-amber">🟡 黄色（Warning / 震荡 / 临界观察）</div>
-            <p style="font-size:12.5px; margin-top:4px;">代表指标处于磨底期、中美利差倒挂约束或边际斜率待验证（指令：<strong>维持哑铃均衡配置、不赌单边贝塔</strong>）。</p>
+            <div class="t-amber">🟡 琥珀色（Warning / 震荡 / 观察）</div>
+            <p>代表指标处于磨底期、中美利差倒挂约束或边际斜率待验证（指令：<strong>维持哑铃均衡配置、不赌单边贝塔</strong>）。</p>
           </div>
           <div class="legend-box card-blue">
             <div class="t-blue">🔵 蓝色（Formula / 一手锚点指标）</div>
-            <p style="font-size:12.5px; margin-top:4px;">代表资产定价核心公式、美联储/中国央行资产负债表恒等式与一手官方数据库代码。</p>
+            <p>代表资产定价核心公式、美联储/中国央行资产负债表恒等式与一手官方数据库代码。</p>
           </div>
           <div class="legend-box card-purple">
             <div class="t-purple">🟣 紫色（Tech CapEx / 产业映射）</div>
-            <p style="font-size:12.5px; margin-top:4px;">代表 AI 算力基建、Agent 软件商业化、具身智能产业链卡点与月度/旬度高频先导指标。</p>
+            <p>代表 AI 算力基建、Agent 软件商业化、具身智能产业链卡点与月度/旬度高频先导指标。</p>
           </div>
         </div>
       </section>
@@ -499,34 +552,34 @@
           <table>
             <thead>
               <tr>
-                <th>终端页面模块</th>
-                <th>跑批属性</th>
+                <th style="width:24%">终端页面模块</th>
+                <th style="width:22%">跑批属性</th>
                 <th>数据更新方式与底层运转逻辑</th>
               </tr>
             </thead>
             <tbody>
               <tr>
-                <td><strong>① 双层决策</strong><br><span style="font-size:12px;color:var(--text-muted)">七维规则 + 哑铃仓位 + 双视角晨报</span></td>
+                <td><strong>① 双层决策</strong><br><span style="color:var(--text-muted)">七维规则 + 哑铃仓位 + 晨报</span></td>
                 <td><span class="tag tag-green">🟢 100% 全自动跑批</span></td>
                 <td>每日由云端 Python 脚本 <code>scripts/update_macro.py</code> 根据最新抓取的 16 项指标，自动重算 7 条硬规则红绿灯、哑铃四篮子配比及两份动态晨报话术。</td>
               </tr>
               <tr>
-                <td><strong>② 宏观脉冲</strong><br><span style="font-size:12px;color:var(--text-muted)">美国 9 项 + 中国 7 项一手指标</span></td>
+                <td><strong>② 宏观脉冲</strong><br><span style="color:var(--text-muted)">美国 9 项 + 中国 7 项指标</span></td>
                 <td><span class="tag tag-green">🟢 100% 全自动跑批</span></td>
                 <td>自动从 <span class="t-blue">美联储 FRED API</span> 与 <span class="t-blue">中国外汇交易中心 / AkShare</span> 拉取最新观测值，自动计算 1期/5期变化与近3年/1年历史分位数。</td>
               </tr>
               <tr>
-                <td><strong>③ 科技 CapEx</strong><br><span style="font-size:12px;color:var(--text-muted)">三阶段产业链与财报检索词</span></td>
+                <td><strong>③ 科技 CapEx</strong><br><span style="color:var(--text-muted)">三阶段产业链与检索词</span></td>
                 <td><span class="tag tag-purple">🟣 静态核查方法论库</span></td>
-                <td>内置算力基建、Agent 商业化、具身智能三阶段卡点、高频先导指标日历与 SEC/巨潮 <code>Ctrl+F</code> 检索词（方法论框架无需每日变动，供财报季与月度核查一键复制）。</td>
+                <td>内置算力基建、Agent 商业化、具身智能三阶段卡点、高频先导指标日历与 SEC/巨潮 <code>Ctrl+F</code> 检索词（供财报季与月度核查一键复制）。</td>
               </tr>
               <tr>
-                <td><strong>④ 哑铃沙盘</strong><br><span style="font-size:12px;color:var(--text-muted)">9 变量压力测试</span></td>
+                <td><strong>④ 哑铃沙盘</strong><br><span style="color:var(--text-muted)">9 变量压力测试</span></td>
                 <td><span class="tag tag-blue">🔵 实盘同步 + 实时重算</span></td>
                 <td>打开页面时自动加载云端最新跑批实盘初值；手动拖动滑块或点击预设情景时，由浏览器前端引擎毫秒级实时重算。</td>
               </tr>
               <tr>
-                <td><strong>⑤ 传导百科与信源</strong><br><span style="font-size:12px;color:var(--text-muted)">传导矩阵 + 六大误区 + 8大信源</span></td>
+                <td><strong>⑤ 传导百科与信源</strong><br><span style="color:var(--text-muted)">传导矩阵 + 六大误区</span></td>
                 <td><span class="tag tag-blue">🔵 静态知识库与直达入口</span></td>
                 <td>内置全球宏观政策传导对照矩阵、六大线性传导误区纠偏与 8 大官方披露源一键直达链接。</td>
               </tr>
@@ -538,7 +591,7 @@
         <ul>
           <li>
             <span class="t-green">⏰ 每日定时自动跑批时间</span>：工作流 <code>.github/workflows/daily_macro_update.yml</code> 设定为 <code>cron: '0 0 * * *'</code>，即 <strong>每天早上北京时间 <code>08:00</code>（UTC <code>00:00</code>）准时触发</strong>。
-            <br><span style="font-size:13px; color:var(--text-muted)">（注：受 GitHub Actions 全球公共队列整点排队影响，实际执行完成并刷新线上网页的时间通常在 <strong>北京时间 08:02 ~ 08:15 之间</strong>，正好赶在 A 股/港股与国内债市早盘开盘及分行晨会之前。）</span>
+            <br><span style="color:var(--text-muted)">（注：受 GitHub Actions 全球公共队列整点排队影响，实际执行完成并刷新线上网页的时间通常在 <strong>北京时间 08:02 ~ 08:15 之间</strong>，正好赶在 A 股/港股与国内债市早盘开盘及分行晨会之前。）</span>
           </li>
           <li>
             <span class="t-blue">⚡ 手动即时跑批</span>：若在交易日盘后或突发事件后需立即刷新，可随时在 GitHub 仓库 <code>Actions</code> 页面点击 <code>Run workflow</code>，约 <strong>60 秒</strong> 即可完成全量拉取与网页发布。
@@ -566,7 +619,7 @@
         <div class="formula-box">
           <div class="formula-title">🔵 股债资产统一定价总公式（DCF 拆解）</div>
           <div>
-            资产价值 <strong>P</strong> = ∑ [ <span class="t-green">CF<sub>t</sub>（分子端：企业盈利 / 自由现金流 / 固定票息）</span> ] ÷ [ 1 + <span class="t-blue">r<sub>real</sub>（实际无风险利率）</span> + <span class="t-amber">π<sup>e</sup>（隐含通胀预期）</span> + <span class="t-red">TP（期限溢价）</span> + <span class="t-purple">ERP / Credit Spread（股债/信用风险溢价）</span> ]<sup>t</sup>
+            资产价值 <strong>P</strong> = &sum; [ <span class="t-green">CF<sub>t</sub>（分子端：企业盈利 / 自由现金流 / 固定票息）</span> ] &divide; [ 1 + <span class="t-blue">r<sub>real</sub>（实际无风险利率）</span> + <span class="t-amber">&pi;<sup>e</sup>（隐含通胀预期）</span> + <span class="t-red">TP（期限溢价）</span> + <span class="t-purple">ERP / Credit Spread（股债/信用风险溢价）</span> ]<sup>t</sup>
           </div>
         </div>
 
@@ -636,7 +689,7 @@
         </div>
         <ul>
           <li><span class="t-green">🟢 缓冲期（2023–2024年）</span>：当 <code>ON RRP</code> 拥有 2 万亿美元余额时，美联储 QT 缩表或财政部发债回补 <code>TGA</code>，抽走的是货币基金存在 <code>ON RRP</code> 里的超额闲钱，商业银行准备金毫发无损。</li>
-          <li><span class="t-red">🔴 临界危险期（当前实盘状态：防守 +6%）</span>：今日实盘 <code>ON RRP</code> 仅剩 <strong><code>5.09B</code>（蓄水池彻底耗尽）</strong>，而财政部 <code>TGA</code> 高达 <strong><code>999.73B</code></strong>！这意味着此后财政部每发债抽水 1 美元、美联储每缩表 1 美元，都会 <strong>1:1 直接抽干商业银行准备金（当前 <code>WRESBAL</code> 已跌至 <code>2893.77B</code>，跌破 <code>3000B</code> 充裕线）</strong>。一旦准备金稀缺，华尔街回购利率 <code>SOFR</code> 跳升至 <code>IORB</code> 之上，触发高收益债利差（<code>HY OAS</code>）走阔与高 Beta 股票去杠杆波动。</li>
+          <li><span class="t-red">🔴 临界危险期（当前实盘状态：防守 +6%）</span>：实盘 <code>ON RRP</code> 接近耗尽，而财政部 <code>TGA</code> 高达近万亿美元！这意味着此后财政部每发债抽水 1 美元、美联储每缩表 1 美元，都会 <strong>1:1 直接抽干商业银行准备金（<code>WRESBAL</code> 跌破 <code>3000B</code> 充裕线）</strong>。一旦准备金稀缺，华尔街回购利率 <code>SOFR</code> 跳升至 <code>IORB</code> 之上，触发高收益债利差（<code>HY OAS</code>）走阔与高 Beta 股票去杠杆波动。</li>
         </ul>
       </section>
 
@@ -649,15 +702,15 @@
 
         <h3>原理 ③：中美 10Y 利差与跨境汇率约束（对应系统规则 3）</h3>
         <ul>
-          <li><span class="t-blue">🔵 核心指标</span>：<code>中美10Y利差 = CN10Y（1.62%） - US10Y（4.94%） = -3.28%</code>（倒挂 328bp）。</li>
+          <li><span class="t-blue">🔵 核心指标</span>：<code>中美10Y利差 = CN10Y（中债10Y） - US10Y（美债10Y）</code>。</li>
           <li><span class="t-amber">🟡 深度倒挂约束（利差 &le; -2.20%，防守 +4%）</span>：倒挂过深时，为稳住离岸人民币汇率（<code>USD/CNH</code>）并防范跨境套息外流，国内央行大幅调降政策利率的空间受制；同时压制离岸港股分母端外资回流。权益配置宜偏重<strong>内需自主可控与 A 股红利底仓</strong>。</li>
           <li><span class="t-green">🟢 利差收敛共振（利差 &ge; -1.20%，防守 -4%）</span>：汇率约束解除，外资回流新兴市场，港股科技与 A 股核心资产迎来双击。</li>
         </ul>
 
         <h3>原理 ④：国内宽货币与低利率“资产荒”象限（对应系统规则 4）</h3>
         <ul>
-          <li><span class="t-green">🟢 低利率资产荒延续（<code>CN10Y &le; 2.18%</code> 且 <code>FDR007 &le; 1.80%</code>，防守 +5%）</span>：狭义资金面宽松（今日 <code>FDR007</code> 仅 <code>1.35%</code>），实体信贷需求偏弱导致资金淤积。险资（OCI 账户）与固收资金面临严重欠配压力，倒逼增配<strong>央国企高股息红利低波（水电、运营商、国有大行）</strong>与<strong>中短久期高等级信用债</strong>。</li>
-          <li><span class="t-amber">🟡 极低利率下的 30Y 久期防拥挤警示（当 <code>CN10Y &le; 1.75%</code> 时激活）</span>：当前 10Y 中债已处 <code>1.62%</code>（近 3 年 1% 极低分位），30Y 超长债（<code>2.05%</code>）票息保护极薄，对超长期特别国债集中发行供给高度敏感。<strong>严禁盲目拉长 30Y 久期博弈资本利得，必须用 1~3 年高等级信用债吃票息替代超长债</strong>。</li>
+          <li><span class="t-green">🟢 低利率资产荒延续（<code>CN10Y &le; 2.18%</code> 且 <code>FDR007 &le; 1.80%</code>，防守 +5%）</span>：狭义资金面宽松，实体信贷需求偏弱导致资金淤积。险资（OCI 账户）与固收资金面临严重欠配压力，倒逼增配<strong>央国企高股息红利低波（水电、运营商、国有大行）</strong>与<strong>中短久期高等级信用债</strong>。</li>
+          <li><span class="t-amber">🟡 极低利率下的 30Y 久期防拥挤警示（当 <code>CN10Y &le; 1.75%</code> 时激活）</span>：当 10Y 中债跌破 1.75% 处于历史极低分位时，30Y 超长债票息保护极薄，对超长期特别国债集中发行供给高度敏感。<strong>严禁盲目拉长 30Y 久期博弈资本利得，必须用 1~3 年高等级信用债吃票息替代超长债</strong>。</li>
         </ul>
 
         <h3>原理 ⑤：【理财渠道核心】机构行为与“银行理财预防性赎回负反馈”（对应系统规则 5）</h3>
@@ -693,7 +746,7 @@
           </div>
           <div class="signal-card card-green">
             <h4>
-              <span class="t-green">🟢 非银无赎回压力（&lt; 15bp，今日 5.0bp）</span>
+              <span class="t-green">🟢 非银无赎回压力（&lt; 15bp）</span>
               <span class="tag tag-green">防守 -2%</span>
             </h4>
             <p>银行向非银流动性传导极其顺畅，理财与债基规模稳定，1~3 年高等级信用债吃票息套息环境非常安全。</p>
@@ -704,17 +757,17 @@
         <ul>
           <li><span class="t-amber">🟡 新口径 M1 纠偏</span>：人民银行自 2025 年起将个人活期存款与支付机构备付金纳入新 M1，不能再机械套用旧口径阈值（<code>-4.5%</code>）无脑重仓顺周期。</li>
           <li><span class="t-green">🟢 宽信用主动修复（<code>M1-M2 &gt; -3.5%</code> 或 <code>M1-M2 &gt; -4.8% 且月环比 &gt; 0</code>，防守 -10%）</span>：企业活期存款与财政实物工作量同步活化，由纯红利防御大幅切换至顺周期核心资产与港股弹性标的。</li>
-          <li><span class="t-amber">🟡 剪刀差磨底待验证（如今日 <code>-4.0%</code>，但月环比 <code>-0.6pct &le; 0</code>，防守 +2%）</span>：尚未形成连续上行斜率，维持哑铃配置等待社融企业中长期贷款验证。</li>
+          <li><span class="t-amber">🟡 剪刀差磨底待验证（<code>-6.0% &lt; M1-M2 &le; -3.5%</code> 且月环比 &le; 0，防守 +2%）</span>：尚未形成连续上行斜率，维持哑铃配置等待社融企业中长期贷款验证。</li>
         </ul>
 
         <h3>原理 ⑦：A 股股债性价比标尺（沪深 300 隐含风险溢价 ERP，对应规则 7）</h3>
         <div class="formula-box">
           <div class="formula-title">🔵 股债风险溢价（Equity Risk Premium）计算公式</div>
           <div>
-            <span class="t-blue">沪深300 ERP（今日 6.25%）</span> = [ 1 &divide; <span class="t-green">沪深300 PE<sub>TTM</sub>（滚动市盈率）</span> ] &minus; <span class="t-blue">CN10Y（10年期国债收益率 1.62%）</span>
+            <span class="t-blue">沪深300 ERP</span> = [ 1 &divide; <span class="t-green">沪深300 PE<sub>TTM</sub>（滚动市盈率）</span> ] &minus; <span class="t-blue">CN10Y（10年期国债收益率）</span>
           </div>
         </div>
-        <p>当 <code>ERP &ge; 5.80%</code> 时（<span class="tag tag-green">🟢 高性价比赔率区，防守 -6%</span>），由于无风险国债利率处于 1.62% 历史极低位，股票盈利收益率相对国债溢价超过 625bp，指数向下空间被封锁，宜通过哑铃进攻端积极布局硬科技板块。</p>
+        <p>当 <code>ERP &ge; 5.80%</code> 时（<span class="tag tag-green">🟢 高性价比赔率区，防守 -6%</span>），由于无风险国债利率处于历史极低位，股票盈利收益率相对国债溢价丰厚，指数向下空间被封锁，宜通过哑铃进攻端积极布局硬科技板块。</p>
       </section>
 
       <!-- 第五章：科技 CapEx -->
@@ -763,7 +816,7 @@
                 <th><span class="t-red">🔴 紧缩/风险信号（加防守）</span></th>
                 <th><span class="t-amber">🟡 震荡/观察信号</span></th>
                 <th><span class="t-green">🟢 宽松/进攻信号（加进攻）</span></th>
-                <th>今日实盘状态与权重调整</th>
+                <th>典型触发权重示例</th>
               </tr>
             </thead>
             <tbody>
@@ -772,49 +825,49 @@
                 <td>实际利率承压 <code>+8%</code><br>衰退通缩交易 <code>+6%</code></td>
                 <td>分母区间震荡 <code>0%</code></td>
                 <td>分母实质宽松 <code>-8%</code></td>
-                <td><span class="tag tag-amber">🟡 实际利率承压 (2.60%)</span> <strong>+8%</strong></td>
+                <td><span class="tag tag-amber">🟡 实际利率承压</span> <strong>+8%</strong></td>
               </tr>
               <tr>
                 <td><strong>② 美元狭义流动性与准备金底线</strong></td>
                 <td>准备金逼近临界 <code>+6%</code></td>
                 <td>准备金供需平衡 <code>0%</code></td>
                 <td>美元流动性充裕 <code>-4%</code></td>
-                <td><span class="tag tag-red">🔴 准备金破3000B (2893.77B)</span> <strong>+6%</strong></td>
+                <td><span class="tag tag-red">🔴 准备金破3000B</span> <strong>+6%</strong></td>
               </tr>
               <tr>
                 <td><strong>③ 中美利差与跨境汇率约束</strong></td>
                 <td>深度倒挂约束 <code>+4%</code></td>
                 <td>利差温和倒挂 <code>0%</code></td>
                 <td>利差收敛共振 <code>-4%</code></td>
-                <td><span class="tag tag-amber">🟡 深度倒挂 (-3.28%)</span> <strong>+4%</strong></td>
+                <td><span class="tag tag-amber">🟡 深度倒挂</span> <strong>+4%</strong></td>
               </tr>
               <tr>
                 <td><strong>④ 国内宽货币与资产荒象限</strong></td>
                 <td>债市久期防回调 <code>-4%</code></td>
                 <td>票息筑底 <code>0%</code></td>
                 <td>资产荒延续 <code>+5%</code></td>
-                <td><span class="tag tag-green">🟢 资产荒延续 (1.62%)</span> <strong>+5%</strong></td>
+                <td><span class="tag tag-green">🟢 资产荒延续</span> <strong>+5%</strong></td>
               </tr>
               <tr>
                 <td><strong>⑤ 理财赎回负反馈与非银分层</strong></td>
                 <td>赎回负反馈预警 <code>+5%</code></td>
                 <td>非银资金边际收敛 <code>+2%</code></td>
                 <td>非银无赎回压力 <code>-2%</code></td>
-                <td><span class="tag tag-green">🟢 无赎回压力 (5.0bp)</span> <strong>-2%</strong></td>
+                <td><span class="tag tag-green">🟢 无赎回压力</span> <strong>-2%</strong></td>
               </tr>
               <tr>
                 <td><strong>⑥ 国内分子端宽信用与M1活化</strong></td>
                 <td>分子端收缩防御 <code>+5%</code></td>
                 <td>剪刀差磨底待验证 <code>+2%</code></td>
                 <td>宽信用主动修复 <code>-10%</code></td>
-                <td><span class="tag tag-amber">🟡 磨底待验证 (-4.0%)</span> <strong>+2%</strong></td>
+                <td><span class="tag tag-amber">🟡 磨底待验证</span> <strong>+2%</strong></td>
               </tr>
               <tr>
                 <td><strong>⑦ A股股债性价比 (沪深300 ERP)</strong></td>
                 <td>风险溢价偏薄 <code>+6%</code></td>
                 <td>估值性价比均衡 <code>0%</code></td>
                 <td>高性价比赔率区 <code>-6%</code></td>
-                <td><span class="tag tag-green">🟢 高性价比区 (6.25%)</span> <strong>-6%</strong></td>
+                <td><span class="tag tag-green">🟢 高性价比区</span> <strong>-6%</strong></td>
               </tr>
             </tbody>
           </table>
@@ -824,7 +877,7 @@
           <div class="formula-title">🔵 哑铃总仓位风控锁定与四子篮子拆分算法</div>
           <div>
             1. <strong>防守端总权重 W<sub>def</sub></strong> = RoundTo5( clamp( 50% + &sum;&Delta;w<sub>i</sub>, 35%, 75% ) )<br>
-            &nbsp;&nbsp;&nbsp;&rarr; 今日实盘推导：<code>50% + 8% + 6% + 4% + 5% - 2% + 2% - 6% = 67%</code> &rArr; 按5%步长取整锁定为 <span class="t-green">防守端 65%</span> : <span class="t-purple">进攻端 35%</span><br><br>
+            &nbsp;&nbsp;&nbsp;&rarr; 实盘推导示例：<code>50% + 8% + 6% + 4% + 5% - 2% + 2% - 6% = 67%</code> &rArr; 按5%步长取整锁定为 <span class="t-green">防守端 65%</span> : <span class="t-purple">进攻端 35%</span><br><br>
             2. <strong>四个子资产篮子精确拆分比例</strong>：<br>
             &nbsp;&nbsp;&nbsp;• <span class="t-green">🛡️ 防御篮子 1（中短久期利率债/高等级信用债）</span> = RoundTo5( W<sub>def</sub> &times; 0.58 ) = <strong>40%</strong><br>
             &nbsp;&nbsp;&nbsp;• <span class="t-green">🛡️ 防御篮子 2（央国企高股息红利低波）</span> = W<sub>def</sub> &minus; 防御篮子 1 = <strong>25%</strong><br>

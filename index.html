@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="zh-CN" class="dark">
+<html lang="zh-CN">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-  <title>宏观流动性与科技CapEx一手数据投研终端 (Pro) | Macro & Tech CapEx Terminal</title>
+  <title>宏观流动性与科技CapEx一手数据投研终端 (护眼大字版) | Macro & Tech CapEx Terminal</title>
   <!-- Tailwind CSS CDN -->
   <script src="https://cdn.tailwindcss.com"></script>
   <!-- React 18 & Babel CDN for Zero-Build GitHub Pages Deployment -->
@@ -11,18 +11,221 @@
   <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
   <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
   <style>
+    :root {
+      /* 默认字号倍率（基础字号已整体扩大一倍） */
+      --font-scale: 1;
+
+      /* 默认：暖米羊皮纸护眼配色（Warm Ivory Eye-Care） */
+      --bg-body: #F4F1EA;
+      --bg-card: #FCFBF7;
+      --bg-subcard: #EFECE3;
+      --bg-pill: #E4DFD3;
+      --text-main: #1C2430;
+      --text-secondary: #334155;
+      --text-muted: #475569;
+      --border-main: #D6CFC0;
+      --border-strong: #BFB6A4;
+    }
+
+    body.theme-green {
+      /* 豆沙绿护眼配色（Soft Sage Green Eye-Care） */
+      --bg-body: #E3EDE6;
+      --bg-card: #F2F7F4;
+      --bg-subcard: #D9E7DF;
+      --bg-pill: #C8DBD0;
+      --text-main: #14241B;
+      --text-secondary: #263E31;
+      --text-muted: #3B5246;
+      --border-main: #B8CEBF;
+      --border-strong: #96B5A2;
+    }
+
     body {
+      background-color: var(--bg-body);
+      color: var(--text-main);
+      font-family: "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      overflow-x: hidden;
+      line-height: 1.75;
+      -webkit-tap-highlight-color: transparent;
+      transition: background-color 0.25s, color 0.25s;
+    }
+
+    body.theme-dark {
       background-color: #090d16;
       color: #e2e8f0;
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "PingFang SC", "Microsoft YaHei", sans-serif;
-      overflow-x: hidden;
-      -webkit-tap-highlight-color: transparent;
     }
-    .glass-card {
-      background: rgba(15, 23, 42, 0.78);
+
+    /* 宽屏自适应：为扩大一倍的大字体提供充裕空间 */
+    .max-w-7xl {
+      max-width: 1660px !important;
+    }
+
+    /* 全局字号扩大一倍（2x Enlarged Typography） */
+    .text-\[11px\] {
+      font-size: calc(20px * var(--font-scale)) !important;
+      line-height: 1.6 !important;
+    }
+    .text-xs {
+      font-size: calc(22px * var(--font-scale)) !important;
+      line-height: 1.65 !important;
+    }
+    .text-sm {
+      font-size: calc(25px * var(--font-scale)) !important;
+      line-height: 1.65 !important;
+    }
+    .text-base {
+      font-size: calc(28px * var(--font-scale)) !important;
+      line-height: 1.5 !important;
+    }
+    .text-lg {
+      font-size: calc(32px * var(--font-scale)) !important;
+      line-height: 1.45 !important;
+    }
+    .text-xl {
+      font-size: calc(36px * var(--font-scale)) !important;
+      line-height: 1.4 !important;
+    }
+    .text-2xl {
+      font-size: calc(42px * var(--font-scale)) !important;
+      line-height: 1.35 !important;
+    }
+
+    /* 护眼浅色模式（暖米纸 / 豆沙绿）全局色彩映射 */
+    body:not(.theme-dark) .glass-card {
+      background: var(--bg-card) !important;
+      border: 2px solid var(--border-main) !important;
+      box-shadow: 0 6px 20px rgba(0, 0, 0, 0.05) !important;
+    }
+    body.theme-dark .glass-card {
+      background: rgba(15, 23, 42, 0.85);
       backdrop-filter: blur(12px);
-      border: 1px solid rgba(51, 65, 85, 0.65);
+      border: 1px solid rgba(51, 65, 85, 0.75);
     }
+
+    body:not(.theme-dark) .bg-slate-900\/75,
+    body:not(.theme-dark) .bg-slate-900\/80,
+    body:not(.theme-dark) .bg-slate-900\/60,
+    body:not(.theme-dark) .bg-slate-900\/70,
+    body:not(.theme-dark) .bg-slate-900\/90,
+    body:not(.theme-dark) .bg-slate-900,
+    body:not(.theme-dark) .bg-slate-950\/70 {
+      background-color: var(--bg-subcard) !important;
+      border-color: var(--border-main) !important;
+    }
+
+    body:not(.theme-dark) .bg-slate-800 {
+      background-color: var(--bg-pill) !important;
+      border-color: var(--border-strong) !important;
+      color: var(--text-main) !important;
+    }
+    body:not(.theme-dark) .hover\:bg-slate-700:hover,
+    body:not(.theme-dark) .hover\:bg-slate-800\/80:hover,
+    body:not(.theme-dark) .hover\:bg-slate-800\/60:hover {
+      background-color: var(--border-main) !important;
+      color: var(--text-main) !important;
+    }
+
+    body:not(.theme-dark) .border-slate-800,
+    body:not(.theme-dark) .border-slate-800\/80,
+    body:not(.theme-dark) .border-slate-800\/90,
+    body:not(.theme-dark) .border-slate-700,
+    body:not(.theme-dark) .divide-slate-800\/70 > :not([hidden]) ~ :not([hidden]) {
+      border-color: var(--border-main) !important;
+    }
+
+    body:not(.theme-dark) .text-white,
+    body:not(.theme-dark) .text-slate-200 {
+      color: var(--text-main) !important;
+    }
+    body:not(.theme-dark) .text-slate-300 {
+      color: var(--text-secondary) !important;
+    }
+    body:not(.theme-dark) .text-slate-400,
+    body:not(.theme-dark) .text-slate-500 {
+      color: var(--text-muted) !important;
+    }
+
+    /* 保持主激活按钮为白字高对比 */
+    body:not(.theme-dark) .bg-indigo-600,
+    body:not(.theme-dark) .bg-emerald-600 {
+      color: #ffffff !important;
+    }
+
+    /* 护眼模式下的五色语义文字与卡片高亮 */
+    body:not(.theme-dark) .text-emerald-300,
+    body:not(.theme-dark) .text-emerald-300\/90,
+    body:not(.theme-dark) .text-emerald-400 {
+      color: #047857 !important;
+      font-weight: 700;
+    }
+    body:not(.theme-dark) .text-rose-300,
+    body:not(.theme-dark) .text-rose-400 {
+      color: #B91C1C !important;
+      font-weight: 700;
+    }
+    body:not(.theme-dark) .text-amber-200,
+    body:not(.theme-dark) .text-amber-300,
+    body:not(.theme-dark) .text-amber-400 {
+      color: #B45309 !important;
+      font-weight: 700;
+    }
+    body:not(.theme-dark) .text-sky-300,
+    body:not(.theme-dark) .text-sky-400 {
+      color: #0369A1 !important;
+      font-weight: 700;
+    }
+    body:not(.theme-dark) .text-indigo-300,
+    body:not(.theme-dark) .text-indigo-300\/90,
+    body:not(.theme-dark) .text-indigo-400,
+    body:not(.theme-dark) .text-purple-400 {
+      color: #4338CA !important;
+      font-weight: 700;
+    }
+
+    /* 护眼模式下的彩色状态框 */
+    body:not(.theme-dark) .bg-emerald-950\/30,
+    body:not(.theme-dark) .bg-emerald-950\/50,
+    body:not(.theme-dark) .bg-emerald-950\/60,
+    body:not(.theme-dark) .bg-emerald-500\/20 {
+      background-color: #D1FAE5 !important;
+      border-color: #6EE7B7 !important;
+      color: #065F46 !important;
+    }
+    body:not(.theme-dark) .bg-rose-950\/30,
+    body:not(.theme-dark) .bg-rose-950\/50,
+    body:not(.theme-dark) .bg-rose-500\/20 {
+      background-color: #FEE2E2 !important;
+      border-color: #FCA5A5 !important;
+      color: #991B1B !important;
+    }
+    body:not(.theme-dark) .bg-amber-950\/30,
+    body:not(.theme-dark) .bg-amber-950\/50,
+    body:not(.theme-dark) .bg-amber-500\/20 {
+      background-color: #FEF3C7 !important;
+      border-color: #FCD34D !important;
+      color: #92400E !important;
+    }
+    body:not(.theme-dark) .bg-sky-950\/30,
+    body:not(.theme-dark) .bg-sky-500\/15,
+    body:not(.theme-dark) .bg-sky-500\/20 {
+      background-color: #E0F2FE !important;
+      border-color: #7DD3FC !important;
+      color: #075985 !important;
+    }
+    body:not(.theme-dark) .bg-indigo-950\/30,
+    body:not(.theme-dark) .bg-indigo-950\/40,
+    body:not(.theme-dark) .bg-indigo-950\/60,
+    body:not(.theme-dark) .bg-indigo-500\/20 {
+      background-color: #E0E7FF !important;
+      border-color: #A5B4FC !important;
+      color: #3730A3 !important;
+    }
+
+    input[type="range"] {
+      height: 10px;
+      cursor: pointer;
+    }
+
     .no-scrollbar::-webkit-scrollbar { display: none; }
     .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
   </style>
@@ -623,30 +826,75 @@
                 </div>
               </div>
 
-              {/* PC端顶部导航切换 */}
-              <nav className="hidden md:flex items-center gap-1.5 bg-slate-900/90 p-1 rounded-xl border border-slate-800">
-                {PAGES.map(p => (
+              {/* PC端顶部导航切换与护眼/字号工具栏 */}
+              <div className="flex flex-wrap items-center gap-2">
+                <nav className="hidden md:flex items-center gap-1.5 bg-slate-900/90 p-1.5 rounded-xl border border-slate-800">
+                  {PAGES.map(p => (
+                    <button
+                      key={p.id}
+                      onClick={() => setActivePage(p.id)}
+                      className={`px-3.5 py-2 rounded-lg text-xs font-bold transition-all ${
+                        activePage === p.id
+                          ? "bg-indigo-600 text-white shadow-lg shadow-indigo-600/30"
+                          : "text-slate-400 hover:text-white hover:bg-slate-800/60"
+                      }`}
+                    >
+                      {p.short}
+                    </button>
+                  ))}
+                </nav>
+                <div className="flex flex-wrap items-center gap-1.5">
                   <button
-                    key={p.id}
-                    onClick={() => setActivePage(p.id)}
-                    className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-all ${
-                      activePage === p.id
-                        ? "bg-indigo-600 text-white shadow-lg shadow-indigo-600/30"
-                        : "text-slate-400 hover:text-white hover:bg-slate-800/60"
-                    }`}
+                    onClick={() => { document.body.classList.remove("theme-green", "theme-dark"); }}
+                    className="px-3 py-1.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-xs font-bold border border-slate-700 transition"
+                    title="暖米羊皮纸护眼配色"
                   >
-                    {p.short}
+                    🌾 暖米护眼
                   </button>
-                ))}
-              </nav>
-              <a
-                href="./guide.html"
-                target="_blank"
-                rel="noreferrer"
-                className="px-3 py-1.5 rounded-xl bg-sky-500/15 hover:bg-sky-500/25 text-sky-300 border border-sky-500/30 text-xs font-semibold transition shrink-0"
-              >
-                📖 染色版原理手册 ↗
-              </a>
+                  <button
+                    onClick={() => { document.body.classList.remove("theme-dark"); document.body.classList.add("theme-green"); }}
+                    className="px-3 py-1.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-xs font-bold border border-slate-700 transition"
+                    title="豆沙绿护眼配色"
+                  >
+                    🌿 豆沙绿
+                  </button>
+                  <button
+                    onClick={() => { document.body.classList.remove("theme-green"); document.body.classList.add("theme-dark"); }}
+                    className="px-3 py-1.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-xs font-bold border border-slate-700 transition"
+                    title="夜间深色模式"
+                  >
+                    🌙 深色
+                  </button>
+                  <button
+                    onClick={() => {
+                      const rootEl = document.documentElement;
+                      const cur = parseFloat(getComputedStyle(rootEl).getPropertyValue("--font-scale")) || 1;
+                      rootEl.style.setProperty("--font-scale", Math.max(0.75, +(cur - 0.1).toFixed(2)));
+                    }}
+                    className="px-3 py-1.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-xs font-bold border border-slate-700 transition"
+                  >
+                    A-
+                  </button>
+                  <button
+                    onClick={() => {
+                      const rootEl = document.documentElement;
+                      const cur = parseFloat(getComputedStyle(rootEl).getPropertyValue("--font-scale")) || 1;
+                      rootEl.style.setProperty("--font-scale", Math.min(1.5, +(cur + 0.1).toFixed(2)));
+                    }}
+                    className="px-3 py-1.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-xs font-bold border border-slate-700 transition"
+                  >
+                    A+
+                  </button>
+                  <a
+                    href="./guide.html"
+                    target="_blank"
+                    rel="noreferrer"
+                    className="px-3.5 py-1.5 rounded-xl bg-sky-500/15 hover:bg-sky-500/25 text-sky-300 border border-sky-500/30 text-xs font-bold transition shrink-0"
+                  >
+                    📖 染色版原理手册 ↗
+                  </a>
+                </div>
+              </div>
 
               <p className="w-full text-xs text-emerald-300/90 bg-emerald-950/30 border border-emerald-500/20 rounded-lg px-3 py-1.5" role="status">
                 ✓ {rawData.meta.data_quality_note}
