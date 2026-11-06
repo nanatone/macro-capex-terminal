@@ -227,7 +227,55 @@
     }
 
     .no-scrollbar::-webkit-scrollbar { display: none; }
-    .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+      .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+
+    /* 手机端 (<768px) 专属字体与紧凑锁定栏优化，释放 88%+ 屏幕可视阅读区 */
+    @media (max-width: 767px) {
+      .text-\[11px\] {
+        font-size: calc(13px * var(--font-scale)) !important;
+        line-height: 1.45 !important;
+      }
+      .text-xs {
+        font-size: calc(14.5px * var(--font-scale)) !important;
+        line-height: 1.55 !important;
+      }
+      .text-sm {
+        font-size: calc(16px * var(--font-scale)) !important;
+        line-height: 1.55 !important;
+      }
+      .text-base {
+        font-size: calc(17.5px * var(--font-scale)) !important;
+        line-height: 1.45 !important;
+      }
+      .text-lg {
+        font-size: calc(19px * var(--font-scale)) !important;
+        line-height: 1.4 !important;
+      }
+      .text-xl {
+        font-size: calc(21px * var(--font-scale)) !important;
+        line-height: 1.35 !important;
+      }
+      .text-2xl {
+        font-size: calc(23px * var(--font-scale)) !important;
+        line-height: 1.3 !important;
+      }
+      /* 顶部与底部固定栏在手机端保持恒定紧凑尺寸，不随正文 A+ 无限膨胀遮挡视线 */
+      .mobile-header-title {
+        font-size: 15px !important;
+        line-height: 1.25 !important;
+      }
+      .mobile-tool-btn {
+        font-size: 12px !important;
+        line-height: 1.2 !important;
+        padding: 4px 7px !important;
+        border-radius: 8px !important;
+      }
+      .mobile-nav-btn {
+        font-size: 12px !important;
+        line-height: 1.2 !important;
+        padding: 6px 2px !important;
+      }
+    }
   </style>
 </head>
 <body class="min-h-screen flex flex-col justify-between">
@@ -309,6 +357,7 @@
       const [reportMode, setReportMode] = useState("trading"); // "trading" | "wealth"
       const [simMode, setSimMode] = useState(false);
       const [copiedText, setCopiedText] = useState("");
+      const [showMobileMeta, setShowMobileMeta] = useState(false);
 
       // 实时沙盘模拟参数 (9大核心变量，与后端7维规则引擎100%对齐)
       const [simUs10y, setSimUs10y] = useState(FALLBACK_DATA.metrics.us.dgs10.value);
@@ -802,32 +851,33 @@
 
       return (
         <div
-          className="min-h-screen pb-24 md:pb-12 flex flex-col"
+          className="min-h-screen pb-16 md:pb-12 flex flex-col"
           onTouchStart={onTouchStart}
           onTouchMove={onTouchMove}
           onTouchEnd={onTouchEnd}
         >
           {/* 顶部全局状态栏 */}
-          <header className="sticky top-0 z-30 glass-card border-b border-slate-800 px-4 py-3">
-            <div className="max-w-7xl mx-auto flex flex-wrap items-center justify-between gap-2">
-              <div className="flex items-center gap-3">
+          <header className="sticky top-0 z-30 glass-card border-b border-slate-800 px-2.5 py-1.5 md:px-4 md:py-3">
+            <div className="max-w-7xl mx-auto flex flex-nowrap md:flex-wrap items-center justify-between gap-1.5 md:gap-2">
+              <div className="flex items-center gap-1.5 md:gap-3 min-w-0">
                 <div className="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-pulse" />
                 <div>
-                  <h1 className="text-base md:text-lg font-bold tracking-tight text-white flex items-center gap-2">
-                    宏观流动性与科技CapEx一手数据投研终端
-                    <span className="text-[11px] bg-indigo-500/20 text-indigo-300 border border-indigo-500/40 px-2 py-0.5 rounded-full font-mono">
+                  <h1 className="mobile-header-title text-base md:text-lg font-bold tracking-tight text-white flex items-center gap-1.5 md:gap-2 truncate">
+                    <span className="md:hidden truncate">宏观CapEx终端</span>
+                    <span className="hidden md:inline">宏观流动性与科技CapEx一手数据投研终端</span>
+                    <span className="hidden sm:inline-block text-[11px] bg-indigo-500/20 text-indigo-300 border border-indigo-500/40 px-2 py-0.5 rounded-full font-mono">
                       Pro 7-Dim
                     </span>
-                    {simMode && <span className="text-xs bg-amber-500/20 text-amber-300 border border-amber-500/40 px-2 py-0.5 rounded-full">⚡ 沙盘实时接管中</span>}
+                    {simMode && <span className="mobile-tool-btn text-xs bg-amber-500/20 text-amber-300 border border-amber-500/40 px-2 py-0.5 rounded-full shrink-0">⚡<span className="hidden md:inline"> 沙盘实时接管中</span></span>}
                   </h1>
-                  <p className="text-xs text-slate-400">
+                  <p className="hidden md:block text-xs text-slate-400">
                     更新: {rawData.meta.updated_at} | 宏观象限: <span className="text-sky-300 font-medium">{rawData.meta.market_regime}</span>
                   </p>
                 </div>
               </div>
 
               {/* PC端顶部导航切换与护眼/字号工具栏 */}
-              <div className="flex flex-wrap items-center gap-2">
+              <div className="flex flex-wrap items-center gap-1.5 md:gap-2">
                 <nav className="hidden md:flex items-center gap-1.5 bg-slate-900/90 p-1.5 rounded-xl border border-slate-800">
                   {PAGES.map(p => (
                     <button
@@ -843,35 +893,35 @@
                     </button>
                   ))}
                 </nav>
-                <div className="flex flex-wrap items-center gap-1.5">
+                <div className="flex items-center gap-1 md:gap-1.5">
                   <button
                     onClick={() => { document.body.classList.remove("theme-green", "theme-dark"); }}
-                    className="px-3 py-1.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-xs font-bold border border-slate-700 transition"
+                    className="mobile-tool-btn px-3 py-1.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-xs font-bold border border-slate-700 transition"
                     title="暖米羊皮纸护眼配色"
                   >
-                    🌾 暖米护眼
+                    <span className="md:hidden">🌾</span><span className="hidden md:inline">🌾 暖米护眼</span>
                   </button>
                   <button
                     onClick={() => { document.body.classList.remove("theme-dark"); document.body.classList.add("theme-green"); }}
-                    className="px-3 py-1.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-xs font-bold border border-slate-700 transition"
+                    className="mobile-tool-btn px-3 py-1.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-xs font-bold border border-slate-700 transition"
                     title="豆沙绿护眼配色"
                   >
-                    🌿 豆沙绿
+                    <span className="md:hidden">🌿</span><span className="hidden md:inline">🌿 豆沙绿</span>
                   </button>
                   <button
                     onClick={() => { document.body.classList.remove("theme-green"); document.body.classList.add("theme-dark"); }}
-                    className="px-3 py-1.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-xs font-bold border border-slate-700 transition"
+                    className="mobile-tool-btn px-3 py-1.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-xs font-bold border border-slate-700 transition"
                     title="夜间深色模式"
                   >
-                    🌙 深色
+                    <span className="md:hidden">🌙</span><span className="hidden md:inline">🌙 深色</span>
                   </button>
                   <button
                     onClick={() => {
                       const rootEl = document.documentElement;
                       const cur = parseFloat(getComputedStyle(rootEl).getPropertyValue("--font-scale")) || 1;
-                      rootEl.style.setProperty("--font-scale", Math.max(0.75, +(cur - 0.1).toFixed(2)));
+                      rootEl.style.setProperty("--font-scale", Math.max(0.65, +(cur - 0.1).toFixed(2)));
                     }}
-                    className="px-3 py-1.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-xs font-bold border border-slate-700 transition"
+                    className="mobile-tool-btn px-3 py-1.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-xs font-bold border border-slate-700 transition"
                   >
                     A-
                   </button>
@@ -881,7 +931,7 @@
                       const cur = parseFloat(getComputedStyle(rootEl).getPropertyValue("--font-scale")) || 1;
                       rootEl.style.setProperty("--font-scale", Math.min(1.5, +(cur + 0.1).toFixed(2)));
                     }}
-                    className="px-3 py-1.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-xs font-bold border border-slate-700 transition"
+                    className="mobile-tool-btn px-3 py-1.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-xs font-bold border border-slate-700 transition"
                   >
                     A+
                   </button>
@@ -889,23 +939,45 @@
                     href="./guide.html"
                     target="_blank"
                     rel="noreferrer"
-                    className="px-3.5 py-1.5 rounded-xl bg-sky-500/15 hover:bg-sky-500/25 text-sky-300 border border-sky-500/30 text-xs font-bold transition shrink-0"
+                    className="mobile-tool-btn px-3.5 py-1.5 rounded-xl bg-sky-500/15 hover:bg-sky-500/25 text-sky-300 border border-sky-500/30 text-xs font-bold transition shrink-0"
                   >
-                    📖 染色版原理手册 ↗
+                    <span className="md:hidden">📖手册</span><span className="hidden md:inline">📖 染色版原理手册 ↗</span>
                   </a>
                 </div>
               </div>
 
-              <p className="w-full text-xs text-emerald-300/90 bg-emerald-950/30 border border-emerald-500/20 rounded-lg px-3 py-1.5" role="status">
+              <p className="hidden md:block w-full text-xs text-emerald-300/90 bg-emerald-950/30 border border-emerald-500/20 rounded-lg px-3 py-1.5" role="status">
                 ✓ {rawData.meta.data_quality_note}
               </p>
             </div>
           </header>
 
           {/* 主体多页滑动容器 */}
-          <main className="flex-1 max-w-7xl w-full mx-auto px-4 pt-4">
+          <main className="flex-1 max-w-7xl w-full mx-auto px-3 pt-2.5 md:px-4 md:pt-4">
+            {/* 手机端非锁定随页滚动的紧凑状态条（可点击展开/收起，下滑时自动滚走不遮挡屏幕） */}
+            <div className="md:hidden mb-2.5 bg-slate-900/75 border border-slate-800/90 rounded-xl px-3 py-2">
+              <div
+                onClick={() => setShowMobileMeta(v => !v)}
+                className="flex items-center justify-between gap-2 cursor-pointer"
+              >
+                <div className="text-xs text-slate-300 truncate">
+                  <span className="text-emerald-400 font-bold">✓ 16项已核验</span>
+                  <span className="mx-1.5 text-slate-500">|</span>
+                  <span className="text-sky-300 font-medium">{rawData.meta.market_regime}</span>
+                </div>
+                <span className="text-[11px] text-indigo-400 font-semibold shrink-0">
+                  {showMobileMeta ? "收起 ▴" : "详情 ▾"}
+                </span>
+              </div>
+              {showMobileMeta && (
+                <div className="mt-2 pt-2 border-t border-slate-800/80 text-xs text-slate-400 space-y-1">
+                  <div>更新时间: {rawData.meta.updated_at}</div>
+                  <div className="text-emerald-300/90">✓ {rawData.meta.data_quality_note}</div>
+                </div>
+              )}
+            </div>
             {/* 页面进度指示条 */}
-            <div className="flex items-center justify-between mb-4 bg-slate-900/60 px-3.5 py-2 rounded-xl border border-slate-800/80">
+            <div className="flex items-center justify-between mb-2.5 md:mb-4 bg-slate-900/60 px-3 py-1.5 md:px-3.5 md:py-2 rounded-xl border border-slate-800/80">
               <div className="flex items-center gap-2">
                 <span className="text-xs font-bold text-indigo-400 uppercase tracking-wider">
                   Page {activePage + 1}/5
@@ -930,9 +1002,9 @@
 
             {/* ==================== PAGE 0: 双层决策引擎 (七维硬逻辑触发器 + 双视角动态软研报) ==================== */}
             {activePage === 0 && (
-              <div className="space-y-6">
+              <div className="space-y-3.5 md:space-y-6">
                 {/* 顶部核心哑铃配比仪表横幅 */}
-                <div className="glass-card rounded-2xl p-5 border-l-4 border-l-indigo-500">
+                <div className="glass-card rounded-2xl p-3.5 md:p-5 border-l-4 border-l-indigo-500">
                   <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
                     <div>
                       <div className="text-xs text-indigo-400 font-semibold uppercase tracking-wider mb-1">
@@ -944,7 +1016,7 @@
                         进攻端（AI算力+具身/Agent）<span className="text-indigo-400">{computedEngine.barbell_allocation.offense_total}%</span>
                       </h2>
                     </div>
-                    <div className="flex flex-wrap items-center gap-2">
+                    <div className="flex flex-wrap items-center gap-1.5 md:gap-2">
                       <button
                         onClick={() => setActivePage(3)}
                         className="px-3.5 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-xs font-medium text-slate-200 border border-slate-700 transition"
@@ -985,13 +1057,13 @@
                 </div>
 
                 {/* 第二层决策：动态双视角软研报（二级交易实战版 vs 存续期管理与渠道版） */}
-                <div className="glass-card rounded-2xl p-5">
+                <div className="glass-card rounded-2xl p-3.5 md:p-5">
                   <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-3 pb-4 border-b border-slate-800">
                     <div>
                       <span className="text-xs font-bold text-purple-400 uppercase">Layer 2 · 条件驱动动态双视角早报引擎</span>
                       <h3 className="text-base md:text-lg font-bold text-white mt-0.5">{activeReport.title}</h3>
                     </div>
-                    <div className="flex flex-wrap items-center gap-2">
+                    <div className="flex flex-wrap items-center gap-1.5 md:gap-2">
                       <div className="bg-slate-900 p-1 rounded-xl border border-slate-800 flex text-xs">
                         <button
                           onClick={() => setReportMode("trading")}
@@ -1054,7 +1126,7 @@
                 </div>
 
                 {/* 第一层决策：七维硬逻辑量化阈值触发器列表 */}
-                <div className="glass-card rounded-2xl p-5">
+                <div className="glass-card rounded-2xl p-3.5 md:p-5">
                   <div className="mb-4 flex flex-col sm:flex-row sm:items-center justify-between gap-2">
                     <div>
                       <span className="text-xs font-bold text-emerald-400 uppercase">Layer 1 · 七维硬逻辑量化阈值触发器 (Rule-Based Engine)</span>
@@ -1089,7 +1161,7 @@
 
             {/* ==================== PAGE 1: 16项中美宏观脉冲与流动性/利差拆解 ==================== */}
             {activePage === 1 && (
-              <div className="space-y-6">
+              <div className="space-y-3.5 md:space-y-6">
                 {/* 顶部两大核心传导公式实时拆解卡片 */}
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
                   <div className="bg-sky-950/30 border border-sky-500/30 rounded-2xl p-4">
@@ -1121,7 +1193,7 @@
 
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                   {/* 美国分母端流动性锚 (9项) */}
-                  <div className="glass-card rounded-2xl p-5">
+                  <div className="glass-card rounded-2xl p-3.5 md:p-5">
                     <div className="flex items-center justify-between pb-3 mb-4 border-b border-slate-800">
                       <div>
                         <span className="text-xs font-bold text-sky-400 uppercase">US Macro & Fed Liquidity (9 Series)</span>
@@ -1179,7 +1251,7 @@
                   </div>
 
                   {/* 中国宽货币与宽信用传导 (7项) */}
-                  <div className="glass-card rounded-2xl p-5">
+                  <div className="glass-card rounded-2xl p-3.5 md:p-5">
                     <div className="flex items-center justify-between pb-3 mb-4 border-b border-slate-800">
                       <div>
                         <span className="text-xs font-bold text-emerald-400 uppercase">CN Macro, Liquidity Tiering & ERP (7 Series)</span>
@@ -1259,7 +1331,7 @@
                   </div>
                 </div>
 
-                <div className="glass-card rounded-2xl p-5">
+                <div className="glass-card rounded-2xl p-3.5 md:p-5">
                   <div className="mb-4">
                     <span className="text-xs font-bold text-indigo-400 uppercase">Tech CapEx Verification Chain</span>
                     <h3 className="text-base md:text-lg font-bold text-white">
@@ -1327,12 +1399,12 @@
 
             {/* ==================== PAGE 3: 哑铃策略实时沙盘推演 ==================== */}
             {activePage === 3 && (
-              <div className="glass-card rounded-2xl p-5 space-y-5">
+              <div className="glass-card rounded-2xl p-3.5 md:p-5 space-y-3.5 md:space-y-5">
                 <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-3 border-b border-slate-800 pb-4">
                   <div>
                     <span className="text-xs font-bold text-amber-400 uppercase">Interactive 9-Factor Macro Stress Test</span>
                     <h3 className="text-base md:text-lg font-bold text-white">哑铃型配置沙盘：9大核心变量实时重算七维规则与双视角话术</h3>
-                    <p className="text-xs text-slate-400">
+                    <p className="hidden md:block text-xs text-slate-400">
                       前后端规则引擎已实现 100% 逻辑同步。您可点击下方经典压力测试情景，或手动拖动滑块模拟盘中突发事件。
                     </p>
                   </div>
@@ -1351,7 +1423,7 @@
                 </div>
 
                 {/* 一键预设宏观压力测试情景按钮 */}
-                <div className="flex flex-wrap items-center gap-2">
+                <div className="flex flex-wrap items-center gap-1.5 md:gap-2">
                   <span className="text-xs text-slate-400 font-semibold mr-1">一键加载经典压力情景：</span>
                   <button
                     onClick={() => applyScenario("us_liquidity_crunch")}
@@ -1567,9 +1639,9 @@
 
             {/* ==================== PAGE 4: 股债传导百科、六大误区纠偏与一手权威信源 ==================== */}
             {activePage === 4 && (
-              <div className="space-y-6">
+              <div className="space-y-3.5 md:space-y-6">
                 {/* 模块1：全球宏观政策与股债资产表现传导对照矩阵 */}
-                <div className="glass-card rounded-2xl p-5">
+                <div className="glass-card rounded-2xl p-3.5 md:p-5">
                   <span className="text-xs font-bold text-indigo-400 uppercase">Macro-to-Asset Transmission Matrix</span>
                   <h3 className="text-base md:text-lg font-bold text-white mt-0.5 mb-3">
                     全球宏观政策情景与股债资产定价传导对照表（DCF 分子/分母 + 机构行为）
@@ -1601,7 +1673,7 @@
                 </div>
 
                 {/* 模块2：六大常见投研认知局限与实战纠偏 */}
-                <div className="glass-card rounded-2xl p-5">
+                <div className="glass-card rounded-2xl p-3.5 md:p-5">
                   <span className="text-xs font-bold text-amber-400 uppercase">Institutional Reality Check · 6 Core Pitfalls</span>
                   <h3 className="text-base md:text-lg font-bold text-white mt-0.5 mb-3">
                     摆脱“看对新闻却亏钱”：二级实战与理财渠道必须规避的六大线性传导误区
@@ -1622,7 +1694,7 @@
                 </div>
 
                 {/* 模块3：一手权威信源直达 */}
-                <div className="glass-card rounded-2xl p-5">
+                <div className="glass-card rounded-2xl p-3.5 md:p-5">
                   <span className="text-xs font-bold text-sky-400 uppercase">First-Hand Regulatory & High-Frequency Sources</span>
                   <h3 className="text-base md:text-lg font-bold text-white mt-0.5 mb-4">全球一手监管披露与高频产业数据库直达 SOP</h3>
                   <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3">
@@ -1657,13 +1729,13 @@
           </main>
 
           {/* 移动端底部固定毛玻璃导航栏 */}
-          <nav className="md:hidden fixed bottom-0 left-0 right-0 z-40 glass-card border-t border-slate-800 px-2 py-2">
+          <nav className="md:hidden fixed bottom-0 left-0 right-0 z-40 glass-card border-t border-slate-800 px-1.5 py-1">
             <div className="grid grid-cols-5 gap-1">
               {PAGES.map(p => (
                 <button
                   key={p.id}
                   onClick={() => setActivePage(p.id)}
-                  className={`py-2 rounded-xl text-[11px] font-semibold text-center transition ${
+                  className={`mobile-nav-btn rounded-lg font-semibold text-center transition truncate ${
                     activePage === p.id
                       ? "bg-indigo-600 text-white shadow"
                       : "text-slate-400"
