@@ -1,6 +1,6 @@
 {
   "meta": {
-    "updated_at": "2026-11-15 12:48:15 CST",
+    "updated_at": "2026-11-16 12:45:05 CST",
     "data_source": "FRED API (9项) + ChinaMoney/AkShare/Eastmoney/Legu (7项); CapEx Framework",
     "market_regime": "海外实际利率2.86% + 国内低利率资产荒(中债1.6%) · 哑铃 65:35（含缓存指标）",
     "regime_code": "PRO_SEVEN_DIM_BARBELL",
