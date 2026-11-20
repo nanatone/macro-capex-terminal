@@ -11,6 +11,7 @@ on:
     paths:
       - 'index.html'
       - 'guide.html'
+      - 'data/macro_daily.json'
       - '.github/workflows/daily_macro_update.yml'
 
 permissions:
@@ -46,6 +47,7 @@ jobs:
         if: github.event_name != 'push'
         env:
           FRED_API_KEY: ${{ secrets.FRED_API_KEY }}
+          TUSHARE_TOKEN: ${{ secrets.TUSHARE_TOKEN }}
           WEBHOOK_URL: ${{ secrets.WEBHOOK_URL }}
         run: python scripts/update_macro.py
       - name: Commit updated data

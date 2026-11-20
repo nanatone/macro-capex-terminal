@@ -67,6 +67,30 @@ class MacroDataTests(unittest.TestCase):
         self.assertIn("边际回落", reports["trading_perspective"]["transmission_logic"])
         self.assertIn("R007-DR007", reports["wealth_perspective"]["core_marginal_change"])
 
+    def test_eight_dim_commodity_grading_and_five_bucket_barbell(self):
+        us = copy.deepcopy(macro.DEFAULT_US_METRICS)
+        cn = copy.deepcopy(macro.DEFAULT_CN_METRICS)
+        cross = copy.deepcopy(macro.DEFAULT_CROSS_ASSET)
+        commodities = macro.fetch_commodities_data(copy.deepcopy(macro.DEFAULT_COMMODITIES), dfii10=us["dfii10"]["value"])
+        c_map = {c["id"]: c for c in commodities}
+        self.assertEqual(c_map["copper"]["fundamentalGrade"], "STRONG_BULL")
+        self.assertEqual(c_map["alumina"]["fundamentalGrade"], "BACK_WATCH")
+        self.assertEqual(c_map["tungsten"]["fundamentalGrade"], "CACHE_WATCH")
+        self.assertEqual(c_map["rebar"]["fundamentalGrade"], "CONTANGO_BEAR")
+        self.assertEqual(c_map["gold"]["fundamentalGrade"], "PRECIOUS_HEDGE")
+
+        engine_out = macro.run_hard_rule_engine(us, cn, cross_asset=cross, commodities=commodities)
+        self.assertEqual(len(engine_out["hard_rules"]), 8)
+        self.assertEqual(len(engine_out["barbell_allocation"]["breakdown"]), 5)
+        total_w = sum(b["weight"] for b in engine_out["barbell_allocation"]["breakdown"])
+        self.assertEqual(total_w, 100)
+
+        pool = macro.enrich_equity_pool(copy.deepcopy(macro.DEFAULT_EQUITY_POOL), commodities, defense_weight=65)
+        p_map = {s["code"]: s for s in pool}
+        self.assertEqual(p_map["601899.SH"]["resonanceGrade"], "STRONG_RESONANCE")
+        self.assertEqual(p_map["000807.SZ"]["resonanceGrade"], "COST_SQUEEZE_WATCH")
+        self.assertEqual(p_map["920807.BJ"]["resonanceGrade"], "CACHE_WATCH")
+
 
 if __name__ == "__main__":
     unittest.main()
