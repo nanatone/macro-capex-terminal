@@ -311,7 +311,7 @@
     const { useState, useEffect, useMemo, useRef } = React;
 
     // 默认内置完整一体化实盘快照（宏观16项 + 跨资产4项 + 大宗期现6品种 + 哑铃映射池12标的 + 科技CapEx三阶段）
-    const FALLBACK_DATA = {"meta":{"updated_at":"2026-11-20 13:55:00 CST","equity_quote_date":"2026-11-19 (T-1已收盘前复权)","benchmark_note":"沪深300 (000300.SH): 3984.84 (+0.03%)","data_source":"FRED API + 中国货币网(11:30定盘) + 央行10月金融统计 + 上期所11-19仓单与日行情原表 + 沪深北12只个股T-1已完成日线","market_regime":"海外实际利率2.89% + 国内10月M1-M2改善(-2.7%) + 铜仓单连降 · 哑铃 55:45","regime_code":"PRO_EIGHT_DIM_UNIFIED","data_quality_note":"中美16项宏观(含11-20货币网定盘与10月央行M1/M2)、上期所11-19仓单原表及12只A股T-1已收盘日线均已核验并逐项标注数据日期。"},"metrics":{"us":{"dgs10":{"name":"10Y 美债名义收益率","code":"DGS10","value":5.1,"unit":"%","freq":"daily","window_label":"近3年历史分位数","chg_1d_bp":-2,"chg_5d_bp":22,"percentile_3y":97,"threshold_warn":4.35,"role":"DCF分母总锚：名义利率 = 实际利率(DFII10) + 通胀预期(T10YIE)","url":"https://fred.stlouisfed.org/series/DGS10","data_status":"updated","observation_date":"2026-11-17","trend_10d":[4.9,4.92,4.89,4.87,4.88,4.94,4.99,5.05,5.12,5.1],"trend_dates":["11-04","11-05","11-06","11-09","11-10","11-11","11-12","11-13","11-16","11-17"]},"dfii10":{"name":"10Y TIPS 实际利率","code":"DFII10","value":2.89,"unit":"%","freq":"daily","window_label":"近3年历史分位数","chg_1d_bp":-3,"chg_5d_bp":23,"percentile_3y":99,"threshold_warn":2.2,"role":"DCF真实分母端：剔除通胀后的全球科技成长股真实无风险贴现率","url":"https://fred.stlouisfed.org/series/DFII10","data_status":"updated","observation_date":"2026-11-17","trend_10d":[2.64,2.65,2.63,2.64,2.66,2.71,2.77,2.83,2.92,2.89],"trend_dates":["11-04","11-05","11-06","11-09","11-10","11-11","11-12","11-13","11-16","11-17"]},"t10yie":{"name":"10Y 盈亏平衡通胀预期","code":"T10YIE","value":2.19,"unit":"%","freq":"daily","window_label":"近3年历史分位数","chg_1d_bp":-2,"chg_5d_bp":-1,"percentile_3y":7,"threshold_warn":2.45,"role":"DCF分子端映射：隐含通胀与增长预期（急跌<1.9%预示衰退交易）","url":"https://fred.stlouisfed.org/series/T10YIE","data_status":"updated","observation_date":"2026-11-18","trend_10d":[2.24,2.23,2.22,2.21,2.2,2.21,2.2,2.22,2.21,2.19],"trend_dates":["11-05","11-06","11-09","11-10","11-11","11-12","11-13","11-16","11-17","11-18"]},"t10y2y":{"name":"10Y-2Y 美债期限利差","code":"T10Y2Y","value":0.27,"unit":"%","freq":"daily","window_label":"近3年历史分位数","chg_1d_bp":-3,"chg_5d_bp":2,"percentile_3y":40,"threshold_warn":0.5,"role":"收益率曲线形态与长债期限溢价(Term Premium)周期","url":"https://fred.stlouisfed.org/series/T10Y2Y","data_status":"updated","observation_date":"2026-11-18","trend_10d":[0.38,0.35,0.31,0.28,0.25,0.26,0.28,0.31,0.3,0.27],"trend_dates":["11-05","11-06","11-09","11-10","11-11","11-12","11-13","11-16","11-17","11-18"]},"effr":{"name":"联邦基金有效利率","code":"EFFR","value":3.88,"unit":"%","freq":"daily","window_label":"近3年历史分位数","chg_1d_bp":0,"chg_5d_bp":0,"percentile_3y":27,"threshold_warn":5,"role":"美联储短端政策利率基准与货币市场资金成本锚","url":"https://fred.stlouisfed.org/series/EFFR","data_status":"updated","observation_date":"2026-11-17","trend_10d":[3.88,3.88,3.88,3.88,3.88,3.88,3.88,3.88,3.88,3.88],"trend_dates":["11-04","11-05","11-06","11-09","11-10","11-11","11-12","11-13","11-16","11-17"]},"rrp":{"name":"美联储隔夜逆回购 (ON RRP)","code":"RRPONTSYD","value":0.33,"unit":"十亿美元","freq":"daily","window_label":"近3年历史分位数","chg_1d_bp":0,"chg_5d_bp":0.2,"percentile_3y":6,"threshold_warn":200,"role":"美元非银超额流动性第一道缓冲池（耗尽后QT直接抽离银行准备金）","url":"https://fred.stlouisfed.org/series/RRPONTSYD","data_status":"updated","observation_date":"2026-11-18","trend_10d":[0.12,0.14,0.11,0.13,0.13,0.18,0.24,0.29,0.33,0.33],"trend_dates":["11-05","11-06","11-09","11-10","11-11","11-12","11-13","11-16","11-17","11-18"]},"tga":{"name":"美国财政部一般账户 (TGA)","code":"WTREGEN","value":914.37,"unit":"十亿美元","freq":"weekly","window_label":"近3年历史分位数(周频)","chg_1d_bp":-42.8,"chg_5d_bp":34.1,"percentile_3y":86,"threshold_warn":800,"role":"财政发债抽水(>800B显著收紧市场准备金)与财政支出投放账户","url":"https://fred.stlouisfed.org/series/WTREGEN","data_status":"updated","observation_date":"2026-11-11","trend_10d":[845.2,862,871.5,880.3,912.6,934,977.1,999.73,957.17,914.37],"trend_dates":["09-09","09-16","09-23","09-30","10-07","10-14","10-21","10-28","11-04","11-11"]},"wresbal":{"name":"美联储商业银行准备金余额","code":"WRESBAL","value":2960.6,"unit":"十亿美元","freq":"weekly","window_label":"近3年历史分位数(周频)","chg_1d_bp":30.5,"chg_5d_bp":-69.1,"percentile_3y":17,"threshold_warn":3000,"role":"美元流动性最终底线（跌破3000B触发华尔街回购市场资金紧缺预警）","url":"https://fred.stlouisfed.org/series/WRESBAL","data_status":"updated","observation_date":"2026-11-11","trend_10d":[3115,3082.4,3055.8,3041.2,3029.7,2988.5,2962.6,2893.77,2930.09,2960.6],"trend_dates":["09-09","09-16","09-23","09-30","10-07","10-14","10-21","10-28","11-04","11-11"]},"hy_oas":{"name":"美国高收益债利差 (HY OAS)","code":"BAMLH0A0HYM2","value":3.43,"unit":"%","freq":"daily","window_label":"近3年历史分位数","chg_1d_bp":9,"chg_5d_bp":13,"percentile_3y":88,"threshold_warn":4,"role":"跨市场信用风险溢价与全球套息交易(Carry Trade)去杠杆温度计","url":"https://fred.stlouisfed.org/series/BAMLH0A0HYM2","data_status":"updated","observation_date":"2026-11-17","trend_10d":[3.32,3.3,3.28,3.29,3.3,3.32,3.35,3.33,3.34,3.43],"trend_dates":["11-04","11-05","11-06","11-09","11-10","11-11","11-12","11-13","11-16","11-17"]}},"cn":{"cn10y":{"name":"10Y 中债国债收益率","code":"CN10Y","value":1.58,"unit":"%","freq":"daily","window_label":"近3年历史分位数","chg_1d_bp":-1.4,"chg_5d_bp":-2.5,"percentile_3y":1,"threshold_warn":2.15,"role":"DCF分母端：国内无风险利率核心锚与低利率资产荒温度计","url":"https://yield.chinabond.com.cn/","data_status":"updated","observation_date":"2026-11-19","trend_10d":[1.61,1.6,1.61,1.6,1.6,1.6,1.59,1.59,1.59,1.58],"trend_dates":["11-06","11-09","11-10","11-11","11-12","11-13","11-16","11-17","11-18","11-19"]},"cn30y":{"name":"30Y 超长国债收益率","code":"CN30Y","value":2.04,"unit":"%","freq":"daily","window_label":"近3年历史分位数","chg_1d_bp":-1.4,"chg_5d_bp":-1,"percentile_3y":22,"threshold_warn":2.35,"role":"险资长久期配置锚与超长期特别国债供给冲击敏感度指标","url":"https://yield.chinabond.com.cn/","data_status":"updated","observation_date":"2026-11-19","trend_10d":[2.04,2.04,2.05,2.05,2.05,2.05,2.05,2.05,2.05,2.04],"trend_dates":["11-06","11-09","11-10","11-11","11-12","11-13","11-16","11-17","11-18","11-19"]},"dr007":{"name":"银行间7天回购定盘利率 (FDR007/DR007)","code":"FDR007","value":1.37,"unit":"%","freq":"daily","window_label":"近1年分位数(外汇交易中心11:30定盘)","chg_1d_bp":1,"chg_5d_bp":-2,"percentile_3y":32,"threshold_warn":1.8,"role":"中国外汇交易中心存款类机构7天质押式回购定盘基准（11:30发布，08:00晨报使用前一日值）","url":"https://www.chinamoney.org.cn/chinese/bkfrr/","data_status":"updated","observation_date":"2026-11-20 (11:30定盘 / 前日1.36%)","trend_10d":[1.36,1.37,1.39,1.4,1.39,1.38,1.38,1.38,1.36,1.37],"trend_dates":["11-09","11-10","11-11","11-12","11-13","11-16","11-17","11-18","11-19","11-20"]},"r007_dr007_spread":{"name":"R007 - DR007 流动性分层利差","code":"FR007-FDR007","value":3,"unit":"bp","freq":"daily","window_label":"近1年分位数(外汇交易中心11:30定盘)","chg_1d_bp":-1,"chg_5d_bp":0,"percentile_3y":27,"threshold_warn":20,"role":"非银机构融资成本与资金分层监控（走阔提示收紧风险预算；确认理财赎回需申赎规模证据）","url":"https://www.chinamoney.org.cn/chinese/bkfrr/","data_status":"updated","observation_date":"2026-11-20 (FR007 1.40% - FDR007 1.37%)","trend_10d":[5,4,3,2,3,3.5,3.5,3.5,4,3],"trend_dates":["11-09","11-10","11-11","11-12","11-13","11-16","11-17","11-18","11-19","11-20"]},"us_cn_spread":{"name":"中美 10Y 国债利差 (中-美)","code":"CN10Y-US10Y","value":-3.52,"unit":"%","freq":"daily","window_label":"近3年历史分位数","chg_1d_bp":0.6,"chg_5d_bp":-18.4,"percentile_3y":1,"threshold_warn":-2.2,"role":"跨境资本流动、人民币汇率稳汇率约束与港股离岸市场分母端锚","url":"https://yield.chinabond.com.cn/","data_status":"updated","observation_date":"2026-11-19","trend_10d":[-3.28,-3.27,-3.27,-3.34,-3.39,-3.45,-3.53,-3.51,-3.48,-3.52],"trend_dates":["11-06","11-09","11-10","11-11","11-12","11-13","11-16","11-17","11-18","11-19"]},"m1_m2_diff":{"name":"M1 - M2 同比剪刀差 (新口径)","code":"M1-M2","value":-2.7,"unit":"%","freq":"monthly","window_label":"近3年(36月)分位数","chg_1d_bp":1.3,"chg_5d_bp":1.3,"percentile_3y":72,"threshold_warn":-3.5,"role":"DCF分子端：央行10月金融统计M1同比+4.4%、M2同比+7.1%，剪刀差明显收窄+1.3pct","url":"http://www.pbc.gov.cn/diaochatongjisi/116219/index.html","data_status":"updated","observation_date":"2026-10 (月度·11月中旬发布)","trend_10d":[-4.6,-4.4,-4.2,-4.1,-3.9,-3.7,-3.5,-3.4,-4,-2.7],"trend_dates":["01月","02月","03月","04月","05月","06月","07月","08月","09月","10月"]},"erp_csi300":{"name":"沪深300 股债风险溢价 (ERP)","code":"CSI300_ERP","value":6.31,"unit":"%","freq":"daily","window_label":"近3年历史分位数","chg_1d_bp":2,"chg_5d_bp":0,"percentile_3y":49,"threshold_warn":5.8,"role":"A股股债性价比标尺（>=5.8%且处高分位代表权益向下空间封锁）","url":"https://www.csindex.com.cn/","data_status":"updated","observation_date":"2026-11-19","trend_10d":[6.27,6.3,6.31,6.28,6.29,6.32,6.31,6.3,6.29,6.31],"trend_dates":["11-06","11-09","11-10","11-11","11-12","11-13","11-16","11-17","11-18","11-19"]}},"cross_asset":{"dxy":{"id":"dxy","name":"美元指数 (DXY)","code":"ICE: DXY","value":103.41,"unit":"","change":"+0.23%","trend":"up","signal":"美元偏强震荡 · 留意工业品计价弹性","spark":[101.85,102.1,101.92,101.59,102.29,101.66,102.25,102.91,103.17,103.41],"role":"全球大宗商品计价货币总锚与非美市场跨境资本流动压力表","data_status":"updated","observation_date":"2026-11-18","trend_10d":[101.85,102.1,101.92,101.59,102.29,101.66,102.25,102.91,103.17,103.41],"trend_dates":["11-05","11-06","11-09","11-10","11-11","11-12","11-13","11-16","11-17","11-18"]},"cop_gold":{"id":"cop_gold","name":"铜金比 (Copper/Gold)","code":"COMEX HG / GC","value":3.49,"unit":"","change":"-0.03","trend":"down","signal":"避险强于顺周期 · 紧盯电网/AIDC拉动","spark":[3.31,3.33,3.35,3.34,3.38,3.39,3.42,3.46,3.52,3.49],"role":"全球制造业景气度、特高压电网CapEx与AIDC数据中心用铜密度领先风向标","data_status":"updated","observation_date":"2026-11-18","trend_10d":[3.31,3.33,3.35,3.34,3.38,3.39,3.42,3.46,3.52,3.49],"trend_dates":["11-05","11-06","11-09","11-10","11-11","11-12","11-13","11-16","11-17","11-18"]},"gold_oil":{"id":"gold_oil","name":"金油比 (Gold/WTI)","code":"XAU / WTI","value":43.7,"unit":"x","change":"-0.1x","trend":"down","signal":"工业通胀边际修复","spark":[45.6,45.1,44.8,44.9,45.2,48,46.7,46.2,43.8,43.7],"role":"衡量货币避险溢价 vs 工业实体能源需求与再通胀交易的温度计","data_status":"updated","observation_date":"2026-11-18","trend_10d":[45.6,45.1,44.8,44.9,45.2,48,46.7,46.2,43.8,43.7],"trend_dates":["11-05","11-06","11-09","11-10","11-11","11-12","11-13","11-16","11-17","11-18"]},"fed_net_liq":{"id":"fed_net_liq","name":"美联储净流动性 (Net Liquidity)","code":"WALCL-TGA-ONRRP","value":5.79,"unit":"万亿美元","change":"+40B (周)","trend":"up","signal":"TGA边际释放 · 需盯紧准备金3000B底线","spark":[5.94,5.91,5.89,5.86,5.83,5.87,5.87,5.8,5.75,5.79],"role":"美联储总资产剔除财政部TGA与ON RRP后的广义美元净流动性投放规模","data_status":"updated","observation_date":"2026-11-18","trend_10d":[5.94,5.91,5.89,5.86,5.83,5.87,5.87,5.8,5.75,5.79],"trend_dates":["09-16","09-23","09-30","10-07","10-14","10-21","10-28","11-04","11-11","11-18"]}}},"decision_engine":{"hard_rules":[{"id":"RULE_US_RATE_SLOPE","dimension":"① 海外分母端与实际利率拆解","status":"warning","status_label":"实际利率承压","trigger_condition":"10Y美债>=4.35% 或 实际利率>=2.20% 或 5日>=+12bp","current_reading":"名义 5.1% (5日+22.0bp) | 实际 2.89% + 通胀 2.19%","action_instruction":"10Y美债报5.1%（近5日上冲+22.0bp），拆解看10Y TIPS实际利率高达2.89%、通胀预期2.19%。高实际利率直接抬升DCF无风险分母，压制远期现金流占比高但无当期业绩的纯概念股；海外债久期宜控制在短端。"},{"id":"RULE_US_LIQUIDITY_BUFFER","dimension":"② 美元狭义流动性与准备金底线","status":"danger","status_label":"准备金逼近临界","trigger_condition":"(RRP<200B且TGA>750B) 或 准备金<3000B 或 HY利差>=4%","current_reading":"准备金 2960.6B | RRP 0.33B | TGA 914.37B | HY利差 3.43%","action_instruction":"ON RRP蓄水池仅剩0.33B（近乎耗尽），叠加财政部TGA高达914.37B抽水，直接导致美联储商业银行准备金降至2960.6B（低于3000B充裕线），高收益债利差报3.43%。警惕华尔街回购利率跳升与海外高Beta资产去杠杆波动。"},{"id":"RULE_CROSS_BORDER_FX","dimension":"③ 中美利差与跨境汇率约束","status":"warning","status_label":"深度倒挂约束","trigger_condition":"中美10Y利差 <= -2.20% 触发外部稳汇率与离岸分母约束","current_reading":"中美利差 -3.52% (中债1.58% - 美债5.1%)","action_instruction":"中美10Y利差深度倒挂至-3.52%（中债1.58% vs 美债5.1%），外部稳汇率（USD/CNH）约束国内央行大幅降息空间，同时压制离岸港股分母端外资回流；权益配置宜偏重内需自主可控、上游紧缺资源与A股红利底仓。"},{"id":"RULE_CN_ASSET_FAMINE","dimension":"④ 国内宽货币与资产荒象限","status":"bullish","status_label":"资产荒延续","trigger_condition":"10Y中债<=2.18% 且 DR007<=1.80% 且 5日变动<8bp","current_reading":"10Y中债 1.58% (1%分位) | 30Y 2.04% | DR007 1.37%","action_instruction":"银行间FDR007报1.37%维持低位，注意10Y中债已处1.58%（近3年1%极低分位），30Y超长债(2.04%)赔率空间受限且对特别国债供给敏感，建议以1-3年高等级信用债吃票息+央国企红利低波替代盲目拉长久期。"},{"id":"RULE_CN_WEALTH_REDEMPTION","dimension":"⑤ 理财赎回负反馈与流动性分层","status":"bullish","status_label":"非银无赎回压力","trigger_condition":"R007-DR007分层利差>=25bp 或 (长债5日>=10bp且利差>=15bp)","current_reading":"R007-DR007利差 3.0bp | 10Y中债5日 -2.5bp","action_instruction":"R007-DR007分层利差仅3.0bp且10Y中债5日变动-2.5bp，银行向非银流动性传导顺畅，理财与债基规模稳定，信用债票息套息环境安全。"},{"id":"RULE_CN_CREDIT_PULSE","dimension":"⑥ 国内分子端宽信用与M1活化","status":"bullish","status_label":"宽信用主动修复","trigger_condition":"M1-M2>-3.5% 或 (M1-M2>-4.8%且月环比>0) 确认宽信用拐点","current_reading":"M1-M2剪刀差 -2.7% (月环比 +1.3pct | 2026-10 (月度·11月中旬发布))","action_instruction":"M1-M2剪刀差回升至-2.7%（环比+1.3pct），企业活期存款与财政实物工作量同步活化，建议由纯红利防御向顺周期工业金属、核心资产及弹性标的切换。"},{"id":"RULE_EQUITY_ERP_VALUATION","dimension":"⑦ A股股债性价比 (沪深300 ERP)","status":"bullish","status_label":"高性价比赔率区","trigger_condition":"沪深300 ERP >= 5.80% 触发高性价比配置信号","current_reading":"ERP 6.31% (近3年 49%分位 | 1日 +2.0bp)","action_instruction":"沪深300 ERP达6.31%（近3年49%分位（因包含2024年极端底部样本，但绝对溢价已显著高于5.8%配置线）），10Y国债1.58%低利率推升权益隐含风险溢价，指数向下空间受封锁，宜通过哑铃进攻端布局低库存+Back紧缺资源品与CapEx订单验证的硬科技板块。"},{"id":"RULE_COMMODITY_BASIS_RESONANCE","dimension":"⑧ 大宗期现结构与跨资产比价共振","status":"neutral","status_label":"期现结构分化","trigger_condition":"显性库存5年分位<25% 且 现货升水(Back) 触发资源进攻；Contango且库存>=35% 触发伪红利排雷","current_reading":"强Back低库存: 阴极铜 | Contango排雷: 螺纹钢 | DXY 103.41","action_instruction":"大宗商品期现结构呈品种间分化，严格遵循“只做低库存+Back升水龙头、规避Contango累库伪红利”原则。"}],"barbell_allocation":{"defense_total":55,"offense_total":45,"strong_commodities":["阴极铜"],"contango_commodities":["螺纹钢"],"breakdown":[{"bucket":"防御端：中短久期利率债/高等级信用债","group_key":"defense_bond","weight":30,"tag":"流动性与票息底仓","rationale":"FDR007报1.37%、R007-DR007利差3.0bp保障稳健套息，规避30Y超长债(2.04%)在极低利率分位下的供给与止盈波动。"},{"bucket":"防御端：央国企高股息真红利低波","group_key":"defense_dividend","weight":25,"tag":"险资OCI类债替代锚","rationale":"10Y国债1.58%（1%分位）背景下，自由现金流充裕的水电/运营商/国有大行具备险资OCI账户强力承接（已定向剔除【螺纹钢】等Contango现货贴水累库伪红利）。"},{"bucket":"进攻端：全球AI算力基建与电力/铜连接卡点","group_key":"offense_tech_capex","weight":20,"tag":"CapEx一阶与二阶导验证","rationale":"紧盯台积电月度营收、韩国HBM出口与北美云厂商CapEx同比增速斜率，精选1.6T光模块、液冷、AIDC电源HVDC及国产算力芯片放量标的。"},{"bucket":"进攻端：强Back+低库存紧缺大宗资源品","group_key":"offense_commodity","weight":15,"tag":"期现逼仓与供需缺口","rationale":"当前锁定【阴极铜】（库存<25%分位+现货Back升水）高自给率矿端龙头，叠加黄金央行购金底仓，对冲海外高通胀黏性与AIDC电力/铜铝实物消耗。"},{"bucket":"进攻端：AI Agent商业化与具身智能核心部件","group_key":"offense_tech_agent","weight":10,"tag":"ROI闭环与0到1期权","rationale":"围绕推理侧Scaling Law降本后的企业级Agent软件RPO加速，以及人形机器人行星滚柱丝杠/六维力传感器正式定点公告逢低卡位。"}]},"soft_reports":{"trading_perspective":{"title":"【二级市场实战晨报】美债5.1%(实际2.89%)、中债1.58%，执行“55%红利短债 + 45%紧缺资源与CapEx硬科技”五篮子哑铃配置","core_marginal_change":"海外10Y美债报5.1%（5日+22.0bp，97%分位；拆解为10Y实际利率2.89% + 通胀预期2.19%），ON RRP报0.33B、TGA报914.37B、商业银行准备金2960.6B，高收益债利差3.43%；国内10Y中债报1.58%（1%分位）、30Y报2.04%，FDR007(DR007)报1.37%，R007-DR007分层利差3.0bp，中美10Y利差-3.52%，沪深300 ERP达6.31%（49%分位）；跨资产DXY报103.41、铜金比3.49、金油比43.7x，大宗期现中【阴极铜】处于低库存(<25%分位)+现货Back升水强共振。","transmission_logic":"1. 海外分母端与流动性：10Y美债报5.1%（5日变动+22.0bp），实际利率达2.89%，叠加银行准备金2960.6B与HY利差3.43%，海外分母端贴现率上冲对高估值纯概念成长股形成直接压制；\n2. 国内宽货币与分子端传导：FDR007报1.37%（R007-DR007利差3.0bp），同时M1-M2剪刀差回升至-2.7%（月环比+1.3pct），企业活期资金活化出现积极拐点，资金正逐步从纯债防御向顺周期紧缺资源与高景气成长扩散；\n3. 大宗期现库存与科技CapEx双轮验证：沪深300 ERP处6.31%（49%分位）封锁指数下行空间；实物资产端【阴极铜】呈显性低库存+现货升水(Back)逼仓结构，且直接受益于AIDC数据中心供电/电网CapEx与上游配额刚性约束；科技端聚焦台积电月度营收与云厂商CapEx增速斜率未减、且下游RPO能覆盖折旧的算力卡点与具身智能定点环节。","action_instructions":["【五篮子哑铃配比】今日量化规则锁定 防守端 55%（中短债30% + 央企真红利25%）: 进攻端 45%（AI算力基建20% + 低库存Back紧缺资源15% + Agent/具身智能10%）。","【大宗期现与科技选股过滤】资源端优先配置【阴极铜】对应的高自给率上游矿端龙头及央行购金托底的黄金矿股；科技端精选1.6T光模块、液冷、AIDC电源及披露正式定点通知书的丝杠/传感器标的。","【债市久期与伪红利排雷】10Y国债处1.58%极低分位，R007-DR007利差3.0bp（非银无赎回压力），固收底仓以1-3年高等级信用债/存单吃票息替代30Y超长债博弈；红利端严格剔除【螺纹钢】等处于Contango现货贴水且高库存累库的周期伪红利，聚焦水电、运营商与国有大行。"]},"wealth_perspective":{"title":"【存续期管理与渠道陪伴】10Y中债1.58%、R-DR分层利差3.0bp环境下，固收/固收+归因与分行沟通话术","core_marginal_change":"国内银行间狭义资金面平稳（FDR007报1.37%，R007-DR007流动性分层利差3.0bp），10Y国债报1.58%（近3年1%分位）、30Y国债报2.04%；海外10Y美债报5.1%（实际利率2.89%，5日变动+22.0bp），A股沪深300股债风险溢价（ERP）处于6.31%（近3年49%分位）。","transmission_logic":"1. 【纯债与理财存续期归因】：决定理财净值回撤的核心并非单看央票利率，而是非银资金分层（R007-DR007当前3.0bp）与长债供给冲击。当前短端票息底仓稳固，而10Y/30Y长债在1%极低收益率分位下赔率偏薄、对超长期特别国债供给敏感；\n2. 【固收+与含权产品归因】：中美利差倒挂(-3.52%)与海外高实际利率(2.89%)压制纯概念估值，但国内沪深300 ERP(6.31%)处高性价比区，通过“55%短债/央企真红利安全垫 + 45%紧缺实物资源/硬科技CapEx”的五篮子哑铃结构，可有效平滑单一资产波动。","action_instructions":["【纯固收/短债客户安抚话术】：“当前央行呵护狭义流动性态度明确（FDR007仅1.37%，R007-DR007非银分层利差仅3.0bp，无机构赎回负反馈压力）。近期长端国债在1.58%历史极低利率区间的微幅波动属于正常久期呼吸，我们产品以中短久期高等级信用债筑底锁票息，建议安心持有获取时间复利。”","【分行RM配置转化建议】：针对存款到期或寻求稳健增值的客户，主推“30%短债理财底仓 + 25%央企真红利低波 + 45%硬科技与紧缺资源(金/铜)固收+”组合，既规避单一押注30Y长债的久期回撤，又保留AI产业周期与实物通胀弹性的向上空间。","【渠道风控三大扳机线】：① 10Y中债突破2.15%（长债止损线）；② FDR007突破1.85%（资金收敛线）；③ R007-DR007利差突破25bp（理财赎回踩踏预警线，当前仅3.0bp，资金面安全）。"]}}},"capex_tracker":[{"stage":"第一阶段：算力与硬件基建 (行业按月观察 · 公司按公告更新)","status":"行业月报高景气 · 个股按季报/公告核对","obs_date":"行业最新数据日: 2026-11-10 (台积电10月营收) / 2026-11-11 (韩国前10日出口)","badge_color":"emerald","chain_nodes":"台积电CoWoS先进封装 ➔ HBM3e/HBM4存储 ➔ 800G/1.6T光模块与CPO ➔ AIDC液冷(CDU)、HVDC供电与上游铜铝需求","lead_indicators":"① 每月10日：台积电(TSMC)月度合并营收(最新披露: 2026-11-10)；② 每月1/11/21日：韩国关税厅半导体出口；③ 注：行业月报仅验证算力总量景气，单家A股供应商订单与份额必须以定期报告及巨潮公告为准。","sec_cninfo_keywords":["Purchases of property and equipment","Capital expenditures guidance","CoWoS capacity allocation","1.6T transceivers","Liquid cooling","合同负债","在建工程","存货跌价准备"],"verification_metric":"【公告前记录上次指引 · 公布后对照】北美四大云厂商(MSFT/GOOG/META/AMZN)10-Q实际CapEx与下季指引对比上季记录；A股光模块/服务器龙头核对季度毛利率、合同负债与经营现金流净额。","red_flag":"【取消看多条件 (Invalidation)】云厂商CapEx同比增速斜率连续放缓，或A股硬件供应商季报出现存货跌价准备激增、毛利率环比下滑。"},{"stage":"第二阶段：推理期扩展与 Agent 商业化 (ROI 闭环期)","status":"分化观察期 · 考核RPO与毛利","obs_date":"财报核验期: 2026Q3 10-Q / 三季报披露期 (2026-10月底)","badge_color":"blue","chain_nodes":"Reasoning推理期算力扩展 ➔ 端侧轻量化蒸馏模型 ➔ 企业级AI Agent工作流 ➔ 垂直行业SaaS增收(ARR)","lead_indicators":"① 企业软件财报 RPO(剩余履约义务)增速 vs 营收增速剪刀差；② 算力租赁 GPU 时租价格走势；③ 在公告前记录公司上次ARR/毛利率指引，披露后逐项对照是否超出原判断。","sec_cninfo_keywords":["Remaining Performance Obligations (RPO)","Net Dollar Retention (NDR)","AI Copilot seat adoption","Inference token volume","ARR增速","研发费用资本化率","毛利率同比变动"],"verification_metric":"【ROI商业化闭环】软件企业财报披露RPO（剩余履约义务）增速超越营收增速 > 5pct，且销售毛利率未被API调用成本侵蚀。","red_flag":"【取消看多条件 (Invalidation)】仅披露Token调用量增长但无付费收入披露，或因推理算力成本过高导致毛利率同比下滑。"},{"stage":"第三阶段：具身智能与人形机器人 (0 到 1 公告核验期)","status":"送样观察期 · 无正式定点不提前计价","obs_date":"公告核验基准: 巨潮资讯网截至 2026-11-19 正式公告","badge_color":"purple","chain_nodes":"VLA多模态端到端控制算法 ➔ 行星滚柱丝杠/微型丝杠 ➔ 谐波减速器/空心杯电机 ➔ 六维力传感器与稀土永磁/轻量化材料","lead_indicators":"① 巨潮资讯网《定点通知书》或《日常经营重大合同公告》；② 专用产线环评批复与高精度磨床采购落地；③ 严格区分『投资者调研纪要口头送样』与『正式具有法律约束力的定点公告』。","sec_cninfo_keywords":["行星滚柱丝杠","六维力传感器","空心杯电机","客户送样验证","小批量定点通知书","专用产线环评","投资者关系活动记录表"],"verification_metric":"【仅认准正式公告】国内零部件厂商在巨潮资讯网披露正式定点通知书或批量供货合同，且传统主业经营现金流为正。","red_flag":"【取消看多条件 (Invalidation)】仅停留在无约束力框架协议、无正式定点公告却伴随大股东/高管减持预披露，立即剔除。"}],"commodities":[{"id":"copper","sector":"有色金属","name":"SHFE 阴极铜","code":"主力CU2701 / 近月CU2612","futuresPrice":94720,"spotPrice":97290,"priceLabel":"主力CU2701 / 近月CU2612","diffLabel":"期货近月-主力月差 (非同日现货)","unit":"元/吨","changePct":-5.07,"basis":2570,"basisPct":2.71,"structure":"期货近月Back (+2,570元/吨)","invLevel":"11.8%","invPercentile":11.8,"invWindowLabel":"上期所近5年注册仓单分位","warrantTons":"6,501 吨","invWeeklyChange":"日减 -905吨 (11-18为7,406吨)","futuresObsDate":"2026-11-19","warrantObsDate":"2026-11-19","spotRefNote":"统计局11月上旬1#电解铜市场价维持高位；缺少同日现货报价时仅以期货月差与仓单核验","spotObsDate":"2026-11-10 (统计局旬报)","data_status":"updated","cycleStage":"注册仓单连降至6501吨 · 期货近月Back","capexLink":"AIDC电源HVDC铜排/液冷散热 + 特高压电网CapEx刚性拉动","firstHandNote":"上期所11月19日铜注册仓单由7,406吨降至6,501吨（单日减少905吨），近月CU2612(97,290)较主力CU2701(94,720)维持+2,570元/吨期货Back月差。","forwardCurve":[97290,94720,94000,93880,93750,93650],"basisHistory":[{"date":"W-5","basis":320,"inv":28},{"date":"W-4","basis":680,"inv":24},{"date":"W-3","basis":1150,"inv":19.5},{"date":"W-2","basis":1620,"inv":16},{"date":"11-18","basis":2180,"inv":13.5},{"date":"11-19","basis":2570,"inv":11.8}],"fundamentalGrade":"STRONG_BULL","gradeLabel":"仓单去化+期货Back 强共振","gradeBadgeColor":"emerald","gradeSummary":"交易所注册仓单处 11.8% 低分位（上期所近5年注册仓单分位），且近月较主力合约升水 +2.71%（期货月差Back），供需紧平衡支撑上游高自给率矿端龙头。","allowOffense":true,"pseudoDividendWarning":false,"trend_10d":[103800,104200,104650,105100,104850,105150,103400,101200,97920,94720],"trend_dates":["11-06","11-09","11-10","11-11","11-12","11-13","11-16","11-17","11-18","11-19"]},{"id":"alumina","sector":"铝产业链 (收入vs成本)","name":"SHFE 电解铝(AL) & 氧化铝(AO)","code":"沪铝AL2701 / 氧化铝AO2701","futuresPrice":2590,"spotPrice":2601,"priceLabel":"氧化铝主力AO2701 / 近月AO2612","diffLabel":"氧化铝近月-主力月差 | 沪铝AL2701: 21,330 (-1.66%)","alFuturesPrice":21330,"alNearPrice":21850,"alChangePct":-1.66,"unit":"元/吨","changePct":0.04,"basis":11,"basisPct":0.42,"structure":"铝Back(+520) / 氧化铝微Back(+11)","invLevel":"14.5%","invPercentile":14.5,"invWindowLabel":"氧化铝2023.06上市以来(3.4年)仓单分位","warrantTons":"氧化铝192,896吨 / 沪铝35,764吨","invWeeklyChange":"AO日减-43,214吨 / AL日减-7,061吨","futuresObsDate":"2026-11-19","warrantObsDate":"2026-11-19","spotRefNote":"统计局11月上旬铝锭市场价跟踪；注意氧化铝是电解铝(云铝)的采购成本项","spotObsDate":"2026-11-10 (统计局旬报)","data_status":"updated","cycleStage":"氧化铝坚挺(+0.04%)但沪铝回调(-1.66%) · 吨铝利润待确认","capexLink":"绿电铝产能天花板 + 区分【氧化铝外销受益】与【电解铝外购氧化铝成本挤压】","firstHandNote":"11月19日上期所铝仓单减7,061吨至35,764吨，氧化铝总仓单减43,214吨至192,896吨（注：AO于2023年6月上市，分位基于3.4年历史）。当日沪铝主力21,330元/吨(-1.66%)弱于氧化铝2,590元/吨(+0.04%)，对需外购氧化铝的电解铝厂形成短线成本端挤压。","forwardCurve":[2601,2590,2597,2607,2618,2631],"basisHistory":[{"date":"W-5","basis":80,"inv":26},{"date":"W-4","basis":95,"inv":23},{"date":"W-3","basis":70,"inv":21},{"date":"W-2","basis":45,"inv":19},{"date":"11-18","basis":18,"inv":17.8},{"date":"11-19","basis":11,"inv":14.5}],"fundamentalGrade":"BACK_WATCH","gradeLabel":"仓单去化 · 吨铝利润待确认","gradeBadgeColor":"amber","gradeSummary":"上期所氧化铝(2023.06上市以来3.4年分位 14.5%)与沪铝仓单同步去化，近月维持期货Back(+0.42%)；但当日沪铝(-1.66%)弱于氧化铝(+0.04%)，对需外购氧化铝的电解铝企(如云铝)形成成本端扰动，吨铝利润方向待确认。","allowOffense":true,"pseudoDividendWarning":false,"trend_10d":[2615,2630,2642,2650,2648,2622,2610,2598,2591,2590],"trend_dates":["11-06","11-09","11-10","11-11","11-12","11-13","11-16","11-17","11-18","11-19"]},{"id":"tungsten","sector":"战略小金属","name":"65%黑钨精矿 / 仲钨酸铵(APT)","code":"企业半月长单 (无日频期货)","futuresPrice":143500,"spotPrice":146000,"priceLabel":"11月上半月长单 / 市场参考报价","diffLabel":"长单价差 (非日频交易所数据·仅人工/长单更新)","unit":"元/标吨","changePct":0,"basis":2500,"basisPct":1.74,"structure":"非日频长单 · 暂停自动强共振","invLevel":"样本受限","invPercentile":25,"invWindowLabel":"行业长单跟踪(无交易所日度仓单)","warrantTons":"无交易所公开仓单","invWeeklyChange":"按半月长单手动更新","futuresObsDate":"2026-11-05 (长单日)","warrantObsDate":"无日频源","spotRefNote":"仅在取得章源/江钨原始长单报价时更新；无当日新长单时撤下个股自动强共振","spotObsDate":"2026-11-05 (11月上半月长单)","data_status":"cached","cycleStage":"长单观察 (上次更新11-05，暂停自动触发个股强共振)","capexLink":"AI服务器高多层PCB精密微钻耗材 + 光伏细钨丝金刚线","firstHandNote":"本地黑钨精矿无交易所日频公开行情刷新路径，当前报价沿用11月5日长单(14.35~14.60万元/标吨)。根据数据纪律，未取得新一期企业原始长单前，降级为观察提示，不自动触发个股强共振。","forwardCurve":[146000,145000,144200,143500,143000,142500],"basisHistory":[{"date":"9月上","basis":800,"inv":30},{"date":"9月下","basis":1200,"inv":28},{"date":"10月上","basis":1500,"inv":27},{"date":"10月下","basis":2000,"inv":26},{"date":"11月上","basis":2500,"inv":25},{"date":"待更新","basis":2500,"inv":25}],"fundamentalGrade":"CACHE_WATCH","gradeLabel":"长单观察 (2026-11-05 (长单日))","gradeBadgeColor":"slate","gradeSummary":"该品种无交易所日频公开行情刷新路径（当前沿用 2026-11-05 (长单日) 数据）。按数据校准纪律，未取得新一期原始长单前暂停强共振评级，仅作观察。","allowOffense":false,"pseudoDividendWarning":false,"trend_10d":[138500,139500,141000,142000,143500,143500,143500,143500,143500,143500],"trend_dates":["09月上","09月下","10月上","10月下","11-05","11-05","11-05","11-05","11-05","11-05"]},{"id":"gold","sector":"贵金属","name":"SHFE 沪金 / 上金所 Au99.99","code":"主力AU2702 / 现货Au99.99","futuresPrice":804.32,"spotPrice":801.93,"priceLabel":"沪金主力AU2702 / 上金所Au99.99","diffLabel":"期现基差 (Au99.99现货 - 沪金主力)","unit":"元/克","changePct":-2.6,"basis":-2.39,"basisPct":-0.3,"structure":"上金所Au99.99日行情实取","invLevel":"18.5%","invPercentile":18.5,"invWindowLabel":"黄金按实际利率与央行购金定价(不套用工业库存)","warrantTons":"Au99.99成交 67.31亿元","invWeeklyChange":"近月AU2612报 802.14元/克","futuresObsDate":"2026-11-19","warrantObsDate":"2026-11-19","spotRefNote":"上金所 Au99.99 每日收盘实取 (801.93元/克，日跌-1.09%)","spotObsDate":"2026-11-19 (上金所日行情)","data_status":"updated","cycleStage":"10Y TIPS实际利率(2.89%)高位压制短线金价 · 央行购金托底","capexLink":"对冲美国财政赤字与信用货币稀释的战略底仓","firstHandNote":"11月19日上金所Au99.99现货收报801.93元/克(-1.09%，成交额67.31亿元)，上期所沪金主力AU2702收报804.32元/克(-2.60%)，期现基差-2.39元/克(-0.30%)。受美债10Y实际利率2.89%高位约束，短线回调等待分母端企稳。","forwardCurve":[801.93,802.14,803.12,804.32,806.46,808.2],"basisHistory":[{"date":"W-5","basis":-1.2,"inv":24},{"date":"W-4","basis":0.4,"inv":22},{"date":"W-3","basis":0.8,"inv":21},{"date":"W-2","basis":-0.6,"inv":20},{"date":"11-18","basis":-3.53,"inv":19},{"date":"11-19","basis":-2.39,"inv":18.5}],"fundamentalGrade":"PRECIOUS_HEDGE","gradeLabel":"央行购金底仓 · 实际利率约束","gradeBadgeColor":"amber","gradeSummary":"10Y TIPS实际利率(2.89%)处高位对金价构成短线分母约束，上金所Au99.99(801.93元/克)与央行购金封锁中期下行空间，宜待实际利率回落分批配置。","allowOffense":true,"pseudoDividendWarning":false,"trend_10d":[858.2,855.4,852.1,856.8,854,841.48,835.1,825.8,814.32,804.32],"trend_dates":["11-06","11-09","11-10","11-11","11-12","11-13","11-16","11-17","11-18","11-19"]},{"id":"crude","sector":"能源化工","name":"INE 中质含硫原油 / EIA周库存","code":"主力SC2701 / 近月SC2612","futuresPrice":585.9,"spotPrice":595.3,"priceLabel":"主力SC2701 / 近月SC2612","diffLabel":"期货近月-主力月差 (SC2612 - SC2701)","unit":"元/桶","changePct":-0.59,"basis":9.4,"basisPct":1.6,"structure":"期货近月Back (+9.4元/桶)","invLevel":"31.0%","invPercentile":31,"invWindowLabel":"EIA美国商业原油5年周库存分位(地域:美国)","warrantTons":"INE仓单 366.6万桶","invWeeklyChange":"INE仓单日增减 0桶","futuresObsDate":"2026-11-19","warrantObsDate":"2026-11-19 (INE) / 2026-11-13 (EIA周报)","spotRefNote":"库存分位源自美国EIA商业原油周库存(具地域属性)，配合INE原油交割库仓单366.6万桶跟踪","spotObsDate":"2026-11-13 (EIA周报)","data_status":"updated","cycleStage":"近月期货Back(+1.60%) + 美国商业原油库存中性偏低","capexLink":"全球海工油服上游勘探CapEx + 通胀预期(T10YIE)驱动锚","firstHandNote":"11月19日INE原油主力SC2701收报585.9元/桶(-0.59%)，近月SC2612报595.3元/桶，近月-主力期货月差+9.4元/桶(+1.60%)，期限曲线595.3➔546.6元/桶呈Back结构；INE交割库仓单366.6万桶。","forwardCurve":[595.3,585.9,576.8,566.5,555.5,546.6],"basisHistory":[{"date":"W-5","basis":2.1,"inv":36},{"date":"W-4","basis":3.4,"inv":35},{"date":"W-3","basis":4.8,"inv":34},{"date":"W-2","basis":6.2,"inv":32.5},{"date":"11-18","basis":7.9,"inv":31.5},{"date":"11-19","basis":9.4,"inv":31}],"fundamentalGrade":"BACK_WATCH","gradeLabel":"期货近月Back · 结构支撑","gradeBadgeColor":"sky","gradeSummary":"期货近月保持升水 +1.6%（月差Back），库存分位 31.0%（EIA美国商业原油5年周库存分位(地域:美国)）处于可控区间，具备逢低配置价值。","allowOffense":true,"pseudoDividendWarning":false,"trend_10d":[595.2,598.6,594,601.5,599,625.5,612,589.4,576.1,585.9],"trend_dates":["11-06","11-09","11-10","11-11","11-12","11-13","11-16","11-17","11-18","11-19"]},{"id":"rebar","sector":"黑色建材","name":"SHFE 螺纹钢","code":"主力RB2701 / 近月RB2612","futuresPrice":2983,"spotPrice":2955,"priceLabel":"主力RB2701 / 统计局旬度现货参考","diffLabel":"旬度现货-主力价差 | 期货近月RB2612: 3,010","unit":"元/吨","changePct":0.51,"basis":-28,"basisPct":-0.94,"structure":"现货偏弱 / 老仓单集中注销","invLevel":"42.0%","invPercentile":42,"invWindowLabel":"社会库存与钢厂库存5年季节性分位","warrantTons":"10,058 吨","invWeeklyChange":"日减 -20,160吨 (交割月前老仓单注销)","futuresObsDate":"2026-11-19","warrantObsDate":"2026-11-19","spotRefNote":"统计局11月上旬螺纹钢(Φ20mm,HRB400E)市场价偏弱；仓单骤减系老仓单制度性注销而非终端抢料","spotObsDate":"2026-11-10 (统计局旬报)","data_status":"updated","cycleStage":"冬季施工淡季 + 规避传统周期伪红利","capexLink":"传统地产/基建施工映射（须待10月M1-M2改善向实物工作量传导确认）","firstHandNote":"11月19日上期所螺纹钢主力RB2701收报2,983元/吨(+0.51%)，注册仓单由30,218吨降至10,058吨(-20,160吨，主因11月老仓单集中注销)。北方进入冬季施工淡季，维持伪红利排雷观察。","forwardCurve":[2955,3010,2983,2945,2954,2972],"basisHistory":[{"date":"W-5","basis":25,"inv":38},{"date":"W-4","basis":10,"inv":39.5},{"date":"W-3","basis":-5,"inv":40.5},{"date":"W-2","basis":-15,"inv":41.2},{"date":"11-18","basis":-22,"inv":42},{"date":"11-19","basis":-28,"inv":42}],"fundamentalGrade":"CONTANGO_BEAR","gradeLabel":"现货偏弱+高库存 · 伪红利排雷","gradeBadgeColor":"rose","gradeSummary":"旬度现货较期货贴水 -0.94% 且库存分位达 42.0%，反映施工淡季需求偏弱，严禁因静态高股息率将其作为红利底仓。","allowOffense":false,"pseudoDividendWarning":true,"trend_10d":[3080,3068,3055,3046,3038,3035,3012,2968,2977,2983],"trend_dates":["11-06","11-09","11-10","11-11","11-12","11-13","11-16","11-17","11-18","11-19"]}],"equity_pool":[{"code":"601899.SH","name":"紫金矿业","board":"主板 (10cm)","bucketGroup":"offense_commodity","bucketLabel":"进攻 · 紧缺大宗资源","linkedCommodities":["copper","gold"],"commodity":"阴极铜 / 黄金","price":23.88,"changePct":-2.61,"turnoverYi":99.2,"vsCsi300Pct":-2.64,"quoteDate":"2026-11-19","announcementDate":"2026-10-25 (三季报产量核验)","selfSufficiency":"矿产铜107万吨/金72吨，矿端高自给率直接受益铜价与金价","firstHandCatalyst":"上期所铜仓单11-19再降905吨至6,501吨，期货近月CU2612升水主力+2,570元/吨；11-19成交额99.2亿元跟随铜金期货回调","cancelCondition":"若上期所铜仓单连续3日累库>3000吨，或沪铜近月-主力转为Contango贴水，取消资源首选评级","trend_10d":[28.28,28.41,28.18,27.86,26.78,26.38,25.96,25.99,24.52,23.88],"trend_dates":["11-06","11-09","11-10","11-11","11-12","11-13","11-16","11-17","11-18","11-19"],"resonanceGrade":"STRONG_RESONANCE","actionLabel":"仓单去化+期货Back · 矿端观察首选","badgeColor":"emerald","diagnosis":"关联品种【SHFE 阴极铜(仓单去化+期货Back 强共振) / SHFE 沪金(央行购金底仓 · 实际利率约束)】注册仓单持续下降(<25%分位)且近月维持期货Back升水，高自给率矿端龙头优先跟踪。"},{"code":"000807.SZ","name":"云铝股份","board":"主板 (10cm)","bucketGroup":"offense_commodity","bucketLabel":"进攻 · 紧缺大宗资源","linkedCommodities":["alumina"],"commodity":"电解铝(收入) - 氧化铝(成本)","price":21.35,"changePct":-4,"turnoverYi":15.41,"vsCsi300Pct":-4.03,"quoteDate":"2026-11-19","announcementDate":"2026-03-28 (2025年报成本结构)","selfSufficiency":"据2025年报：原铝板块采购氧化铝与电力生产电解铝（氧化铝自给率不足100%，外购部分属成本项）","firstHandCatalyst":"11-19沪铝主力21,330元/吨(-1.66%)下跌而氧化铝2,590元/吨(+0.04%)抗跌，仅氧化铝涨/抗跌会挤压外购氧化铝的吨铝利润","cancelCondition":"当氧化铝涨幅>沪铝涨幅导致模拟吨铝利润走弱时，取消自动看多（已触发降级为待确认）","trend_10d":[24.52,24.87,23.72,23.41,23.31,23.04,22.84,22.68,22.24,21.35],"trend_dates":["11-06","11-09","11-10","11-11","11-12","11-13","11-16","11-17","11-18","11-19"],"resonanceGrade":"COST_SQUEEZE_WATCH","actionLabel":"成本端有变化 · 吨铝利润待确认","badgeColor":"amber","diagnosis":"据2025年报，公司原铝板块需采购氧化铝与电力；最新交易日沪铝(-1.66%)弱于氧化铝(+0.04%)，仅氧化铝坚挺而铝价回调会挤压外购氧化铝部分的吨铝利润，据此取消自动看多，待铝价与成本变化支持盈利改善后再纳入候选。"},{"code":"920807.BJ","name":"奔朗新材","board":"北交所 (30cm)","bucketGroup":"offense_commodity","bucketLabel":"进攻 · 紧缺大宗资源","linkedCommodities":["tungsten"],"commodity":"超硬材料 / 碳化钨工具","price":6.91,"changePct":-4.95,"turnoverYi":0.09,"vsCsi300Pct":-4.98,"quoteDate":"2026-11-19","announcementDate":"2026-11-05 (11月上半月钨长单)","selfSufficiency":"金刚石与硬质合金超硬工具（注：碳化钨亦为原材料成本项，需验证向下游顺价能力）","firstHandCatalyst":"黑钨长单停留在11-05数据且无日频行情源，11-19成交额仅0.09亿元、日跌-4.95%，已撤下自动强共振评级","cancelCondition":"无新一期钨企长单报价或成交额低于0.2亿元时，仅作观察，不列入次日进攻候选","trend_10d":[7.94,7.93,8.01,8.05,7.96,7.67,7.55,7.45,7.27,6.91],"trend_dates":["11-06","11-09","11-10","11-11","11-12","11-13","11-16","11-17","11-18","11-19"],"resonanceGrade":"CACHE_WATCH","actionLabel":"长单/公告观察 · 暂停自动强共振","badgeColor":"slate","diagnosis":"关联品种【65%黑钨精矿(长单观察 (2026-11-05 (长单日)))】无交易所日频公开源，未取得新一期企业原始长单或公司公告前仅作观察。"},{"code":"688122.SH","name":"西部超导","board":"科创板 (20cm)","bucketGroup":"offense_commodity","bucketLabel":"进攻 · 紧缺大宗资源","linkedCommodities":["tungsten"],"commodity":"高端钛合金 / 超导线材","price":40.74,"changePct":1.8,"turnoverYi":4.4,"vsCsi300Pct":1.77,"quoteDate":"2026-11-19","announcementDate":"2026-10-29 (三季报合同负债核验)","selfSufficiency":"航空钛材与MRI/核聚变超导线材龙头，按公司公告与合同负债跟踪（不挂钩黑钨日频共振）","firstHandCatalyst":"11-19逆势收涨+1.80%（跑赢沪深300 +1.77pct，成交额4.40亿元），三季报超导线材与高端钛材交付稳健","cancelCondition":"若后续季度合同负债环比下滑或跌破20日均线量能萎缩，移出观察候选","trend_10d":[43.25,44.2,44.04,43.99,42.36,42.35,40.21,39.41,40.02,40.74],"trend_dates":["11-06","11-09","11-10","11-11","11-12","11-13","11-16","11-17","11-18","11-19"],"resonanceGrade":"CACHE_WATCH","actionLabel":"长单/公告观察 · 暂停自动强共振","badgeColor":"slate","diagnosis":"关联品种【65%黑钨精矿(长单观察 (2026-11-05 (长单日)))】无交易所日频公开源，未取得新一期企业原始长单或公司公告前仅作观察。"},{"code":"600547.SH","name":"山东黄金","board":"主板 (10cm)","bucketGroup":"offense_commodity","bucketLabel":"进攻 · 紧缺大宗资源","linkedCommodities":["gold"],"commodity":"黄金 (国内主力矿山)","price":23.65,"changePct":1.55,"turnoverYi":14.7,"vsCsi300Pct":1.52,"quoteDate":"2026-11-19","announcementDate":"2026-10-30 (三季报自产金核验)","selfSufficiency":"自产矿产金约45吨，纯正黄金矿端高自给率龙头","firstHandCatalyst":"11-19上金所Au99.99收于801.93元/克，股价逆势收涨+1.55%（成交额14.70亿元，跑赢基准+1.52pct），展现矿端底部韧性","cancelCondition":"若10Y TIPS实际利率突破3.00%且上金所Au99.99跌破780元/克，暂停逢低加配","trend_10d":[26.2,26.72,27,26.65,24.91,24.41,23.85,24.19,23.29,23.65],"trend_dates":["11-06","11-09","11-10","11-11","11-12","11-13","11-16","11-17","11-18","11-19"],"resonanceGrade":"PRECIOUS_ANCHOR","actionLabel":"央行购金底仓 · 盯实际利率拐点","badgeColor":"amber","diagnosis":"关联品种【SHFE 沪金(央行购金底仓 · 实际利率约束)】受央行购金与上金所Au99.99支撑，短线等待10Y TIPS实际利率回落窗口。"},{"code":"300139.SZ","name":"晓程科技","board":"创业板 (20cm)","bucketGroup":"offense_commodity","bucketLabel":"进攻 · 紧缺大宗资源","linkedCommodities":["gold"],"commodity":"黄金 (加纳金矿)","price":33.63,"changePct":-2.83,"turnoverYi":5.51,"vsCsi300Pct":-2.86,"quoteDate":"2026-11-19","announcementDate":"2026-10-28 (三季报加纳矿产金核验)","selfSufficiency":"海外加纳三大金矿权益，20cm高Beta金矿标的","firstHandCatalyst":"受10Y美债实际利率(2.89%)高位与沪金主力(-2.60%)回调影响，11-19收跌-2.83%（成交额5.51亿元），相对山东黄金偏弱","cancelCondition":"在实际利率(DFII10)未拐头向下且相对板块龙头(山东黄金)走弱期间，暂不追高","trend_10d":[39.86,39.55,40.24,40.09,38.06,37.11,34.89,35.69,34.61,33.63],"trend_dates":["11-06","11-09","11-10","11-11","11-12","11-13","11-16","11-17","11-18","11-19"],"resonanceGrade":"PRECIOUS_ANCHOR","actionLabel":"央行购金底仓 · 盯实际利率拐点","badgeColor":"amber","diagnosis":"关联品种【SHFE 沪金(央行购金底仓 · 实际利率约束)】受央行购金与上金所Au99.99支撑，短线等待10Y TIPS实际利率回落窗口。"},{"code":"920088.BJ","name":"科力股份","board":"北交所 (30cm)","bucketGroup":"offense_commodity","bucketLabel":"进攻 · 紧缺大宗资源","linkedCommodities":["crude"],"commodity":"原油 / 油田工程技术服务","price":30.29,"changePct":-4.15,"turnoverYi":0.49,"vsCsi300Pct":-4.18,"quoteDate":"2026-11-19","announcementDate":"2026-10-29 (三季报油服营收核验)","selfSufficiency":"中石油/中海油油田化学与地面工程服务商（业绩取决于上游油企CapEx结算而非单日油价）","firstHandCatalyst":"INE原油近月SC2612虽升水主力+9.4元/桶，但个股11-19收跌-4.15%（成交额0.49亿元），短期走势与单日油价背离","cancelCondition":"日成交额不足1亿元且相对基准走弱(-4.18pct)时，仅作跟踪，不触发次日交易","trend_10d":[37.07,36.47,35.55,35.9,36.14,35.37,33.1,31.98,31.6,30.29],"trend_dates":["11-06","11-09","11-10","11-11","11-12","11-13","11-16","11-17","11-18","11-19"],"resonanceGrade":"BACK_SUPPORT","actionLabel":"期货Back支撑 · 结合量价跟踪","badgeColor":"sky","diagnosis":"关联品种【INE 中质含硫原油(期货近月Back · 结构支撑)】维持近月Back结构，结合个股成交额与相对基准强弱跟踪。"},{"code":"300191.SZ","name":"潜能恒信","board":"创业板 (20cm)","bucketGroup":"offense_commodity","bucketLabel":"进攻 · 紧缺大宗资源","linkedCommodities":["crude"],"commodity":"原油 (海上油气区块勘探)","price":20.59,"changePct":-2.23,"turnoverYi":0.88,"vsCsi300Pct":-2.26,"quoteDate":"2026-11-19","announcementDate":"2026-10-28 (三季报区块进展)","selfSufficiency":"地震数据处理找油技术 + 海上油气区块开发分成权益","firstHandCatalyst":"11-19收跌-2.23%（成交额0.88亿元），虽INE原油维持近月Back结构，但区块投产兑现需以巨潮正式钻井/投产公告为准","cancelCondition":"无新钻井/产量公告且成交额低于1.5亿元时，维持观察，不自动升级为强共振","trend_10d":[22.99,23.25,22.84,23.59,23.2,22.41,21.5,21.05,21.06,20.59],"trend_dates":["11-06","11-09","11-10","11-11","11-12","11-13","11-16","11-17","11-18","11-19"],"resonanceGrade":"BACK_SUPPORT","actionLabel":"期货Back支撑 · 结合量价跟踪","badgeColor":"sky","diagnosis":"关联品种【INE 中质含硫原油(期货近月Back · 结构支撑)】维持近月Back结构，结合个股成交额与相对基准强弱跟踪。"},{"code":"600900.SH","name":"长江电力","board":"主板 (10cm)","bucketGroup":"defense_dividend","bucketLabel":"防御 · 央国企真红利","linkedCommodities":[],"commodity":"10Y中债(1.58%) 险资OCI类债锚","price":30.88,"changePct":0.65,"turnoverYi":28.11,"vsCsi300Pct":0.62,"quoteDate":"2026-11-19","announcementDate":"2026-10-31 (三季报来水与发电量公告)","selfSufficiency":"六库联调垄断水电资产，现金流与分红完全免疫工业品Contango累库风险","firstHandCatalyst":"10Y中债降至1.58%、11-20 FDR007仅1.37%，11-19长江电力收涨+0.65%（成交28.11亿元，近10日由29.91稳步升至30.88元）","cancelCondition":"若10Y中债收益率快速反弹突破2.15%导致股息率利差收窄，则下调防御红利权重","trend_10d":[29.91,29.83,29.67,29.48,29.61,29.91,30.49,30.6,30.68,30.88],"trend_dates":["11-06","11-09","11-10","11-11","11-12","11-13","11-16","11-17","11-18","11-19"],"resonanceGrade":"CORE_DEFENSE","actionLabel":"真红利底仓 · 险资OCI承接","badgeColor":"emerald","diagnosis":"当前宏观防守权重 55%，10Y中债低利率环境下具备险资OCI账户持续承接，且无大宗Contango累库风险。"},{"code":"600941.SH","name":"中国移动","board":"主板 (10cm)","bucketGroup":"defense_dividend","bucketLabel":"防御 · 央国企真红利","price":107.8,"changePct":0.39,"turnoverYi":15.87,"vsCsi300Pct":0.36,"quoteDate":"2026-11-19","announcementDate":"2026-10-22 (三季报经营现金流与派息指引)","linkedCommodities":[],"commodity":"高派息央企 + 运营商算力底座","selfSufficiency":"超70%派息率指引明确 + 经营现金流稳健，兼具类债红利底仓与智算网络属性","firstHandCatalyst":"11-19收涨+0.39%报107.80元（成交额15.87亿元，近10日由98.70低点连续走强至107.80元），与低利率资产荒高度契合","cancelCondition":"若应收账款周转明显恶化或运营商资本开支超预期重回扩张侵蚀自由现金流，取消红利首选","trend_10d":[103.49,103.03,101.55,99.93,98.7,101.46,104.49,105.2,107.38,107.8],"trend_dates":["11-06","11-09","11-10","11-11","11-12","11-13","11-16","11-17","11-18","11-19"],"resonanceGrade":"CORE_DEFENSE","actionLabel":"真红利底仓 · 险资OCI承接","badgeColor":"emerald","diagnosis":"当前宏观防守权重 55%，10Y中债低利率环境下具备险资OCI账户持续承接，且无大宗Contango累库风险。"},{"code":"300308.SZ","name":"中际旭创","board":"创业板 (20cm)","bucketGroup":"offense_tech_capex","bucketLabel":"进攻 · 科技CapEx跟踪","linkedCommodities":["copper"],"commodity":"800G/1.6T光模块 (行业月报+季报核对)","price":408.4,"changePct":3.05,"turnoverYi":166.08,"vsCsi300Pct":3.02,"quoteDate":"2026-11-19","announcementDate":"2026-10-28 (三季报毛利率/存货核验) | 2026-11-10 (台积电10月营收参照)","selfSufficiency":"全球800G/1.6T光模块龙头（注：台积电月营收仅验证行业景气，公司订单与份额以季报/公告为准）","firstHandCatalyst":"11-19放量收涨+3.05%报408.40元（全市场头部成交额166.08亿元，跑赢沪深300 +3.02pct），资金承接强劲","cancelCondition":"若下季北美四大云厂CapEx同比增速斜率放缓，或公司季报存货跌价准备/毛利率环比恶化，立即止盈降级","trend_10d":[448,452.03,471,542,508.9,466.2,408.97,393,396.3,408.4],"trend_dates":["11-06","11-09","11-10","11-11","11-12","11-13","11-16","11-17","11-18","11-19"],"resonanceGrade":"CAPEX_TRACK","actionLabel":"行业月报高景气 · 个股按公告核对","badgeColor":"indigo","diagnosis":"台积电月度营收验证算力总量高景气；单家公司订单、毛利率与存货周转须以定期报告及巨潮正式公告为准。"},{"code":"300124.SZ","name":"汇川技术","board":"创业板 (20cm)","bucketGroup":"offense_tech_capex","bucketLabel":"进攻 · 科技CapEx跟踪","linkedCommodities":[],"commodity":"通用工控 + 具身智能丝杠/伺服","price":53.45,"changePct":0,"turnoverYi":11.75,"vsCsi300Pct":-0.03,"quoteDate":"2026-11-19","announcementDate":"2026-10-29 (三季报) | 10月M1-M2(-2.7%)顺周期跟踪","selfSufficiency":"国内通用伺服/变频器龙头（人形机器人执行器仍处送样孵化期，必须待正式定点公告确认，不提前记为已验证）","firstHandCatalyst":"11-19平盘报53.45元（成交额11.75亿元）；央行10月M1-M2剪刀差收窄至-2.7%利好工控主业筑底，机器人业务待正式定点公告","cancelCondition":"未披露正式量产定点通知书前，不赋予具身智能溢价；若工控订单增速低于预期则移出候选","trend_10d":[56.66,57.55,55.85,55.1,53.11,53.45,52.96,52.8,53.45,53.45],"trend_dates":["11-06","11-09","11-10","11-11","11-12","11-13","11-16","11-17","11-18","11-19"],"resonanceGrade":"CAPEX_TRACK","actionLabel":"行业月报高景气 · 个股按公告核对","badgeColor":"indigo","diagnosis":"台积电月度营收验证算力总量高景气；单家公司订单、毛利率与存货周转须以定期报告及巨潮正式公告为准。"}],"field_notes":[{"id":1,"time":"2026-11-20 11:35","category":"银行间资金面 · 理财渠道跟踪","source":"中国货币网(ChinaMoney) 11:30定盘原表 & 央行10月金融统计","title":"11月20日FDR007报1.37%、FR007报1.40%(分层仅3bp)，10月M1-M2收窄至-2.7%","content":"直连中国货币网实取11月20日11:30最新定盘：FDR007报1.37%、FR007报1.40%，非银分层利差仅3.0bp（11月19日为4.0bp），融资端无流动性分层压力；央行10月M1同比+4.4%、M2同比+7.1%，M1-M2剪刀差收窄至-2.7%（较9月-4.0%改善1.3pct）。","impact":"宏观顺风 (Macro Tailwind)","linkedTickers":["600900.SH","600941.SH"]},{"id":2,"time":"2026-11-19 16:10","category":"有色金属 · 铜/铝","source":"上期所11月18-19日仓单日报原表 & 2025年报产业链核对","title":"上期所铜仓单日减905吨至6,501吨；沪铝跌1.66%而氧化铝抗跌，云铝暂转观察","content":"核对上期所11月19日原表：铜注册仓单由18日7,406吨降至6,501吨(-905吨)，近月CU2612较主力CU2701升水+2,570元/吨；铝仓单减7,061吨至35,764吨，氧化铝仓单减43,214吨。因11-19沪铝(-1.66%)弱于氧化铝(+0.04%)，对需采购氧化铝的云铝股份(000807.SZ)构成短线成本端扰动，系统自动将云铝降为『吨铝利润待确认』。","impact":"分化验证 (Divergent Signal)","linkedTickers":["601899.SH","000807.SZ"]},{"id":3,"time":"2026-11-19 15:30","category":"科技CapEx · 算力/机器人调研","source":"台积电10月营收公告(11-10) & 深交所11-19已完成日线","title":"中际旭创11-19成交166.08亿元收涨+3.05%；行业景气与个股公告严格分层","content":"台积电11月10日公布10月营收验证算力行业高景气；个股层面11月19日中际旭创(300308.SZ)收盘408.40元(+3.05%，全天成交166.08亿元，跑赢沪深300基准+3.02pct)，相对强弱显著优于缺乏新长单更新的小金属标的。","impact":"强利多 (Strong Bullish)","linkedTickers":["300308.SZ","300124.SZ"]}]};
+    const FALLBACK_DATA = {"meta":{"updated_at":"2026-11-20 13:55:00 CST","equity_quote_date":"2026-11-19 (T-1已收盘前复权)","benchmark_note":"沪深300 (000300.SH): 3984.84 (+0.03%)","data_source":"FRED API + 中国货币网(11:30定盘) + 央行10月金融统计 + 上期所11-19仓单与日行情原表 + 沪深北12只个股T-1已完成日线","market_regime":"海外实际利率2.89% + 国内10月M1-M2改善(-2.7%) + 铜仓单连降 · 哑铃 55:45","regime_code":"PRO_EIGHT_DIM_UNIFIED","data_quality_note":"中美16项宏观(含11-20货币网定盘与10月央行M1/M2)、上期所11-19仓单原表及12只A股T-1已收盘日线均已核验并逐项标注数据日期。"},"metrics":{"us":{"dgs10":{"name":"10Y 美债名义收益率","code":"DGS10","value":5.1,"unit":"%","freq":"daily","window_label":"近3年历史分位数","chg_1d_bp":-2,"chg_5d_bp":22,"percentile_3y":97,"threshold_warn":4.35,"role":"DCF分母总锚：名义利率 = 实际利率(DFII10) + 通胀预期(T10YIE)","url":"https://fred.stlouisfed.org/series/DGS10","data_status":"updated","observation_date":"2026-11-17","trend_10d":[4.9,4.92,4.89,4.87,4.88,4.94,4.99,5.05,5.12,5.1],"trend_dates":["11-04","11-05","11-06","11-09","11-10","11-11","11-12","11-13","11-16","11-17"]},"dfii10":{"name":"10Y TIPS 实际利率","code":"DFII10","value":2.89,"unit":"%","freq":"daily","window_label":"近3年历史分位数","chg_1d_bp":-3,"chg_5d_bp":23,"percentile_3y":99,"threshold_warn":2.2,"role":"DCF真实分母端：剔除通胀后的全球科技成长股真实无风险贴现率","url":"https://fred.stlouisfed.org/series/DFII10","data_status":"updated","observation_date":"2026-11-17","trend_10d":[2.64,2.65,2.63,2.64,2.66,2.71,2.77,2.83,2.92,2.89],"trend_dates":["11-04","11-05","11-06","11-09","11-10","11-11","11-12","11-13","11-16","11-17"]},"t10yie":{"name":"10Y 盈亏平衡通胀预期","code":"T10YIE","value":2.19,"unit":"%","freq":"daily","window_label":"近3年历史分位数","chg_1d_bp":-2,"chg_5d_bp":-1,"percentile_3y":7,"threshold_warn":2.45,"role":"DCF分子端映射：隐含通胀与增长预期（急跌<1.9%预示衰退交易）","url":"https://fred.stlouisfed.org/series/T10YIE","data_status":"updated","observation_date":"2026-11-18","trend_10d":[2.24,2.23,2.22,2.21,2.2,2.21,2.2,2.22,2.21,2.19],"trend_dates":["11-05","11-06","11-09","11-10","11-11","11-12","11-13","11-16","11-17","11-18"]},"t10y2y":{"name":"10Y-2Y 美债期限利差","code":"T10Y2Y","value":0.27,"unit":"%","freq":"daily","window_label":"近3年历史分位数","chg_1d_bp":-3,"chg_5d_bp":2,"percentile_3y":40,"threshold_warn":0.5,"role":"收益率曲线形态与长债期限溢价(Term Premium)周期","url":"https://fred.stlouisfed.org/series/T10Y2Y","data_status":"updated","observation_date":"2026-11-18","trend_10d":[0.38,0.35,0.31,0.28,0.25,0.26,0.28,0.31,0.3,0.27],"trend_dates":["11-05","11-06","11-09","11-10","11-11","11-12","11-13","11-16","11-17","11-18"]},"effr":{"name":"联邦基金有效利率","code":"EFFR","value":3.88,"unit":"%","freq":"daily","window_label":"近3年历史分位数","chg_1d_bp":0,"chg_5d_bp":0,"percentile_3y":27,"threshold_warn":5,"role":"美联储短端政策利率基准与货币市场资金成本锚","url":"https://fred.stlouisfed.org/series/EFFR","data_status":"updated","observation_date":"2026-11-17","trend_10d":[3.88,3.88,3.88,3.88,3.88,3.88,3.88,3.88,3.88,3.88],"trend_dates":["11-04","11-05","11-06","11-09","11-10","11-11","11-12","11-13","11-16","11-17"]},"rrp":{"name":"美联储隔夜逆回购 (ON RRP)","code":"RRPONTSYD","value":0.33,"unit":"十亿美元","freq":"daily","window_label":"近3年历史分位数","chg_1d_bp":0,"chg_5d_bp":0.2,"percentile_3y":6,"threshold_warn":200,"role":"美元非银超额流动性第一道缓冲池（耗尽后QT直接抽离银行准备金）","url":"https://fred.stlouisfed.org/series/RRPONTSYD","data_status":"updated","observation_date":"2026-11-18","trend_10d":[0.12,0.14,0.11,0.13,0.13,0.18,0.24,0.29,0.33,0.33],"trend_dates":["11-05","11-06","11-09","11-10","11-11","11-12","11-13","11-16","11-17","11-18"]},"tga":{"name":"美国财政部一般账户 (TGA)","code":"WTREGEN","value":914.37,"unit":"十亿美元","freq":"weekly","window_label":"近3年历史分位数(周频)","chg_1d_bp":-42.8,"chg_5d_bp":34.1,"percentile_3y":86,"threshold_warn":800,"role":"财政发债抽水(>800B显著收紧市场准备金)与财政支出投放账户","url":"https://fred.stlouisfed.org/series/WTREGEN","data_status":"updated","observation_date":"2026-11-11","trend_10d":[845.2,862,871.5,880.3,912.6,934,977.1,999.73,957.17,914.37],"trend_dates":["09-09","09-16","09-23","09-30","10-07","10-14","10-21","10-28","11-04","11-11"]},"wresbal":{"name":"美联储商业银行准备金余额","code":"WRESBAL","value":2960.6,"unit":"十亿美元","freq":"weekly","window_label":"近3年历史分位数(周频)","chg_1d_bp":30.5,"chg_5d_bp":-69.1,"percentile_3y":17,"threshold_warn":3000,"role":"美元流动性最终底线（跌破3000B触发华尔街回购市场资金紧缺预警）","url":"https://fred.stlouisfed.org/series/WRESBAL","data_status":"updated","observation_date":"2026-11-11","trend_10d":[3115,3082.4,3055.8,3041.2,3029.7,2988.5,2962.6,2893.77,2930.09,2960.6],"trend_dates":["09-09","09-16","09-23","09-30","10-07","10-14","10-21","10-28","11-04","11-11"]},"hy_oas":{"name":"美国高收益债利差 (HY OAS)","code":"BAMLH0A0HYM2","value":3.43,"unit":"%","freq":"daily","window_label":"近3年历史分位数","chg_1d_bp":9,"chg_5d_bp":13,"percentile_3y":88,"threshold_warn":4,"role":"跨市场信用风险溢价与全球套息交易(Carry Trade)去杠杆温度计","url":"https://fred.stlouisfed.org/series/BAMLH0A0HYM2","data_status":"updated","observation_date":"2026-11-17","trend_10d":[3.32,3.3,3.28,3.29,3.3,3.32,3.35,3.33,3.34,3.43],"trend_dates":["11-04","11-05","11-06","11-09","11-10","11-11","11-12","11-13","11-16","11-17"]}},"cn":{"cn10y":{"name":"10Y 中债国债收益率","code":"CN10Y","value":1.58,"unit":"%","freq":"daily","window_label":"近3年历史分位数","chg_1d_bp":-1.4,"chg_5d_bp":-2.5,"percentile_3y":1,"threshold_warn":2.15,"role":"DCF分母端：国内无风险利率核心锚与低利率资产荒温度计","url":"https://yield.chinabond.com.cn/","data_status":"updated","observation_date":"2026-11-19","trend_10d":[1.61,1.6,1.61,1.6,1.6,1.6,1.59,1.59,1.59,1.58],"trend_dates":["11-06","11-09","11-10","11-11","11-12","11-13","11-16","11-17","11-18","11-19"]},"cn30y":{"name":"30Y 超长国债收益率","code":"CN30Y","value":2.04,"unit":"%","freq":"daily","window_label":"近3年历史分位数","chg_1d_bp":-1.4,"chg_5d_bp":-1,"percentile_3y":22,"threshold_warn":2.35,"role":"险资长久期配置锚与超长期特别国债供给冲击敏感度指标","url":"https://yield.chinabond.com.cn/","data_status":"updated","observation_date":"2026-11-19","trend_10d":[2.04,2.04,2.05,2.05,2.05,2.05,2.05,2.05,2.05,2.04],"trend_dates":["11-06","11-09","11-10","11-11","11-12","11-13","11-16","11-17","11-18","11-19"]},"dr007":{"name":"银行间7天回购定盘利率 (FDR007/DR007)","code":"FDR007","value":1.37,"unit":"%","freq":"daily","window_label":"近1年分位数(外汇交易中心11:30定盘)","chg_1d_bp":1,"chg_5d_bp":-2,"percentile_3y":32,"threshold_warn":1.8,"role":"中国外汇交易中心存款类机构7天质押式回购定盘基准（11:30发布，08:00晨报使用前一日值）","url":"https://www.chinamoney.org.cn/chinese/bkfrr/","data_status":"updated","observation_date":"2026-11-20 (11:30定盘 / 前日1.36%)","trend_10d":[1.36,1.37,1.39,1.4,1.39,1.38,1.38,1.38,1.36,1.37],"trend_dates":["11-09","11-10","11-11","11-12","11-13","11-16","11-17","11-18","11-19","11-20"]},"r007_dr007_spread":{"name":"R007 - DR007 流动性分层利差","code":"FR007-FDR007","value":3,"unit":"bp","freq":"daily","window_label":"近1年分位数(外汇交易中心11:30定盘)","chg_1d_bp":-1,"chg_5d_bp":0,"percentile_3y":27,"threshold_warn":20,"role":"非银机构融资成本与资金分层监控（走阔提示收紧风险预算；确认理财赎回需申赎规模证据）","url":"https://www.chinamoney.org.cn/chinese/bkfrr/","data_status":"updated","observation_date":"2026-11-20 (FR007 1.40% - FDR007 1.37%)","trend_10d":[5,4,3,2,3,3.5,3.5,3.5,4,3],"trend_dates":["11-09","11-10","11-11","11-12","11-13","11-16","11-17","11-18","11-19","11-20"]},"us_cn_spread":{"name":"中美 10Y 国债利差 (中-美)","code":"CN10Y-US10Y","value":-3.52,"unit":"%","freq":"daily","window_label":"近3年历史分位数","chg_1d_bp":0.6,"chg_5d_bp":-18.4,"percentile_3y":1,"threshold_warn":-2.2,"role":"跨境资本流动、人民币汇率稳汇率约束与港股离岸市场分母端锚","url":"https://yield.chinabond.com.cn/","data_status":"updated","observation_date":"2026-11-19","trend_10d":[-3.28,-3.27,-3.27,-3.34,-3.39,-3.45,-3.53,-3.51,-3.48,-3.52],"trend_dates":["11-06","11-09","11-10","11-11","11-12","11-13","11-16","11-17","11-18","11-19"]},"m1_m2_diff":{"name":"M1 - M2 同比剪刀差 (新口径)","code":"M1-M2","value":-2.7,"unit":"%","freq":"monthly","window_label":"近3年(36月)分位数","chg_1d_bp":1.3,"chg_5d_bp":1.3,"percentile_3y":72,"threshold_warn":-3.5,"role":"DCF分子端：央行10月金融统计M1同比+4.4%、M2同比+7.1%，剪刀差明显收窄+1.3pct","url":"http://www.pbc.gov.cn/diaochatongjisi/116219/index.html","data_status":"updated","observation_date":"2026-10 (月度·11月中旬发布)","trend_10d":[-4.6,-4.4,-4.2,-4.1,-3.9,-3.7,-3.5,-3.4,-4,-2.7],"trend_dates":["01月","02月","03月","04月","05月","06月","07月","08月","09月","10月"]},"erp_csi300":{"name":"沪深300 股债风险溢价 (ERP)","code":"CSI300_ERP","value":6.31,"unit":"%","freq":"daily","window_label":"近3年历史分位数","chg_1d_bp":2,"chg_5d_bp":0,"percentile_3y":49,"threshold_warn":5.8,"role":"A股股债性价比标尺（>=5.8%且处高分位代表权益向下空间封锁）","url":"https://www.csindex.com.cn/","data_status":"updated","observation_date":"2026-11-19","trend_10d":[6.27,6.3,6.31,6.28,6.29,6.32,6.31,6.3,6.29,6.31],"trend_dates":["11-06","11-09","11-10","11-11","11-12","11-13","11-16","11-17","11-18","11-19"]}},"cross_asset":{"dxy":{"id":"dxy","name":"美元指数 (DXY)","code":"ICE: DXY","value":103.41,"unit":"","change":"+0.23%","trend":"up","signal":"美元偏强震荡 · 留意工业品计价弹性","spark":[101.85,102.1,101.92,101.59,102.29,101.66,102.25,102.91,103.17,103.41],"role":"全球大宗商品计价货币总锚与非美市场跨境资本流动压力表","data_status":"updated","observation_date":"2026-11-18","trend_10d":[101.85,102.1,101.92,101.59,102.29,101.66,102.25,102.91,103.17,103.41],"trend_dates":["11-05","11-06","11-09","11-10","11-11","11-12","11-13","11-16","11-17","11-18"]},"cop_gold":{"id":"cop_gold","name":"铜金比 (Copper/Gold)","code":"COMEX HG / GC","value":3.49,"unit":"","change":"-0.03","trend":"down","signal":"避险强于顺周期 · 紧盯电网/AIDC拉动","spark":[3.31,3.33,3.35,3.34,3.38,3.39,3.42,3.46,3.52,3.49],"role":"全球制造业景气度、特高压电网CapEx与AIDC数据中心用铜密度领先风向标","data_status":"updated","observation_date":"2026-11-18","trend_10d":[3.31,3.33,3.35,3.34,3.38,3.39,3.42,3.46,3.52,3.49],"trend_dates":["11-05","11-06","11-09","11-10","11-11","11-12","11-13","11-16","11-17","11-18"]},"gold_oil":{"id":"gold_oil","name":"金油比 (Gold/WTI)","code":"XAU / WTI","value":43.7,"unit":"x","change":"-0.1x","trend":"down","signal":"工业通胀边际修复","spark":[45.6,45.1,44.8,44.9,45.2,48,46.7,46.2,43.8,43.7],"role":"衡量货币避险溢价 vs 工业实体能源需求与再通胀交易的温度计","data_status":"updated","observation_date":"2026-11-18","trend_10d":[45.6,45.1,44.8,44.9,45.2,48,46.7,46.2,43.8,43.7],"trend_dates":["11-05","11-06","11-09","11-10","11-11","11-12","11-13","11-16","11-17","11-18"]},"fed_net_liq":{"id":"fed_net_liq","name":"美联储净流动性 (Net Liquidity)","code":"WALCL-TGA-ONRRP","value":5.79,"unit":"万亿美元","change":"+40B (周)","trend":"up","signal":"TGA边际释放 · 需盯紧准备金3000B底线","spark":[5.94,5.91,5.89,5.86,5.83,5.87,5.87,5.8,5.75,5.79],"role":"美联储总资产剔除财政部TGA与ON RRP后的广义美元净流动性投放规模","data_status":"updated","observation_date":"2026-11-18","trend_10d":[5.94,5.91,5.89,5.86,5.83,5.87,5.87,5.8,5.75,5.79],"trend_dates":["09-16","09-23","09-30","10-07","10-14","10-21","10-28","11-04","11-11","11-18"]}}},"decision_engine":{"hard_rules":[{"id":"RULE_US_RATE_SLOPE","dimension":"① 海外分母端与实际利率拆解","status":"warning","status_label":"实际利率承压","trigger_condition":"10Y美债>=4.35% 或 实际利率>=2.20% 或 5日>=+12bp","current_reading":"名义 5.1% (5日+22.0bp) | 实际 2.89% + 通胀 2.19%","action_instruction":"10Y美债报5.1%（近5日上冲+22.0bp），拆解看10Y TIPS实际利率高达2.89%、通胀预期2.19%。高实际利率直接抬升DCF无风险分母，压制远期现金流占比高但无当期业绩的纯概念股；海外债久期宜控制在短端。"},{"id":"RULE_US_LIQUIDITY_BUFFER","dimension":"② 美元狭义流动性与准备金底线","status":"danger","status_label":"准备金逼近临界","trigger_condition":"(RRP<200B且TGA>750B) 或 准备金<3000B 或 HY利差>=4%","current_reading":"准备金 2960.6B | RRP 0.33B | TGA 914.37B | HY利差 3.43%","action_instruction":"ON RRP蓄水池仅剩0.33B（近乎耗尽），叠加财政部TGA高达914.37B抽水，直接导致美联储商业银行准备金降至2960.6B（低于3000B充裕线），高收益债利差报3.43%。警惕华尔街回购利率跳升与海外高Beta资产去杠杆波动。"},{"id":"RULE_CROSS_BORDER_FX","dimension":"③ 中美利差与跨境汇率约束","status":"warning","status_label":"深度倒挂约束","trigger_condition":"中美10Y利差 <= -2.20% 触发外部稳汇率与离岸分母约束","current_reading":"中美利差 -3.52% (中债1.58% - 美债5.1%)","action_instruction":"中美10Y利差深度倒挂至-3.52%（中债1.58% vs 美债5.1%），外部稳汇率（USD/CNH）约束国内央行大幅降息空间，同时压制离岸港股分母端外资回流；权益配置宜偏重内需自主可控、上游紧缺资源与A股红利底仓。"},{"id":"RULE_CN_ASSET_FAMINE","dimension":"④ 国内宽货币与资产荒象限","status":"bullish","status_label":"资产荒延续","trigger_condition":"10Y中债<=2.18% 且 DR007<=1.80% 且 5日变动<8bp","current_reading":"10Y中债 1.58% (1%分位) | 30Y 2.04% | DR007 1.37%","action_instruction":"银行间FDR007报1.37%维持低位，注意10Y中债已处1.58%（近3年1%极低分位），30Y超长债(2.04%)赔率空间受限且对特别国债供给敏感，建议以1-3年高等级信用债吃票息+央国企红利低波替代盲目拉长久期。"},{"id":"RULE_CN_WEALTH_REDEMPTION","dimension":"⑤ 理财赎回负反馈与流动性分层","status":"bullish","status_label":"非银无赎回压力","trigger_condition":"R007-DR007分层利差>=25bp 或 (长债5日>=10bp且利差>=15bp)","current_reading":"R007-DR007利差 3.0bp | 10Y中债5日 -2.5bp","action_instruction":"R007-DR007分层利差仅3.0bp且10Y中债5日变动-2.5bp，银行向非银流动性传导顺畅，理财与债基规模稳定，信用债票息套息环境安全。"},{"id":"RULE_CN_CREDIT_PULSE","dimension":"⑥ 国内分子端宽信用与M1活化","status":"bullish","status_label":"宽信用主动修复","trigger_condition":"M1-M2>-3.5% 或 (M1-M2>-4.8%且月环比>0) 确认宽信用拐点","current_reading":"M1-M2剪刀差 -2.7% (月环比 +1.3pct | 2026-10 (月度·11月中旬发布))","action_instruction":"M1-M2剪刀差回升至-2.7%（环比+1.3pct），企业活期存款与财政实物工作量同步活化，建议由纯红利防御向顺周期工业金属、核心资产及弹性标的切换。"},{"id":"RULE_EQUITY_ERP_VALUATION","dimension":"⑦ A股股债性价比 (沪深300 ERP)","status":"bullish","status_label":"高性价比赔率区","trigger_condition":"沪深300 ERP >= 5.80% 触发高性价比配置信号","current_reading":"ERP 6.31% (近3年 49%分位 | 1日 +2.0bp)","action_instruction":"沪深300 ERP达6.31%（近3年49%分位（因包含2024年极端底部样本，但绝对溢价已显著高于5.8%配置线）），10Y国债1.58%低利率推升权益隐含风险溢价，指数向下空间受封锁，宜通过哑铃进攻端布局低库存+Back紧缺资源品与CapEx订单验证的硬科技板块。"},{"id":"RULE_COMMODITY_BASIS_RESONANCE","dimension":"⑧ 大宗期现结构与跨资产比价共振","status":"neutral","status_label":"期现结构分化","trigger_condition":"显性库存5年分位<25% 且 现货升水(Back) 触发资源进攻；Contango且库存>=35% 触发伪红利排雷","current_reading":"强Back低库存: 阴极铜 | Contango排雷: 螺纹钢 | DXY 103.41","action_instruction":"大宗商品期现结构呈品种间分化，严格遵循“只做低库存+Back升水龙头、规避Contango累库伪红利”原则。"}],"barbell_allocation":{"defense_total":55,"offense_total":45,"strong_commodities":["阴极铜"],"contango_commodities":["螺纹钢"],"breakdown":[{"bucket":"防御端：中短久期利率债/高等级信用债","group_key":"defense_bond","weight":30,"tag":"流动性与票息底仓","rationale":"FDR007报1.37%、R007-DR007利差3.0bp保障稳健套息，规避30Y超长债(2.04%)在极低利率分位下的供给与止盈波动。"},{"bucket":"防御端：央国企高股息真红利低波","group_key":"defense_dividend","weight":25,"tag":"险资OCI类债替代锚","rationale":"10Y国债1.58%（1%分位）背景下，自由现金流充裕的水电/运营商/国有大行具备险资OCI账户强力承接（已定向剔除【螺纹钢】等Contango现货贴水累库伪红利）。"},{"bucket":"进攻端：全球AI算力基建与电力/铜连接卡点","group_key":"offense_tech_capex","weight":20,"tag":"CapEx一阶与二阶导验证","rationale":"紧盯台积电月度营收、韩国HBM出口与北美云厂商CapEx同比增速斜率，精选1.6T光模块、液冷、AIDC电源HVDC及国产算力芯片放量标的。"},{"bucket":"进攻端：强Back+低库存紧缺大宗资源品","group_key":"offense_commodity","weight":15,"tag":"期现逼仓与供需缺口","rationale":"当前锁定【阴极铜】（库存<25%分位+现货Back升水）高自给率矿端龙头，叠加黄金央行购金底仓，对冲海外高通胀黏性与AIDC电力/铜铝实物消耗。"},{"bucket":"进攻端：AI Agent商业化与具身智能核心部件","group_key":"offense_tech_agent","weight":10,"tag":"ROI闭环与0到1期权","rationale":"围绕推理侧Scaling Law降本后的企业级Agent软件RPO加速，以及人形机器人行星滚柱丝杠/六维力传感器正式定点公告逢低卡位。"}]},"soft_reports":{"trading_perspective":{"title":"【今日总纲·交易视角】海外高实际利率(2.89%)杀概念 vs 国内10月M1-M2改善(-2.7%) · 锁定「55%短债真红利 + 45%铜矿/算力真景气」","core_marginal_change":"① 国内资金与信用破冰：11-20货币网FDR007报1.37%（R-DR分层仅3.0bp），10月M1-M2剪刀差收窄至-2.7%（环比+1.3pct），10Y中债1.58%推升沪深300 ERP至6.31%。\n② 海外分母与流动性底线：10Y美债5.1%（实际利率2.89% + 通胀2.19%），ON RRP仅剩0.33B、TGA 914.37B，银行准备金2960.6B（破3000B充裕线）。\n③ 大宗仓单与产业链分化：上期所铜仓单日减905吨至6,501吨（期货近月Back +2,570元）；但沪铝(-1.66%)弱于氧化铝(+0.04%)，黑钨无当日新长单。","transmission_logic":"① 海外分母冲高预警：10Y美债报5.1%（5日+22.0bp）、实际利率2.89%、准备金2960.6B，海外贴现率上冲严厉压制高估值题材。\n② 国内分子端破冰 + 资产荒底仓：10月M1-M2收窄至-2.7%（环比+1.3pct），10Y中债1.58% + FDR007 1.37%，既支撑央企真红利底仓（长江电力/中国移动），又激活顺周期高自给资源与工控修复。\n③ 多空鲜明表态：看多【高自给铜矿(紫金) + 放量算力龙头(中际旭创11-19成交166亿涨+3.05%)】；把【外购氧化铝受成本挤压的云铝股份】降为待确认；剔除【无日频新长单的黑钨链与淡季螺纹钢】。","action_instructions":["① 仓位指令：防守 55%（短债30% + 央企真红利25%）: 进攻 45%（AI算力20% + 紧缺资源15% + 工控/Agent 10%）。","② 明日重点看谁：进攻首选 300308 中际旭创（量价齐升+TSMC月报高景气）与 601899 紫金矿业（铜仓单连降+期货Back）；底仓持 600900 长江电力 / 600941 中国移动。","③ 什么情况取消：若上期所铜仓单连续3日累库>3000吨、或10Y实际利率突破3.0%引发外盘流动性冲击，立即暂停资源进攻桶；云铝待沪铝涨幅跑赢氧化铝后再恢复候选。"]},"wealth_perspective":{"title":"【今日总纲·渠道视角】非银分层仅3.0bp无赎回冲击，10Y中债1.58%长久期赔率薄 · 主推「短债底仓 + 央企红利/硬科技固收+」","core_marginal_change":"① 赎回雷达安全：11-20定盘FDR007报1.37%，R007-DR007流动性分层利差仅3.0bp（<25bp安全区），非银融资顺畅。\n② 长端利率赔率偏薄：10Y中债报1.58%（近3年1%极低分位）、30Y中债报2.04%，继续拉长久期性价比低。\n③ 含权固收+性价比突出：沪深300 ERP达6.31%（49%分位），叠加10月M1-M2改善至-2.7%，权益向下空间封锁。","transmission_logic":"① 纯债归因（控久期锁票息）：决定理财回撤的核心是非银分层（R007-DR007当前3.0bp）。当前短端信用债套息极稳，但30Y超长债对供给敏感，宜控久期在1-3年。\n② 固收+归因（哑铃替代单押长债）：用 25% 央企真红利替代高波动超长债，用 45% 算力/金铜捕捉实体修复。\n③ 渠道排雷（严防伪红利）：绝不把黑色建材等淡季弱现货周期股当作红利产推荐给稳健客群，避免『赚股息、亏净值』。","action_instructions":["① 存续安抚话术：“当前银行间FDR007仅1.37%、非银分层利差仅3.0bp（远低于25bp预警线），无机构赎回踩踏压力，短债底仓安心持有吃票息。”","② 转化促单话术：“10年国债1.58%已处历史地板，单押长债赔率有限；建议按『30%短债理财 + 25%央企真红利 + 45%硬科技/金铜固收+』做哑铃配置。”","③ 三条风控扳机线：紧盯 10Y中债 2.15%（久期止损）、FDR007 1.85%（资金收敛）、R007-DR007 25bp（赎回预警，当前仅3.0bp）。"]}}},"capex_tracker":[{"stage":"第一阶段：算力与硬件基建 (行业按月观察 · 公司按公告更新)","status":"行业月报高景气 · 个股按季报/公告核对","obs_date":"行业最新数据日: 2026-11-10 (台积电10月营收) / 2026-11-11 (韩国前10日出口)","badge_color":"emerald","chain_nodes":"台积电CoWoS先进封装 ➔ HBM3e/HBM4存储 ➔ 800G/1.6T光模块与CPO ➔ AIDC液冷(CDU)、HVDC供电与上游铜铝需求","lead_indicators":"① 每月10日：台积电(TSMC)月度合并营收(最新披露: 2026-11-10)；② 每月1/11/21日：韩国关税厅半导体出口；③ 注：行业月报仅验证算力总量景气，单家A股供应商订单与份额必须以定期报告及巨潮公告为准。","sec_cninfo_keywords":["Purchases of property and equipment","Capital expenditures guidance","CoWoS capacity allocation","1.6T transceivers","Liquid cooling","合同负债","在建工程","存货跌价准备"],"verification_metric":"【公告前记录上次指引 · 公布后对照】北美四大云厂商(MSFT/GOOG/META/AMZN)10-Q实际CapEx与下季指引对比上季记录；A股光模块/服务器龙头核对季度毛利率、合同负债与经营现金流净额。","red_flag":"【取消看多条件 (Invalidation)】云厂商CapEx同比增速斜率连续放缓，或A股硬件供应商季报出现存货跌价准备激增、毛利率环比下滑。"},{"stage":"第二阶段：推理期扩展与 Agent 商业化 (ROI 闭环期)","status":"分化观察期 · 考核RPO与毛利","obs_date":"财报核验期: 2026Q3 10-Q / 三季报披露期 (2026-10月底)","badge_color":"blue","chain_nodes":"Reasoning推理期算力扩展 ➔ 端侧轻量化蒸馏模型 ➔ 企业级AI Agent工作流 ➔ 垂直行业SaaS增收(ARR)","lead_indicators":"① 企业软件财报 RPO(剩余履约义务)增速 vs 营收增速剪刀差；② 算力租赁 GPU 时租价格走势；③ 在公告前记录公司上次ARR/毛利率指引，披露后逐项对照是否超出原判断。","sec_cninfo_keywords":["Remaining Performance Obligations (RPO)","Net Dollar Retention (NDR)","AI Copilot seat adoption","Inference token volume","ARR增速","研发费用资本化率","毛利率同比变动"],"verification_metric":"【ROI商业化闭环】软件企业财报披露RPO（剩余履约义务）增速超越营收增速 > 5pct，且销售毛利率未被API调用成本侵蚀。","red_flag":"【取消看多条件 (Invalidation)】仅披露Token调用量增长但无付费收入披露，或因推理算力成本过高导致毛利率同比下滑。"},{"stage":"第三阶段：具身智能与人形机器人 (0 到 1 公告核验期)","status":"送样观察期 · 无正式定点不提前计价","obs_date":"公告核验基准: 巨潮资讯网截至 2026-11-19 正式公告","badge_color":"purple","chain_nodes":"VLA多模态端到端控制算法 ➔ 行星滚柱丝杠/微型丝杠 ➔ 谐波减速器/空心杯电机 ➔ 六维力传感器与稀土永磁/轻量化材料","lead_indicators":"① 巨潮资讯网《定点通知书》或《日常经营重大合同公告》；② 专用产线环评批复与高精度磨床采购落地；③ 严格区分『投资者调研纪要口头送样』与『正式具有法律约束力的定点公告』。","sec_cninfo_keywords":["行星滚柱丝杠","六维力传感器","空心杯电机","客户送样验证","小批量定点通知书","专用产线环评","投资者关系活动记录表"],"verification_metric":"【仅认准正式公告】国内零部件厂商在巨潮资讯网披露正式定点通知书或批量供货合同，且传统主业经营现金流为正。","red_flag":"【取消看多条件 (Invalidation)】仅停留在无约束力框架协议、无正式定点公告却伴随大股东/高管减持预披露，立即剔除。"}],"commodities":[{"id":"copper","sector":"有色金属","name":"SHFE 阴极铜","code":"主力CU2701 / 近月CU2612","futuresPrice":94720,"spotPrice":97290,"priceLabel":"主力CU2701 / 近月CU2612","diffLabel":"期货近月-主力月差 (非同日现货)","unit":"元/吨","changePct":-5.07,"basis":2570,"basisPct":2.71,"structure":"期货近月Back (+2,570元/吨)","invLevel":"11.8%","invPercentile":11.8,"invWindowLabel":"上期所近5年注册仓单分位","warrantTons":"6,501 吨","invWeeklyChange":"日减 -905吨 (11-18为7,406吨)","futuresObsDate":"2026-11-19","warrantObsDate":"2026-11-19","spotRefNote":"统计局11月上旬1#电解铜市场价维持高位；缺少同日现货报价时仅以期货月差与仓单核验","spotObsDate":"2026-11-10 (统计局旬报)","data_status":"updated","cycleStage":"注册仓单连降至6501吨 · 期货近月Back","capexLink":"AIDC电源HVDC铜排/液冷散热 + 特高压电网CapEx刚性拉动","firstHandNote":"上期所11月19日铜注册仓单由7,406吨降至6,501吨（单日减少905吨），近月CU2612(97,290)较主力CU2701(94,720)维持+2,570元/吨期货Back月差。","forwardCurve":[97290,94720,94000,93880,93750,93650],"basisHistory":[{"date":"W-5","basis":320,"inv":28},{"date":"W-4","basis":680,"inv":24},{"date":"W-3","basis":1150,"inv":19.5},{"date":"W-2","basis":1620,"inv":16},{"date":"11-18","basis":2180,"inv":13.5},{"date":"11-19","basis":2570,"inv":11.8}],"fundamentalGrade":"STRONG_BULL","gradeLabel":"仓单去化+期货Back 强共振","gradeBadgeColor":"emerald","gradeSummary":"交易所注册仓单处 11.8% 低分位（上期所近5年注册仓单分位），且近月较主力合约升水 +2.71%（期货月差Back），供需紧平衡支撑上游高自给率矿端龙头。","allowOffense":true,"pseudoDividendWarning":false,"trend_10d":[103800,104200,104650,105100,104850,105150,103400,101200,97920,94720],"trend_dates":["11-06","11-09","11-10","11-11","11-12","11-13","11-16","11-17","11-18","11-19"]},{"id":"alumina","sector":"铝产业链 (收入vs成本)","name":"SHFE 电解铝(AL) & 氧化铝(AO)","code":"沪铝AL2701 / 氧化铝AO2701","futuresPrice":2590,"spotPrice":2601,"priceLabel":"氧化铝主力AO2701 / 近月AO2612","diffLabel":"氧化铝近月-主力月差 | 沪铝AL2701: 21,330 (-1.66%)","alFuturesPrice":21330,"alNearPrice":21850,"alChangePct":-1.66,"unit":"元/吨","changePct":0.04,"basis":11,"basisPct":0.42,"structure":"铝Back(+520) / 氧化铝微Back(+11)","invLevel":"14.5%","invPercentile":14.5,"invWindowLabel":"氧化铝2023.06上市以来(3.4年)仓单分位","warrantTons":"氧化铝192,896吨 / 沪铝35,764吨","invWeeklyChange":"AO日减-43,214吨 / AL日减-7,061吨","futuresObsDate":"2026-11-19","warrantObsDate":"2026-11-19","spotRefNote":"统计局11月上旬铝锭市场价跟踪；注意氧化铝是电解铝(云铝)的采购成本项","spotObsDate":"2026-11-10 (统计局旬报)","data_status":"updated","cycleStage":"氧化铝坚挺(+0.04%)但沪铝回调(-1.66%) · 吨铝利润待确认","capexLink":"绿电铝产能天花板 + 区分【氧化铝外销受益】与【电解铝外购氧化铝成本挤压】","firstHandNote":"11月19日上期所铝仓单减7,061吨至35,764吨，氧化铝总仓单减43,214吨至192,896吨（注：AO于2023年6月上市，分位基于3.4年历史）。当日沪铝主力21,330元/吨(-1.66%)弱于氧化铝2,590元/吨(+0.04%)，对需外购氧化铝的电解铝厂形成短线成本端挤压。","forwardCurve":[2601,2590,2597,2607,2618,2631],"basisHistory":[{"date":"W-5","basis":80,"inv":26},{"date":"W-4","basis":95,"inv":23},{"date":"W-3","basis":70,"inv":21},{"date":"W-2","basis":45,"inv":19},{"date":"11-18","basis":18,"inv":17.8},{"date":"11-19","basis":11,"inv":14.5}],"fundamentalGrade":"BACK_WATCH","gradeLabel":"仓单去化 · 吨铝利润待确认","gradeBadgeColor":"amber","gradeSummary":"上期所氧化铝(2023.06上市以来3.4年分位 14.5%)与沪铝仓单同步去化，近月维持期货Back(+0.42%)；但当日沪铝(-1.66%)弱于氧化铝(+0.04%)，对需外购氧化铝的电解铝企(如云铝)形成成本端扰动，吨铝利润方向待确认。","allowOffense":true,"pseudoDividendWarning":false,"trend_10d":[2615,2630,2642,2650,2648,2622,2610,2598,2591,2590],"trend_dates":["11-06","11-09","11-10","11-11","11-12","11-13","11-16","11-17","11-18","11-19"]},{"id":"tungsten","sector":"战略小金属","name":"65%黑钨精矿 / 仲钨酸铵(APT)","code":"企业半月长单 (无日频期货)","futuresPrice":143500,"spotPrice":146000,"priceLabel":"11月上半月长单 / 市场参考报价","diffLabel":"长单价差 (非日频交易所数据·仅人工/长单更新)","unit":"元/标吨","changePct":0,"basis":2500,"basisPct":1.74,"structure":"非日频长单 · 暂停自动强共振","invLevel":"样本受限","invPercentile":25,"invWindowLabel":"行业长单跟踪(无交易所日度仓单)","warrantTons":"无交易所公开仓单","invWeeklyChange":"按半月长单手动更新","futuresObsDate":"2026-11-05 (长单日)","warrantObsDate":"无日频源","spotRefNote":"仅在取得章源/江钨原始长单报价时更新；无当日新长单时撤下个股自动强共振","spotObsDate":"2026-11-05 (11月上半月长单)","data_status":"cached","cycleStage":"长单观察 (上次更新11-05，暂停自动触发个股强共振)","capexLink":"AI服务器高多层PCB精密微钻耗材 + 光伏细钨丝金刚线","firstHandNote":"本地黑钨精矿无交易所日频公开行情刷新路径，当前报价沿用11月5日长单(14.35~14.60万元/标吨)。根据数据纪律，未取得新一期企业原始长单前，降级为观察提示，不自动触发个股强共振。","forwardCurve":[146000,145000,144200,143500,143000,142500],"basisHistory":[{"date":"9月上","basis":800,"inv":30},{"date":"9月下","basis":1200,"inv":28},{"date":"10月上","basis":1500,"inv":27},{"date":"10月下","basis":2000,"inv":26},{"date":"11月上","basis":2500,"inv":25},{"date":"待更新","basis":2500,"inv":25}],"fundamentalGrade":"CACHE_WATCH","gradeLabel":"长单观察 (2026-11-05 (长单日))","gradeBadgeColor":"slate","gradeSummary":"该品种无交易所日频公开行情刷新路径（当前沿用 2026-11-05 (长单日) 数据）。按数据校准纪律，未取得新一期原始长单前暂停强共振评级，仅作观察。","allowOffense":false,"pseudoDividendWarning":false,"trend_10d":[138500,139500,141000,142000,143500,143500,143500,143500,143500,143500],"trend_dates":["09月上","09月下","10月上","10月下","11-05","11-05","11-05","11-05","11-05","11-05"]},{"id":"gold","sector":"贵金属","name":"SHFE 沪金 / 上金所 Au99.99","code":"主力AU2702 / 现货Au99.99","futuresPrice":804.32,"spotPrice":801.93,"priceLabel":"沪金主力AU2702 / 上金所Au99.99","diffLabel":"期现基差 (Au99.99现货 - 沪金主力)","unit":"元/克","changePct":-2.6,"basis":-2.39,"basisPct":-0.3,"structure":"上金所Au99.99日行情实取","invLevel":"18.5%","invPercentile":18.5,"invWindowLabel":"黄金按实际利率与央行购金定价(不套用工业库存)","warrantTons":"Au99.99成交 67.31亿元","invWeeklyChange":"近月AU2612报 802.14元/克","futuresObsDate":"2026-11-19","warrantObsDate":"2026-11-19","spotRefNote":"上金所 Au99.99 每日收盘实取 (801.93元/克，日跌-1.09%)","spotObsDate":"2026-11-19 (上金所日行情)","data_status":"updated","cycleStage":"10Y TIPS实际利率(2.89%)高位压制短线金价 · 央行购金托底","capexLink":"对冲美国财政赤字与信用货币稀释的战略底仓","firstHandNote":"11月19日上金所Au99.99现货收报801.93元/克(-1.09%，成交额67.31亿元)，上期所沪金主力AU2702收报804.32元/克(-2.60%)，期现基差-2.39元/克(-0.30%)。受美债10Y实际利率2.89%高位约束，短线回调等待分母端企稳。","forwardCurve":[801.93,802.14,803.12,804.32,806.46,808.2],"basisHistory":[{"date":"W-5","basis":-1.2,"inv":24},{"date":"W-4","basis":0.4,"inv":22},{"date":"W-3","basis":0.8,"inv":21},{"date":"W-2","basis":-0.6,"inv":20},{"date":"11-18","basis":-3.53,"inv":19},{"date":"11-19","basis":-2.39,"inv":18.5}],"fundamentalGrade":"PRECIOUS_HEDGE","gradeLabel":"央行购金底仓 · 实际利率约束","gradeBadgeColor":"amber","gradeSummary":"10Y TIPS实际利率(2.89%)处高位对金价构成短线分母约束，上金所Au99.99(801.93元/克)与央行购金封锁中期下行空间，宜待实际利率回落分批配置。","allowOffense":true,"pseudoDividendWarning":false,"trend_10d":[858.2,855.4,852.1,856.8,854,841.48,835.1,825.8,814.32,804.32],"trend_dates":["11-06","11-09","11-10","11-11","11-12","11-13","11-16","11-17","11-18","11-19"]},{"id":"crude","sector":"能源化工","name":"INE 中质含硫原油 / EIA周库存","code":"主力SC2701 / 近月SC2612","futuresPrice":585.9,"spotPrice":595.3,"priceLabel":"主力SC2701 / 近月SC2612","diffLabel":"期货近月-主力月差 (SC2612 - SC2701)","unit":"元/桶","changePct":-0.59,"basis":9.4,"basisPct":1.6,"structure":"期货近月Back (+9.4元/桶)","invLevel":"31.0%","invPercentile":31,"invWindowLabel":"EIA美国商业原油5年周库存分位(地域:美国)","warrantTons":"INE仓单 366.6万桶","invWeeklyChange":"INE仓单日增减 0桶","futuresObsDate":"2026-11-19","warrantObsDate":"2026-11-19 (INE) / 2026-11-13 (EIA周报)","spotRefNote":"库存分位源自美国EIA商业原油周库存(具地域属性)，配合INE原油交割库仓单366.6万桶跟踪","spotObsDate":"2026-11-13 (EIA周报)","data_status":"updated","cycleStage":"近月期货Back(+1.60%) + 美国商业原油库存中性偏低","capexLink":"全球海工油服上游勘探CapEx + 通胀预期(T10YIE)驱动锚","firstHandNote":"11月19日INE原油主力SC2701收报585.9元/桶(-0.59%)，近月SC2612报595.3元/桶，近月-主力期货月差+9.4元/桶(+1.60%)，期限曲线595.3➔546.6元/桶呈Back结构；INE交割库仓单366.6万桶。","forwardCurve":[595.3,585.9,576.8,566.5,555.5,546.6],"basisHistory":[{"date":"W-5","basis":2.1,"inv":36},{"date":"W-4","basis":3.4,"inv":35},{"date":"W-3","basis":4.8,"inv":34},{"date":"W-2","basis":6.2,"inv":32.5},{"date":"11-18","basis":7.9,"inv":31.5},{"date":"11-19","basis":9.4,"inv":31}],"fundamentalGrade":"BACK_WATCH","gradeLabel":"期货近月Back · 结构支撑","gradeBadgeColor":"sky","gradeSummary":"期货近月保持升水 +1.6%（月差Back），库存分位 31.0%（EIA美国商业原油5年周库存分位(地域:美国)）处于可控区间，具备逢低配置价值。","allowOffense":true,"pseudoDividendWarning":false,"trend_10d":[595.2,598.6,594,601.5,599,625.5,612,589.4,576.1,585.9],"trend_dates":["11-06","11-09","11-10","11-11","11-12","11-13","11-16","11-17","11-18","11-19"]},{"id":"rebar","sector":"黑色建材","name":"SHFE 螺纹钢","code":"主力RB2701 / 近月RB2612","futuresPrice":2983,"spotPrice":2955,"priceLabel":"主力RB2701 / 统计局旬度现货参考","diffLabel":"旬度现货-主力价差 | 期货近月RB2612: 3,010","unit":"元/吨","changePct":0.51,"basis":-28,"basisPct":-0.94,"structure":"现货偏弱 / 老仓单集中注销","invLevel":"42.0%","invPercentile":42,"invWindowLabel":"社会库存与钢厂库存5年季节性分位","warrantTons":"10,058 吨","invWeeklyChange":"日减 -20,160吨 (交割月前老仓单注销)","futuresObsDate":"2026-11-19","warrantObsDate":"2026-11-19","spotRefNote":"统计局11月上旬螺纹钢(Φ20mm,HRB400E)市场价偏弱；仓单骤减系老仓单制度性注销而非终端抢料","spotObsDate":"2026-11-10 (统计局旬报)","data_status":"updated","cycleStage":"冬季施工淡季 + 规避传统周期伪红利","capexLink":"传统地产/基建施工映射（须待10月M1-M2改善向实物工作量传导确认）","firstHandNote":"11月19日上期所螺纹钢主力RB2701收报2,983元/吨(+0.51%)，注册仓单由30,218吨降至10,058吨(-20,160吨，主因11月老仓单集中注销)。北方进入冬季施工淡季，维持伪红利排雷观察。","forwardCurve":[2955,3010,2983,2945,2954,2972],"basisHistory":[{"date":"W-5","basis":25,"inv":38},{"date":"W-4","basis":10,"inv":39.5},{"date":"W-3","basis":-5,"inv":40.5},{"date":"W-2","basis":-15,"inv":41.2},{"date":"11-18","basis":-22,"inv":42},{"date":"11-19","basis":-28,"inv":42}],"fundamentalGrade":"CONTANGO_BEAR","gradeLabel":"现货偏弱+高库存 · 伪红利排雷","gradeBadgeColor":"rose","gradeSummary":"旬度现货较期货贴水 -0.94% 且库存分位达 42.0%，反映施工淡季需求偏弱，严禁因静态高股息率将其作为红利底仓。","allowOffense":false,"pseudoDividendWarning":true,"trend_10d":[3080,3068,3055,3046,3038,3035,3012,2968,2977,2983],"trend_dates":["11-06","11-09","11-10","11-11","11-12","11-13","11-16","11-17","11-18","11-19"]}],"equity_pool":[{"code":"601899.SH","name":"紫金矿业","board":"主板 (10cm)","bucketGroup":"offense_commodity","bucketLabel":"进攻 · 紧缺大宗资源","linkedCommodities":["copper","gold"],"commodity":"阴极铜 / 黄金","price":23.88,"changePct":-2.61,"turnoverYi":99.2,"vsCsi300Pct":-2.64,"quoteDate":"2026-11-19","announcementDate":"2026-10-25 (三季报产量核验)","selfSufficiency":"矿产铜107万吨/金72吨，矿端高自给率直接受益铜价与金价","firstHandCatalyst":"上期所铜仓单11-19再降905吨至6,501吨，期货近月CU2612升水主力+2,570元/吨；11-19成交额99.2亿元跟随铜金期货回调","cancelCondition":"若上期所铜仓单连续3日累库>3000吨，或沪铜近月-主力转为Contango贴水，取消资源首选评级","trend_10d":[28.28,28.41,28.18,27.86,26.78,26.38,25.96,25.99,24.52,23.88],"trend_dates":["11-06","11-09","11-10","11-11","11-12","11-13","11-16","11-17","11-18","11-19"],"resonanceGrade":"STRONG_RESONANCE","actionLabel":"仓单去化+期货Back · 矿端观察首选","badgeColor":"emerald","diagnosis":"关联品种【SHFE 阴极铜(仓单去化+期货Back 强共振) / SHFE 沪金(央行购金底仓 · 实际利率约束)】注册仓单持续下降(<25%分位)且近月维持期货Back升水，高自给率矿端龙头优先跟踪。"},{"code":"000807.SZ","name":"云铝股份","board":"主板 (10cm)","bucketGroup":"offense_commodity","bucketLabel":"进攻 · 紧缺大宗资源","linkedCommodities":["alumina"],"commodity":"电解铝(收入) - 氧化铝(成本)","price":21.35,"changePct":-4,"turnoverYi":15.41,"vsCsi300Pct":-4.03,"quoteDate":"2026-11-19","announcementDate":"2026-03-28 (2025年报成本结构)","selfSufficiency":"据2025年报：原铝板块采购氧化铝与电力生产电解铝（氧化铝自给率不足100%，外购部分属成本项）","firstHandCatalyst":"11-19沪铝主力21,330元/吨(-1.66%)下跌而氧化铝2,590元/吨(+0.04%)抗跌，仅氧化铝涨/抗跌会挤压外购氧化铝的吨铝利润","cancelCondition":"当氧化铝涨幅>沪铝涨幅导致模拟吨铝利润走弱时，取消自动看多（已触发降级为待确认）","trend_10d":[24.52,24.87,23.72,23.41,23.31,23.04,22.84,22.68,22.24,21.35],"trend_dates":["11-06","11-09","11-10","11-11","11-12","11-13","11-16","11-17","11-18","11-19"],"resonanceGrade":"COST_SQUEEZE_WATCH","actionLabel":"成本端有变化 · 吨铝利润待确认","badgeColor":"amber","diagnosis":"据2025年报，公司原铝板块需采购氧化铝与电力；最新交易日沪铝(-1.66%)弱于氧化铝(+0.04%)，仅氧化铝坚挺而铝价回调会挤压外购氧化铝部分的吨铝利润，据此取消自动看多，待铝价与成本变化支持盈利改善后再纳入候选。"},{"code":"920807.BJ","name":"奔朗新材","board":"北交所 (30cm)","bucketGroup":"offense_commodity","bucketLabel":"进攻 · 紧缺大宗资源","linkedCommodities":["tungsten"],"commodity":"超硬材料 / 碳化钨工具","price":6.91,"changePct":-4.95,"turnoverYi":0.09,"vsCsi300Pct":-4.98,"quoteDate":"2026-11-19","announcementDate":"2026-11-05 (11月上半月钨长单)","selfSufficiency":"金刚石与硬质合金超硬工具（注：碳化钨亦为原材料成本项，需验证向下游顺价能力）","firstHandCatalyst":"黑钨长单停留在11-05数据且无日频行情源，11-19成交额仅0.09亿元、日跌-4.95%，已撤下自动强共振评级","cancelCondition":"无新一期钨企长单报价或成交额低于0.2亿元时，仅作观察，不列入次日进攻候选","trend_10d":[7.94,7.93,8.01,8.05,7.96,7.67,7.55,7.45,7.27,6.91],"trend_dates":["11-06","11-09","11-10","11-11","11-12","11-13","11-16","11-17","11-18","11-19"],"resonanceGrade":"CACHE_WATCH","actionLabel":"长单/公告观察 · 暂停自动强共振","badgeColor":"slate","diagnosis":"关联品种【65%黑钨精矿(长单观察 (2026-11-05 (长单日)))】无交易所日频公开源，未取得新一期企业原始长单或公司公告前仅作观察。"},{"code":"688122.SH","name":"西部超导","board":"科创板 (20cm)","bucketGroup":"offense_commodity","bucketLabel":"进攻 · 紧缺大宗资源","linkedCommodities":["tungsten"],"commodity":"高端钛合金 / 超导线材","price":40.74,"changePct":1.8,"turnoverYi":4.4,"vsCsi300Pct":1.77,"quoteDate":"2026-11-19","announcementDate":"2026-10-29 (三季报合同负债核验)","selfSufficiency":"航空钛材与MRI/核聚变超导线材龙头，按公司公告与合同负债跟踪（不挂钩黑钨日频共振）","firstHandCatalyst":"11-19逆势收涨+1.80%（跑赢沪深300 +1.77pct，成交额4.40亿元），三季报超导线材与高端钛材交付稳健","cancelCondition":"若后续季度合同负债环比下滑或跌破20日均线量能萎缩，移出观察候选","trend_10d":[43.25,44.2,44.04,43.99,42.36,42.35,40.21,39.41,40.02,40.74],"trend_dates":["11-06","11-09","11-10","11-11","11-12","11-13","11-16","11-17","11-18","11-19"],"resonanceGrade":"CACHE_WATCH","actionLabel":"长单/公告观察 · 暂停自动强共振","badgeColor":"slate","diagnosis":"关联品种【65%黑钨精矿(长单观察 (2026-11-05 (长单日)))】无交易所日频公开源，未取得新一期企业原始长单或公司公告前仅作观察。"},{"code":"600547.SH","name":"山东黄金","board":"主板 (10cm)","bucketGroup":"offense_commodity","bucketLabel":"进攻 · 紧缺大宗资源","linkedCommodities":["gold"],"commodity":"黄金 (国内主力矿山)","price":23.65,"changePct":1.55,"turnoverYi":14.7,"vsCsi300Pct":1.52,"quoteDate":"2026-11-19","announcementDate":"2026-10-30 (三季报自产金核验)","selfSufficiency":"自产矿产金约45吨，纯正黄金矿端高自给率龙头","firstHandCatalyst":"11-19上金所Au99.99收于801.93元/克，股价逆势收涨+1.55%（成交额14.70亿元，跑赢基准+1.52pct），展现矿端底部韧性","cancelCondition":"若10Y TIPS实际利率突破3.00%且上金所Au99.99跌破780元/克，暂停逢低加配","trend_10d":[26.2,26.72,27,26.65,24.91,24.41,23.85,24.19,23.29,23.65],"trend_dates":["11-06","11-09","11-10","11-11","11-12","11-13","11-16","11-17","11-18","11-19"],"resonanceGrade":"PRECIOUS_ANCHOR","actionLabel":"央行购金底仓 · 盯实际利率拐点","badgeColor":"amber","diagnosis":"关联品种【SHFE 沪金(央行购金底仓 · 实际利率约束)】受央行购金与上金所Au99.99支撑，短线等待10Y TIPS实际利率回落窗口。"},{"code":"300139.SZ","name":"晓程科技","board":"创业板 (20cm)","bucketGroup":"offense_commodity","bucketLabel":"进攻 · 紧缺大宗资源","linkedCommodities":["gold"],"commodity":"黄金 (加纳金矿)","price":33.63,"changePct":-2.83,"turnoverYi":5.51,"vsCsi300Pct":-2.86,"quoteDate":"2026-11-19","announcementDate":"2026-10-28 (三季报加纳矿产金核验)","selfSufficiency":"海外加纳三大金矿权益，20cm高Beta金矿标的","firstHandCatalyst":"受10Y美债实际利率(2.89%)高位与沪金主力(-2.60%)回调影响，11-19收跌-2.83%（成交额5.51亿元），相对山东黄金偏弱","cancelCondition":"在实际利率(DFII10)未拐头向下且相对板块龙头(山东黄金)走弱期间，暂不追高","trend_10d":[39.86,39.55,40.24,40.09,38.06,37.11,34.89,35.69,34.61,33.63],"trend_dates":["11-06","11-09","11-10","11-11","11-12","11-13","11-16","11-17","11-18","11-19"],"resonanceGrade":"PRECIOUS_ANCHOR","actionLabel":"央行购金底仓 · 盯实际利率拐点","badgeColor":"amber","diagnosis":"关联品种【SHFE 沪金(央行购金底仓 · 实际利率约束)】受央行购金与上金所Au99.99支撑，短线等待10Y TIPS实际利率回落窗口。"},{"code":"920088.BJ","name":"科力股份","board":"北交所 (30cm)","bucketGroup":"offense_commodity","bucketLabel":"进攻 · 紧缺大宗资源","linkedCommodities":["crude"],"commodity":"原油 / 油田工程技术服务","price":30.29,"changePct":-4.15,"turnoverYi":0.49,"vsCsi300Pct":-4.18,"quoteDate":"2026-11-19","announcementDate":"2026-10-29 (三季报油服营收核验)","selfSufficiency":"中石油/中海油油田化学与地面工程服务商（业绩取决于上游油企CapEx结算而非单日油价）","firstHandCatalyst":"INE原油近月SC2612虽升水主力+9.4元/桶，但个股11-19收跌-4.15%（成交额0.49亿元），短期走势与单日油价背离","cancelCondition":"日成交额不足1亿元且相对基准走弱(-4.18pct)时，仅作跟踪，不触发次日交易","trend_10d":[37.07,36.47,35.55,35.9,36.14,35.37,33.1,31.98,31.6,30.29],"trend_dates":["11-06","11-09","11-10","11-11","11-12","11-13","11-16","11-17","11-18","11-19"],"resonanceGrade":"BACK_SUPPORT","actionLabel":"期货Back支撑 · 结合量价跟踪","badgeColor":"sky","diagnosis":"关联品种【INE 中质含硫原油(期货近月Back · 结构支撑)】维持近月Back结构，结合个股成交额与相对基准强弱跟踪。"},{"code":"300191.SZ","name":"潜能恒信","board":"创业板 (20cm)","bucketGroup":"offense_commodity","bucketLabel":"进攻 · 紧缺大宗资源","linkedCommodities":["crude"],"commodity":"原油 (海上油气区块勘探)","price":20.59,"changePct":-2.23,"turnoverYi":0.88,"vsCsi300Pct":-2.26,"quoteDate":"2026-11-19","announcementDate":"2026-10-28 (三季报区块进展)","selfSufficiency":"地震数据处理找油技术 + 海上油气区块开发分成权益","firstHandCatalyst":"11-19收跌-2.23%（成交额0.88亿元），虽INE原油维持近月Back结构，但区块投产兑现需以巨潮正式钻井/投产公告为准","cancelCondition":"无新钻井/产量公告且成交额低于1.5亿元时，维持观察，不自动升级为强共振","trend_10d":[22.99,23.25,22.84,23.59,23.2,22.41,21.5,21.05,21.06,20.59],"trend_dates":["11-06","11-09","11-10","11-11","11-12","11-13","11-16","11-17","11-18","11-19"],"resonanceGrade":"BACK_SUPPORT","actionLabel":"期货Back支撑 · 结合量价跟踪","badgeColor":"sky","diagnosis":"关联品种【INE 中质含硫原油(期货近月Back · 结构支撑)】维持近月Back结构，结合个股成交额与相对基准强弱跟踪。"},{"code":"600900.SH","name":"长江电力","board":"主板 (10cm)","bucketGroup":"defense_dividend","bucketLabel":"防御 · 央国企真红利","linkedCommodities":[],"commodity":"10Y中债(1.58%) 险资OCI类债锚","price":30.88,"changePct":0.65,"turnoverYi":28.11,"vsCsi300Pct":0.62,"quoteDate":"2026-11-19","announcementDate":"2026-10-31 (三季报来水与发电量公告)","selfSufficiency":"六库联调垄断水电资产，现金流与分红完全免疫工业品Contango累库风险","firstHandCatalyst":"10Y中债降至1.58%、11-20 FDR007仅1.37%，11-19长江电力收涨+0.65%（成交28.11亿元，近10日由29.91稳步升至30.88元）","cancelCondition":"若10Y中债收益率快速反弹突破2.15%导致股息率利差收窄，则下调防御红利权重","trend_10d":[29.91,29.83,29.67,29.48,29.61,29.91,30.49,30.6,30.68,30.88],"trend_dates":["11-06","11-09","11-10","11-11","11-12","11-13","11-16","11-17","11-18","11-19"],"resonanceGrade":"CORE_DEFENSE","actionLabel":"真红利底仓 · 险资OCI承接","badgeColor":"emerald","diagnosis":"当前宏观防守权重 55%，10Y中债低利率环境下具备险资OCI账户持续承接，且无大宗Contango累库风险。"},{"code":"600941.SH","name":"中国移动","board":"主板 (10cm)","bucketGroup":"defense_dividend","bucketLabel":"防御 · 央国企真红利","price":107.8,"changePct":0.39,"turnoverYi":15.87,"vsCsi300Pct":0.36,"quoteDate":"2026-11-19","announcementDate":"2026-10-22 (三季报经营现金流与派息指引)","linkedCommodities":[],"commodity":"高派息央企 + 运营商算力底座","selfSufficiency":"超70%派息率指引明确 + 经营现金流稳健，兼具类债红利底仓与智算网络属性","firstHandCatalyst":"11-19收涨+0.39%报107.80元（成交额15.87亿元，近10日由98.70低点连续走强至107.80元），与低利率资产荒高度契合","cancelCondition":"若应收账款周转明显恶化或运营商资本开支超预期重回扩张侵蚀自由现金流，取消红利首选","trend_10d":[103.49,103.03,101.55,99.93,98.7,101.46,104.49,105.2,107.38,107.8],"trend_dates":["11-06","11-09","11-10","11-11","11-12","11-13","11-16","11-17","11-18","11-19"],"resonanceGrade":"CORE_DEFENSE","actionLabel":"真红利底仓 · 险资OCI承接","badgeColor":"emerald","diagnosis":"当前宏观防守权重 55%，10Y中债低利率环境下具备险资OCI账户持续承接，且无大宗Contango累库风险。"},{"code":"300308.SZ","name":"中际旭创","board":"创业板 (20cm)","bucketGroup":"offense_tech_capex","bucketLabel":"进攻 · 科技CapEx跟踪","linkedCommodities":["copper"],"commodity":"800G/1.6T光模块 (行业月报+季报核对)","price":408.4,"changePct":3.05,"turnoverYi":166.08,"vsCsi300Pct":3.02,"quoteDate":"2026-11-19","announcementDate":"2026-10-28 (三季报毛利率/存货核验) | 2026-11-10 (台积电10月营收参照)","selfSufficiency":"全球800G/1.6T光模块龙头（注：台积电月营收仅验证行业景气，公司订单与份额以季报/公告为准）","firstHandCatalyst":"11-19放量收涨+3.05%报408.40元（全市场头部成交额166.08亿元，跑赢沪深300 +3.02pct），资金承接强劲","cancelCondition":"若下季北美四大云厂CapEx同比增速斜率放缓，或公司季报存货跌价准备/毛利率环比恶化，立即止盈降级","trend_10d":[448,452.03,471,542,508.9,466.2,408.97,393,396.3,408.4],"trend_dates":["11-06","11-09","11-10","11-11","11-12","11-13","11-16","11-17","11-18","11-19"],"resonanceGrade":"CAPEX_TRACK","actionLabel":"行业月报高景气 · 个股按公告核对","badgeColor":"indigo","diagnosis":"台积电月度营收验证算力总量高景气；单家公司订单、毛利率与存货周转须以定期报告及巨潮正式公告为准。"},{"code":"300124.SZ","name":"汇川技术","board":"创业板 (20cm)","bucketGroup":"offense_tech_capex","bucketLabel":"进攻 · 科技CapEx跟踪","linkedCommodities":[],"commodity":"通用工控 + 具身智能丝杠/伺服","price":53.45,"changePct":0,"turnoverYi":11.75,"vsCsi300Pct":-0.03,"quoteDate":"2026-11-19","announcementDate":"2026-10-29 (三季报) | 10月M1-M2(-2.7%)顺周期跟踪","selfSufficiency":"国内通用伺服/变频器龙头（人形机器人执行器仍处送样孵化期，必须待正式定点公告确认，不提前记为已验证）","firstHandCatalyst":"11-19平盘报53.45元（成交额11.75亿元）；央行10月M1-M2剪刀差收窄至-2.7%利好工控主业筑底，机器人业务待正式定点公告","cancelCondition":"未披露正式量产定点通知书前，不赋予具身智能溢价；若工控订单增速低于预期则移出候选","trend_10d":[56.66,57.55,55.85,55.1,53.11,53.45,52.96,52.8,53.45,53.45],"trend_dates":["11-06","11-09","11-10","11-11","11-12","11-13","11-16","11-17","11-18","11-19"],"resonanceGrade":"CAPEX_TRACK","actionLabel":"行业月报高景气 · 个股按公告核对","badgeColor":"indigo","diagnosis":"台积电月度营收验证算力总量高景气；单家公司订单、毛利率与存货周转须以定期报告及巨潮正式公告为准。"}],"field_notes":[{"id":1,"time":"2026-11-20 11:35","category":"银行间资金面 · 理财渠道跟踪","source":"中国货币网(ChinaMoney) 11:30定盘原表 & 央行10月金融统计","title":"11月20日FDR007报1.37%、FR007报1.40%(分层仅3bp)，10月M1-M2收窄至-2.7%","content":"直连中国货币网实取11月20日11:30最新定盘：FDR007报1.37%、FR007报1.40%，非银分层利差仅3.0bp（11月19日为4.0bp），融资端无流动性分层压力；央行10月M1同比+4.4%、M2同比+7.1%，M1-M2剪刀差收窄至-2.7%（较9月-4.0%改善1.3pct）。","impact":"宏观顺风 (Macro Tailwind)","linkedTickers":["600900.SH","600941.SH"]},{"id":2,"time":"2026-11-19 16:10","category":"有色金属 · 铜/铝","source":"上期所11月18-19日仓单日报原表 & 2025年报产业链核对","title":"上期所铜仓单日减905吨至6,501吨；沪铝跌1.66%而氧化铝抗跌，云铝暂转观察","content":"核对上期所11月19日原表：铜注册仓单由18日7,406吨降至6,501吨(-905吨)，近月CU2612较主力CU2701升水+2,570元/吨；铝仓单减7,061吨至35,764吨，氧化铝仓单减43,214吨。因11-19沪铝(-1.66%)弱于氧化铝(+0.04%)，对需采购氧化铝的云铝股份(000807.SZ)构成短线成本端扰动，系统自动将云铝降为『吨铝利润待确认』。","impact":"分化验证 (Divergent Signal)","linkedTickers":["601899.SH","000807.SZ"]},{"id":3,"time":"2026-11-19 15:30","category":"科技CapEx · 算力/机器人调研","source":"台积电10月营收公告(11-10) & 深交所11-19已完成日线","title":"中际旭创11-19成交166.08亿元收涨+3.05%；行业景气与个股公告严格分层","content":"台积电11月10日公布10月营收验证算力行业高景气；个股层面11月19日中际旭创(300308.SZ)收盘408.40元(+3.05%，全天成交166.08亿元，跑赢沪深300基准+3.02pct)，相对强弱显著优于缺乏新长单更新的小金属标的。","impact":"强利多 (Strong Bullish)","linkedTickers":["300308.SZ","300124.SZ"]}]};
 
     const MACRO_SCENARIO_MATRIX = [
       {
@@ -386,18 +386,19 @@
       }
     ];
 
-    // 近10期趋势面积折线图组件（支持16项中美宏观指标、4项跨资产锚、6大宗商品期现价格）
-    function TrendChart10D({ data, dates = [], unit = "", color = "#10B981", label = "近10日趋势", height = 56 }) {
+    // 近10期趋势面积折线图组件（默认紧凑内联模式：不在每个卡片重复印“近10期走势(11-05➔11-18)”，仅在页顶统一说明一次）
+    function TrendChart10D({ data, dates = [], unit = "", color = "#10B981", expanded = false, height = 36 }) {
       const series = Array.isArray(data) && data.length >= 2 ? data.map(Number) : null;
       if (!series) return null;
       const min = Math.min(...series);
       const max = Math.max(...series);
       const range = max - min || 1;
-      const width = 280;
-      const padX = 8;
-      const padY = 10;
+      const width = expanded ? 300 : 168;
+      const h = expanded ? 88 : height;
+      const padX = 5;
+      const padY = expanded ? 10 : 5;
       const innerW = width - padX * 2;
-      const innerH = height - padY * 2;
+      const innerH = h - padY * 2;
 
       const coords = series.map((val, idx) => {
         const x = padX + (idx / (series.length - 1)) * innerW;
@@ -406,22 +407,66 @@
       });
 
       const polylinePoints = coords.map(pt => `${pt.x.toFixed(1)},${pt.y.toFixed(1)}`).join(" ");
-      const areaPoints = `${coords[0].x.toFixed(1)},${height - 2} ${polylinePoints} ${coords[coords.length - 1].x.toFixed(1)},${height - 2}`;
+      const areaPoints = `${coords[0].x.toFixed(1)},${h - 1} ${polylinePoints} ${coords[coords.length - 1].x.toFixed(1)},${h - 1}`;
       const first = coords[0];
       const last = coords[coords.length - 1];
       const delta = +(last.val - first.val).toFixed(2);
       const deltaStr = `${delta >= 0 ? "+" : ""}${delta}${unit}`;
 
+      if (!expanded) {
+        return (
+          <div className="flex flex-col items-end shrink-0" title={`10期区间: ${min}${unit} ~ ${max}${unit} (${first.date} ➔ ${last.date})`}>
+            <svg viewBox={`0 0 ${width} ${h}`} style={{ width: `${width}px`, height: `${h}px` }} className="overflow-visible">
+              <polygon points={areaPoints} fill={color} fillOpacity="0.14" />
+              <line
+                x1={padX}
+                y1={first.y.toFixed(1)}
+                x2={width - padX}
+                y2={first.y.toFixed(1)}
+                stroke={color}
+                strokeOpacity="0.3"
+                strokeDasharray="2 2"
+                strokeWidth="1"
+              />
+              <polyline
+                fill="none"
+                stroke={color}
+                strokeWidth="2.1"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                points={polylinePoints}
+              />
+              {coords.map((pt, idx) => (
+                <circle
+                  key={idx}
+                  cx={pt.x.toFixed(1)}
+                  cy={pt.y.toFixed(1)}
+                  r={idx === coords.length - 1 ? "3" : idx === 0 ? "2.2" : "1.4"}
+                  fill={idx === coords.length - 1 ? "#ffffff" : color}
+                  stroke={color}
+                  strokeWidth={idx === coords.length - 1 ? "1.8" : "0.8"}
+                >
+                  <title>{`${pt.date}: ${pt.val}${unit}`}</title>
+                </circle>
+              ))}
+            </svg>
+            <div className="text-[11px] text-slate-400 font-mono leading-none mt-1">
+              {first.val}➔<strong className="text-white">{last.val}</strong> ({deltaStr})
+            </div>
+          </div>
+        );
+      }
+
       return (
-        <div className="mt-2.5 pt-2 border-t border-slate-800/70">
+        <div>
           <div className="flex items-center justify-between text-[11px] text-slate-400 mb-1 font-mono">
-            <span>{label} ({first.date} ➔ {last.date})</span>
+            <span>{first.date} ➔ {last.date} (区间 {min} ~ {max})</span>
             <span>
               {first.val}{unit} ➔ <strong className="text-white">{last.val}{unit}</strong> ({deltaStr})
             </span>
           </div>
-          <svg viewBox={`0 0 ${width} ${height}`} className="w-full overflow-visible" style={{ height: `${height}px` }}>
-            <polygon points={areaPoints} fill={color} fillOpacity="0.13" />
+          <svg viewBox={`0 0 ${width} ${h}`} className="w-full overflow-visible" style={{ height: `${h}px` }}>
+            <polygon points={areaPoints} fill={color} fillOpacity="0.14" />
             <line
               x1={padX}
               y1={first.y.toFixed(1)}
@@ -441,24 +486,19 @@
               points={polylinePoints}
             />
             {coords.map((pt, idx) => (
-              <g key={idx}>
-                <circle
-                  cx={pt.x.toFixed(1)}
-                  cy={pt.y.toFixed(1)}
-                  r={idx === coords.length - 1 ? "3.6" : idx === 0 ? "2.6" : "1.8"}
-                  fill={idx === coords.length - 1 ? "#ffffff" : color}
-                  stroke={color}
-                  strokeWidth={idx === coords.length - 1 ? "2" : "1"}
-                >
-                  <title>{`${pt.date}: ${pt.val}${unit}`}</title>
-                </circle>
-              </g>
+              <circle
+                key={idx}
+                cx={pt.x.toFixed(1)}
+                cy={pt.y.toFixed(1)}
+                r={idx === coords.length - 1 ? "3.5" : idx === 0 ? "2.5" : "1.8"}
+                fill={idx === coords.length - 1 ? "#ffffff" : color}
+                stroke={color}
+                strokeWidth={idx === coords.length - 1 ? "2" : "1"}
+              >
+                <title>{`${pt.date}: ${pt.val}${unit}`}</title>
+              </circle>
             ))}
           </svg>
-          <div className="flex items-center justify-between text-[11px] text-slate-500 font-mono">
-            <span>10期最低: {min}{unit}</span>
-            <span>10期最高: {max}{unit}</span>
-          </div>
         </div>
       );
     }
@@ -1115,29 +1155,29 @@
           },
           soft_reports: {
             trading_perspective: {
-              title: `【沙盘实时推演·交易版】美债${simUs10y.toFixed(2)}%(实际${simDfii10.toFixed(2)}%)、中债${simCn10y.toFixed(2)}%，动态锁定五篮子哑铃 ${defense}% : ${offense}%`,
-              core_marginal_change: `当前沙盘设定：10Y美债=${simUs10y.toFixed(2)}%（10Y实际利率=${simDfii10.toFixed(2)}%，隐含通胀=${t10yie}%，5日变动=${simUs10y5d}bp），美联储准备金=${simWresbal.toFixed(0)}B；国内10Y中债=${simCn10y.toFixed(2)}%，FDR007=${simDr007.toFixed(2)}%，R007-DR007分层利差=${simRDrSpread.toFixed(1)}bp，中美利差=${usCnSpread.toFixed(2)}%，M1-M2剪刀差=${simScissors.toFixed(1)}%，沪深300 ERP=${simErp.toFixed(2)}%，低库存+Back紧缺大宗品种=${simStrongComCount}个（${sampleStrongNames.join("、") || "无"}）。`,
-              transmission_logic: `1. 海外分母与流动性：10Y实际利率(${simDfii10.toFixed(2)}%)与银行准备金(${simWresbal.toFixed(0)}B)处于${simDfii10 >= 2.20 || simWresbal < 3000 ? "紧约束状态，压制纯概念高估值题材" : "温和友善区间，支持黄金与成长估值扩张"}；\n2. 国内资金与分子端：10Y中债(${simCn10y.toFixed(2)}%)与M1-M2剪刀差(${simScissors.toFixed(1)}%)显示${simScissors > -3.5 ? "宽信用顺周期修复开启" : "低利率资产荒与分子端磨底延续"}；\n3. 大宗期现与科技CapEx联动：系统自动将防守端调整为 ${defense}%（短债${bondW}%+真红利${divW}%）、进攻端调整为 ${offense}%（AI算力${aiHwW}%+紧缺资源${comW}%+Agent/具身${agentW}%）。`,
+              title: `【沙盘推演·交易总纲】美债${simUs10y.toFixed(2)}%(实际${simDfii10.toFixed(2)}%)、中债${simCn10y.toFixed(2)}% · 动态锁定「${defense}%短债真红利 + ${offense}%资源与算力」`,
+              core_marginal_change: `① 国内资金与信用设定：10Y中债 ${simCn10y.toFixed(2)}%，FDR007 ${simDr007.toFixed(2)}%（R-DR分层 ${simRDrSpread.toFixed(1)}bp），M1-M2剪刀差 ${simScissors.toFixed(1)}%，沪深300 ERP ${simErp.toFixed(2)}%。\n② 海外分母与准备金设定：10Y美债 ${simUs10y.toFixed(2)}%（实际利率 ${simDfii10.toFixed(2)}% + 隐含通胀 ${t10yie}%，5日 ${simUs10y5d}bp），美联储准备金 ${simWresbal.toFixed(0)}B。\n③ 大宗期现共振设定：设定 ${simStrongComCount} 个核心大宗品种（${sampleStrongNames.join("、") || "无"}）处于低库存(<25%)+期货Back结构。`,
+              transmission_logic: `① 海外分母端观点：10Y实际利率(${simDfii10.toFixed(2)}%)与银行准备金(${simWresbal.toFixed(0)}B)处于${simDfii10 >= 2.20 || simWresbal < 3000 ? "紧约束区，坚决杀无业绩纯概念题材" : "温和友善区，支持黄金与硬科技估值扩张"}。\n② 国内分子/分母观点：10Y中债(${simCn10y.toFixed(2)}%)与M1-M2(${simScissors.toFixed(1)}%)指向${simScissors > -3.5 ? "宽信用顺周期修复开启，加大进攻端弹性" : "低利率资产荒延续，水电/运营商真红利底仓稳固"}。\n③ 多空鲜明表态：组合配比自动锁定 防守 ${defense}%（短债${bondW}%+真红利${divW}%）: 进攻 ${offense}%（AI算力${aiHwW}%+紧缺资源${comW}%+Agent/具身${agentW}%）。`,
               action_instructions: [
-                `【五篮子仓位指令】立即将组合再平衡至 防守端 ${defense}%（短债${bondW}% + 央企真红利${divW}%）: 进攻端 ${offense}%（AI算力${aiHwW}% + 紧缺大宗资源${comW}% + Agent/具身${agentW}%）。`,
+                `① 仓位指令：防守 ${defense}%（短债${bondW}% + 央企真红利${divW}%）: 进攻 ${offense}%（AI算力${aiHwW}% + 紧缺大宗资源${comW}% + Agent/具身${agentW}%）。`,
                 sampleStrongNames.length
-                  ? `【大宗与科技选股过滤】大宗端聚焦【${sampleStrongNames.join("、")}】高自给率上游矿端龙头；科技端重点核查台积电月度营收、云厂商CapEx/OCF比例及巨潮正式定点公告。`
-                  : "【进攻端选股过滤】大宗缺乏低库存Back共振，进攻仓位集中于台积电月度营收与云厂CapEx验证的AI算力及具身智能定点龙头。",
+                  ? `② 重点看谁：资源端聚焦【${sampleStrongNames.join("、")}】高自给率矿端龙头；科技端盯台积电月度营收与云厂CapEx验证的算力龙头（中际旭创）。`
+                  : "② 重点看谁：大宗无低库存Back共振，进攻仓位集中于台积电月报与公告验证的AI算力龙头。",
                 redempWarning
-                  ? "🚨【债市紧急风控】沙盘显示R007-DR007分层利差突破25bp赎回预警线，立即抛售高弹性银行二永债并缩短久期至存单！"
-                  : `【债市久期与伪红利排雷】R007-DR007利差(${simRDrSpread.toFixed(1)}bp)平稳，维持1-3年高等级信用债吃票息；红利端剔除螺纹钢等Contango累库周期股。`
+                  ? "🚨 ③ 取消与风控条件：沙盘R007-DR007突破25bp赎回预警线，立即砍二永债久期并暂停高Beta进攻加仓！"
+                  : `③ 取消与排雷条件：R007-DR007(${simRDrSpread.toFixed(1)}bp)平稳，维持1-3年信用债吃票息；剔除螺纹钢等弱现货周期伪红利。`
               ]
             },
             wealth_perspective: {
-              title: `【沙盘实时推演·存续期与渠道版】10Y中债${simCn10y.toFixed(2)}%、R-DR利差${simRDrSpread.toFixed(1)}bp情境下的固收+归因与沟通话术`,
-              core_marginal_change: `当前沙盘模拟：国内10Y国债${simCn10y.toFixed(2)}%、FDR007 ${simDr007.toFixed(2)}%、R007-DR007非银分层利差 ${simRDrSpread.toFixed(1)}bp，沪深300 ERP ${simErp.toFixed(2)}%。`,
-              transmission_logic: `1. 纯债与理财赎回监控：${redempWarning ? "非银分层利差突破25bp，需防范散户赎回引发二永债负反馈踩踏，产品已全面收缩久期防守" : "银行向非银流动性传导顺畅，短端票息安全垫稳固，长债微幅波动属正常久期呼吸"}；\n2. 固收+弹性归因：通过 ${defense}% 稳健底仓 + ${offense}% 高景气硬科技与紧缺实物资源对冲单一资产波动。`,
+              title: `【沙盘推演·渠道总纲】10Y中债${simCn10y.toFixed(2)}%、R-DR分层${simRDrSpread.toFixed(1)}bp · 固收+归因与一线RM沟通话术`,
+              core_marginal_change: `① 赎回雷达：${redempWarning ? "R007-DR007达" + simRDrSpread.toFixed(1) + "bp突破25bp预警线，非银融资趋紧" : "FDR007仅" + simDr007.toFixed(2) + "%、R-DR分层仅" + simRDrSpread.toFixed(1) + "bp(<25bp安全线)"}。\n② 利率水位：国内10Y国债 ${simCn10y.toFixed(2)}%，30Y约 ${cn30yVal}%，长端赔率随利率走低而收窄。\n③ 权益性价比：沪深300 ERP ${simErp.toFixed(2)}%，M1-M2剪刀差 ${simScissors.toFixed(1)}%。`,
+              transmission_logic: `① 纯债归因：${redempWarning ? "非银分层利差突破25bp，防范理财赎回引发二永债抛压，已全面降久期防守" : "银行向非银传导顺畅，1-3年短端信用债票息安全垫稳固"}。\n② 固收+归因：用 ${defense}% 短债与央企真红利筑底，叠加 ${offense}% 高景气硬科技与实物资源对冲单押长债风险。\n③ 渠道排雷：剔除传统弱现货高库存周期股，只选现金流免疫周期的央企真红利。`,
               action_instructions: [
                 redempWarning
-                  ? `⚠️【防赎回踩踏紧急话术】：“当前非银资金面短期收敛导致二永债利差波动，我们产品已提前降久期切换至高流动性短债与存单，回撤受控，切勿在流动性冲击波峰盲目赎回将浮亏变成实亏。”`
-                  : `【纯固收客户安抚话术】：“当前FDR007仅${simDr007.toFixed(2)}%、R007-DR007利差仅${simRDrSpread.toFixed(1)}bp，无机构赎回负反馈压力，建议坚定持有中短债底仓获取时间复利。”`,
-                `【分行RM配置转化建议】：推荐按照“${bondW}%短债理财底仓 + ${divW}%央企真红利 + ${offense}%硬科技与金铜资源固收+”构建哑铃组合。`,
-                "【渠道风控扳机线】：持续盯紧 10Y中债 2.15%、FDR007 1.85% 与 R007-DR007 25bp 三条风控线。"
+                  ? `⚠️ ① 紧急防赎回话术：“当前非银资金面短期收敛，我们产品已提前切至高流动性短债与存单，回撤受控，切勿在流动性波峰盲目赎回。”`
+                  : `① 存续安抚话术：“当前FDR007仅${simDr007.toFixed(2)}%、R007-DR007仅${simRDrSpread.toFixed(1)}bp，无机构赎回负反馈压力，建议安心持有短债底仓。”`,
+                `② 转化促单话术：“推荐按『${bondW}%短债理财 + ${divW}%央企真红利 + ${offense}%硬科技与金铜固收+』构建哑铃组合。”`,
+                "③ 三条风控扳机线：持续盯紧 10Y中债 2.15%、FDR007 1.85% 与 R007-DR007 25bp 三条红线。"
               ]
             }
           }
@@ -1331,6 +1371,38 @@
           <span className={`px-2.5 py-0.5 text-xs font-semibold rounded-full border ${map[status] || map.neutral}`}>
             {label}
           </span>
+        );
+      };
+
+      // 将早报的段落在“：”处拆分为【鲜明观点小标题】+【精炼论据】，彻底告别大段文字堆砌
+      const renderSegmentedPoints = (input, accentClass = "text-sky-300") => {
+        const lines = Array.isArray(input)
+          ? input
+          : String(input || "")
+              .split(/\n+/)
+              .map(s => s.trim())
+              .filter(Boolean);
+        return (
+          <div className="space-y-2">
+            {lines.map((line, idx) => {
+              const colonIdx = line.indexOf("：");
+              if (colonIdx > 0 && colonIdx <= 24) {
+                const head = line.slice(0, colonIdx);
+                const body = line.slice(colonIdx + 1);
+                return (
+                  <div key={idx} className="bg-slate-950/70 p-2.5 rounded-lg border border-slate-800/80 text-xs leading-relaxed">
+                    <span className={`font-bold ${accentClass}`}>{head}：</span>
+                    <span className="text-slate-200">{body}</span>
+                  </div>
+                );
+              }
+              return (
+                <div key={idx} className="bg-slate-950/70 p-2.5 rounded-lg border border-slate-800/80 text-xs text-slate-200 leading-relaxed">
+                  {line}
+                </div>
+              );
+            })}
+          </div>
         );
       };
 
@@ -1539,14 +1611,14 @@
                   </div>
                 </div>
 
-                {/* 第二层决策：动态双视角软研报（二级交易实战版 vs 存续期管理与渠道版） */}
+                {/* 第二层决策：动态双视角早报（结构化三段式观点卡片，拒绝大段文字堆砌） */}
                 <div className="glass-card rounded-2xl p-3.5 md:p-5">
-                  <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-3 pb-4 border-b border-slate-800">
+                  <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-2.5 pb-3.5 border-b border-slate-800">
                     <div>
                       <span className="text-xs font-bold text-purple-400 uppercase">Layer 2 · 宏观×大宗期现×科技CapEx 动态双视角早报引擎</span>
                       <h3 className="text-base md:text-lg font-bold text-white mt-0.5">{activeReport.title}</h3>
                     </div>
-                    <div className="flex flex-wrap items-center gap-1.5 md:gap-2">
+                    <div className="flex flex-wrap items-center gap-1.5 md:gap-2 shrink-0">
                       <div className="bg-slate-900 p-1 rounded-xl border border-slate-800 flex text-xs">
                         <button
                           onClick={() => setReportMode("trading")}
@@ -1567,7 +1639,7 @@
                       </div>
                       <button
                         onClick={() => handleCopy(
-                          `${activeReport.title}\n\n【核心边际变化】\n${activeReport.core_marginal_change}\n\n【传导逻辑】\n${activeReport.transmission_logic}\n\n【行动指令】\n${activeReport.action_instructions.join("\n")}`,
+                          `${activeReport.title}\n\n【核心边际变化】\n${activeReport.core_marginal_change}\n\n【核心观点与归因】\n${activeReport.transmission_logic}\n\n【落地指令】\n${activeReport.action_instructions.join("\n")}`,
                           "早报全文"
                         )}
                         className="px-3 py-1.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-xs text-slate-200 border border-slate-700 shrink-0"
@@ -1577,25 +1649,20 @@
                     </div>
                   </div>
 
-                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-4">
-                    <div className="bg-slate-900/60 p-4 rounded-xl border border-slate-800/80">
-                      <div className="text-xs font-bold text-sky-400 mb-2">1. 宏观、跨资产与大宗期现核心边际变化</div>
-                      <p className="text-xs md:text-sm text-slate-300 leading-relaxed whitespace-pre-line">{activeReport.core_marginal_change}</p>
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-3.5 mt-3.5">
+                    <div className="bg-slate-900/60 p-3.5 rounded-xl border border-slate-800/80">
+                      <div className="text-xs font-bold text-sky-400 mb-2">📌 1. 三大核心边际变化（只抓今日增量）</div>
+                      {renderSegmentedPoints(activeReport.core_marginal_change, "text-sky-300")}
                     </div>
-                    <div className="bg-slate-900/60 p-4 rounded-xl border border-slate-800/80">
-                      <div className="text-xs font-bold text-amber-400 mb-2">2. DCF 分母/分子、期现库存与机构行为归因</div>
-                      <p className="text-xs md:text-sm text-slate-300 leading-relaxed whitespace-pre-line">{activeReport.transmission_logic}</p>
+                    <div className="bg-slate-900/60 p-3.5 rounded-xl border border-slate-800/80">
+                      <div className="text-xs font-bold text-amber-400 mb-2">🧭 2. 核心多空观点与传导归因（鲜明表态）</div>
+                      {renderSegmentedPoints(activeReport.transmission_logic, "text-amber-300")}
                     </div>
-                    <div className="bg-slate-900/60 p-4 rounded-xl border border-slate-800/80">
-                      <div className="text-xs font-bold text-emerald-400 mb-2">3. 今日可执行落地指令与伪红利排雷线</div>
-                      <ul className="space-y-2.5 text-xs md:text-sm text-slate-200">
-                        {activeReport.action_instructions.map((inst, i) => (
-                          <li key={i} className="leading-relaxed flex items-start gap-1.5">
-                            <span className="text-indigo-400 font-bold">•</span>
-                            <span>{inst}</span>
-                          </li>
-                        ))}
-                      </ul>
+                    <div className="bg-slate-900/60 p-3.5 rounded-xl border border-slate-800/80">
+                      <div className="text-xs font-bold text-emerald-400 mb-2">
+                        {reportMode === "trading" ? "⚡ 3. 今日三步操作纪律（看谁·为什么·怎么取消）" : "💬 3. 一线 RM 客户沟通三句话术与风控线"}
+                      </div>
+                      {renderSegmentedPoints(activeReport.action_instructions, "text-emerald-300")}
                     </div>
                   </div>
                 </div>
@@ -1636,53 +1703,47 @@
 
             {/* ==================== PAGE 1: 16项中美宏观脉冲 + 4项跨资产大宗定价锚 ==================== */}
             {activePage === 1 && (
-              <div className="space-y-3.5 md:space-y-6">
-                {/* 顶部单行核心公式快览条（去重精简，不重复第①页的规则详情） */}
-                <div className="glass-card rounded-2xl px-4 py-3 flex flex-wrap items-center justify-between gap-2 text-xs font-mono">
+              <div className="space-y-3.5 md:space-y-5">
+                {/* 顶部单行核心公式 + 近10期走势统一图例条（全页只标这一处，不在每个卡片重复标） */}
+                <div className="glass-card rounded-2xl px-4 py-2.5 flex flex-wrap items-center justify-between gap-2 text-xs font-mono">
                   <span className="text-sky-300">
-                    海外分母恒等式: <strong>10Y美债({usMetrics.dgs10.value}%) ≈ 实际利率({usMetrics.dfii10?.value}%) + 通胀预期({usMetrics.t10yie?.value}%)</strong>
-                  </span>
-                  <span className="text-amber-300">
-                    准备金底线: <strong>{usMetrics.wresbal?.value}B</strong> (RRP {usMetrics.rrp.value}B / TGA {usMetrics.tga.value}B)
+                    海外分母: <strong>10Y美债({usMetrics.dgs10.value}%)≈实际({usMetrics.dfii10?.value}%)+通胀({usMetrics.t10yie?.value}%)</strong> | 准备金: <strong>{usMetrics.wresbal?.value}B</strong>
                   </span>
                   <span className="text-emerald-300">
-                    国内非银分层: <strong>R007-DR007 {cnMetrics.r007_dr007_spread?.value}bp</strong> (&lt;25bp无赎回冲击) | <strong>中美利差 {cnMetrics.us_cn_spread?.value}%</strong>
+                    国内分层: <strong>R-DR {cnMetrics.r007_dr007_spread?.value}bp</strong> | <strong>10月M1-M2 {cnMetrics.m1_m2_diff?.value}%</strong>
+                  </span>
+                  <span className="text-amber-300">
+                    📈 卡片右侧曲线均为近10期走势 (首期➔最新，虚线为首期基准，悬停圆点查单日值)
                   </span>
                 </div>
 
-                {/* 跨资产大宗商品定价四锚 (DXY / 铜金比 / 金油比 / 美联储净流动性) + 近10期趋势图 */}
+                {/* 跨资产大宗商品定价四锚 (DXY / 铜金比 / 金油比 / 美联储净流动性) —— 数值与10期走势同排紧凑布局 */}
                 {crossAssetList.length > 0 && (
-                  <div className="glass-card rounded-2xl p-3.5 md:p-5">
-                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pb-3 mb-3.5 border-b border-slate-800">
-                      <div>
-                        <span className="text-xs font-bold text-amber-400 uppercase">Cross-Asset Commodity Pricing Anchors (10-Day Trend)</span>
-                        <h3 className="text-base md:text-lg font-bold text-white">跨资产大宗商品定价四锚（含近10期趋势图）</h3>
+                  <div className="glass-card rounded-2xl p-3.5 md:p-4">
+                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-1 pb-2.5 mb-3 border-b border-slate-800">
+                      <div className="flex items-center gap-2">
+                        <span className="text-xs font-bold text-amber-400 uppercase">Cross-Asset Anchors</span>
+                        <h3 className="text-sm md:text-base font-bold text-white">跨资产大宗商品定价四锚</h3>
                       </div>
-                      <span className="text-xs text-slate-400 font-mono">数据源: FRED / ICE / COMEX</span>
+                      <span className="text-xs text-slate-400 font-mono">FRED / ICE / COMEX</span>
                     </div>
-                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3.5">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
                       {crossAssetList.map((item) => {
                         const isPositive = item.id === "dxy" || item.id === "gold_oil" ? item.trend === "down" : item.trend === "up";
                         const trendData = item.trend_10d || item.spark || [];
                         return (
-                          <div key={item.id} className="bg-slate-900/75 p-4 rounded-xl border border-slate-800 flex flex-col justify-between">
-                            <div>
-                              <div className="flex items-center justify-between gap-2 mb-1">
-                                <span className="text-sm font-bold text-white">{item.name}</span>
-                                <span className="text-[11px] font-mono px-2 py-0.5 bg-slate-800 text-amber-300 rounded">{item.code}</span>
-                              </div>
-                              <div className="text-[11px] font-mono text-sky-300 mb-1">
-                                📅 数据日期: {item.observation_date || "未标注"}
-                              </div>
-                              <p className="text-xs text-slate-400 mb-2">{item.role}</p>
+                          <div key={item.id} className="bg-slate-900/75 p-3 rounded-xl border border-slate-800 flex flex-col justify-between">
+                            <div className="flex items-center justify-between gap-1.5 mb-1">
+                              <span className="text-xs font-bold text-white truncate">{item.name}</span>
+                              <span className="text-[11px] font-mono text-slate-400 shrink-0">data_dt: {item.observation_date}</span>
                             </div>
-                            <div>
-                              <div className="flex items-baseline justify-between gap-2">
-                                <div className="text-xl font-bold font-mono text-white">
-                                  {item.value}<span className="text-xs text-slate-400 ml-1">{item.unit}</span>
+                            <div className="flex items-center justify-between gap-2 my-1">
+                              <div>
+                                <div className="text-lg font-bold font-mono text-white leading-tight">
+                                  {item.value}<span className="text-xs text-slate-400 ml-0.5">{item.unit}</span>
                                 </div>
                                 <div className={`text-xs font-mono ${isPositive ? "text-emerald-400" : "text-amber-400"}`}>
-                                  变动: {item.change}
+                                  {item.change}
                                 </div>
                               </div>
                               <TrendChart10D
@@ -1690,13 +1751,13 @@
                                 dates={item.trend_dates || []}
                                 unit={item.unit}
                                 color={isPositive ? "#10B981" : "#F59E0B"}
-                                label="近10期走势"
                               />
-                              <div className="mt-2 flex items-center justify-between text-xs">
-                                <span className="px-2 py-0.5 rounded bg-amber-950/50 text-amber-300 border border-amber-500/30">
-                                  {item.signal}
-                                </span>
-                              </div>
+                            </div>
+                            <div className="mt-1 flex items-center justify-between gap-1 text-[11px]">
+                              <span className="px-2 py-0.5 rounded bg-amber-950/50 text-amber-300 border border-amber-500/30 truncate">
+                                {item.signal}
+                              </span>
+                              <span className="font-mono text-slate-400 shrink-0">{item.code}</span>
                             </div>
                           </div>
                         );
@@ -1705,66 +1766,64 @@
                   </div>
                 )}
 
-                <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                  {/* 美国分母端流动性锚 (9项，全部单独标明数据日期与近10期趋势图) */}
-                  <div className="glass-card rounded-2xl p-3.5 md:p-5">
-                    <div className="flex items-center justify-between pb-3 mb-4 border-b border-slate-800">
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-5">
+                  {/* 美国分母端流动性锚 (9项，数值+近10期曲线同排紧凑显示) */}
+                  <div className="glass-card rounded-2xl p-3.5 md:p-4">
+                    <div className="flex items-center justify-between pb-2.5 mb-3 border-b border-slate-800">
                       <div>
-                        <span className="text-xs font-bold text-sky-400 uppercase">US Macro & Fed Liquidity (9 Series · 10-Period Trend)</span>
-                        <h3 className="text-base md:text-lg font-bold text-white">美国宏观：实际利率、通胀预期与准备金底线</h3>
+                        <span className="text-xs font-bold text-sky-400 uppercase">US Macro & Fed Liquidity (9 Series)</span>
+                        <h3 className="text-sm md:text-base font-bold text-white">美国宏观：实际利率、通胀预期与准备金底线</h3>
                       </div>
-                      <span className="text-xs text-slate-400 font-mono">数据源: FRED API</span>
+                      <span className="text-xs text-slate-400 font-mono">FRED API</span>
                     </div>
-                    <div className="space-y-3.5">
+                    <div className="space-y-2.5">
                       {Object.values(usMetrics).map((m) => {
                         const labels = formatPeriodLabels(m);
-                        const trendLabel = m.freq === "weekly" ? "近10周趋势" : "近10日趋势";
                         return (
-                          <div key={m.code} className="bg-slate-900/75 p-4 rounded-xl border border-slate-800">
-                            <div className="flex flex-wrap items-center justify-between gap-2 mb-1">
-                              <div className="flex flex-wrap items-center gap-2">
-                                <span className="text-sm font-bold text-white">{m.name}</span>
-                                <span className="text-[11px] font-mono px-2 py-0.5 bg-slate-800 text-sky-300 rounded">{m.code}</span>
-                                <span className="text-[11px] font-mono px-2 py-0.5 rounded bg-sky-950/40 text-sky-300 border border-sky-500/30">
-                                  📅 数据日期: {m.observation_date || "未验证"}
-                                </span>
+                          <div key={m.code} className="bg-slate-900/75 px-3.5 py-2.5 rounded-xl border border-slate-800">
+                            <div className="flex flex-wrap items-center justify-between gap-1.5">
+                              <div className="flex flex-wrap items-center gap-1.5">
+                                <span className="text-xs md:text-sm font-bold text-white">{m.name}</span>
+                                <span className="text-[11px] font-mono px-1.5 py-0.5 bg-slate-800 text-sky-300 rounded">{m.code}</span>
                               </div>
-                              <a href={m.url} target="_blank" rel="noreferrer" className="text-xs text-indigo-400 hover:underline">
-                                FRED官方源 ↗
-                              </a>
-                            </div>
-                            <p className="text-xs text-slate-400 mb-1.5">{m.role}</p>
-                            <div className="flex items-baseline justify-between mb-1">
-                              <div className="text-xl font-bold font-mono text-white">
-                                {m.value}<span className="text-xs text-slate-400 ml-1">{m.unit}</span>
-                              </div>
-                              <div className="flex items-center gap-3 text-xs font-mono">
-                                <span className={m.chg_1d_bp > 0 ? "text-rose-400" : "text-emerald-400"}>
-                                  {labels.p1}
-                                </span>
-                                <span className={Math.abs(m.chg_5d_bp) > 10 ? "text-amber-300 font-bold" : "text-slate-300"}>
-                                  {labels.p5}
-                                </span>
+                              <div className="flex items-center gap-2 text-[11px] font-mono">
+                                <span className="text-sky-300">data_dt: {m.observation_date}</span>
+                                <a href={m.url} target="_blank" rel="noreferrer" className="text-indigo-400 hover:underline">
+                                  源 ↗
+                                </a>
                               </div>
                             </div>
-                            <TrendChart10D
-                              data={m.trend_10d}
-                              dates={m.trend_dates || []}
-                              unit={m.unit}
-                              color={m.chg_5d_bp <= 0 ? "#10B981" : "#38BDF8"}
-                              label={trendLabel}
-                            />
-                            <div className="space-y-1 mt-2">
-                              <div className="flex justify-between text-[11px] text-slate-400">
-                                <span>{m.window_label || "近3年历史分位数"}</span>
-                                <span className="font-mono text-slate-200">{m.percentile_3y}% 分位 (预警线: {m.threshold_warn}{m.unit})</span>
+                            <p className="text-[11px] text-slate-400 truncate mt-0.5" title={m.role}>{m.role}</p>
+                            <div className="flex items-center justify-between gap-3 my-1.5">
+                              <div>
+                                <div className="text-lg md:text-xl font-bold font-mono text-white leading-tight">
+                                  {m.value}<span className="text-xs text-slate-400 ml-1">{m.unit}</span>
+                                </div>
+                                <div className="flex items-center gap-2.5 text-xs font-mono mt-0.5">
+                                  <span className={m.chg_1d_bp > 0 ? "text-rose-400" : "text-emerald-400"}>
+                                    {labels.p1}
+                                  </span>
+                                  <span className={Math.abs(m.chg_5d_bp) > 10 ? "text-amber-300 font-bold" : "text-slate-300"}>
+                                    {labels.p5}
+                                  </span>
+                                </div>
                               </div>
-                              <div className="h-1.5 w-full bg-slate-800 rounded-full overflow-hidden">
+                              <TrendChart10D
+                                data={m.trend_10d}
+                                dates={m.trend_dates || []}
+                                unit={m.unit}
+                                color={m.chg_5d_bp <= 0 ? "#10B981" : "#38BDF8"}
+                              />
+                            </div>
+                            <div className="flex items-center gap-2 text-[11px] text-slate-400">
+                              <span className="shrink-0">3Y分位 {m.percentile_3y}%</span>
+                              <div className="h-1.5 flex-1 bg-slate-800 rounded-full overflow-hidden">
                                 <div
                                   style={{ width: `${m.percentile_3y}%` }}
                                   className={`h-full rounded-full ${m.percentile_3y > 75 ? "bg-rose-500" : m.percentile_3y < 25 ? "bg-emerald-500" : "bg-sky-500"}`}
                                 />
                               </div>
+                              <span className="font-mono text-slate-300 shrink-0">预警 {m.threshold_warn}{m.unit}</span>
                             </div>
                           </div>
                         );
@@ -1772,61 +1831,59 @@
                     </div>
                   </div>
 
-                  {/* 中国宽货币与宽信用传导 (7项，全部单独标明数据日期与近10期趋势图) */}
-                  <div className="glass-card rounded-2xl p-3.5 md:p-5">
-                    <div className="flex items-center justify-between pb-3 mb-4 border-b border-slate-800">
+                  {/* 中国宽货币与宽信用传导 (7项，数值+近10期曲线同排紧凑显示) */}
+                  <div className="glass-card rounded-2xl p-3.5 md:p-4">
+                    <div className="flex items-center justify-between pb-2.5 mb-3 border-b border-slate-800">
                       <div>
-                        <span className="text-xs font-bold text-emerald-400 uppercase">CN Macro, Liquidity Tiering & ERP (7 Series · 10-Period Trend)</span>
-                        <h3 className="text-base md:text-lg font-bold text-white">中国宏观：资产荒、非银分层利差(11:30定盘)与10月M1-M2活化</h3>
+                        <span className="text-xs font-bold text-emerald-400 uppercase">CN Macro, Liquidity Tiering & ERP (7 Series)</span>
+                        <h3 className="text-sm md:text-base font-bold text-white">中国宏观：资产荒、非银分层(11:30定盘)与10月M1-M2活化</h3>
                       </div>
                       <span className="text-xs text-slate-400 font-mono">ChinaMoney / 央行 / 中债</span>
                     </div>
-                    <div className="space-y-3.5">
+                    <div className="space-y-2.5">
                       {Object.values(cnMetrics).map((m) => {
                         const labels = formatPeriodLabels(m);
-                        const trendLabel = m.freq === "monthly" ? "近10月趋势" : "近10日趋势";
                         return (
-                          <div key={m.code} className="bg-slate-900/75 p-4 rounded-xl border border-slate-800">
-                            <div className="flex flex-wrap items-center justify-between gap-2 mb-1">
-                              <div className="flex flex-wrap items-center gap-2">
-                                <span className="text-sm font-bold text-white">{m.name}</span>
-                                <span className="text-[11px] font-mono px-2 py-0.5 bg-slate-800 text-emerald-300 rounded">{m.code}</span>
-                                <span className="text-[11px] font-mono px-2 py-0.5 rounded bg-emerald-950/40 text-emerald-300 border border-emerald-500/30">
-                                  📅 数据日期: {m.observation_date || "未验证"}
-                                </span>
+                          <div key={m.code} className="bg-slate-900/75 px-3.5 py-2.5 rounded-xl border border-slate-800">
+                            <div className="flex flex-wrap items-center justify-between gap-1.5">
+                              <div className="flex flex-wrap items-center gap-1.5">
+                                <span className="text-xs md:text-sm font-bold text-white">{m.name}</span>
+                                <span className="text-[11px] font-mono px-1.5 py-0.5 bg-slate-800 text-emerald-300 rounded">{m.code}</span>
                               </div>
-                              <a href={m.url} target="_blank" rel="noreferrer" className="text-xs text-indigo-400 hover:underline">
-                                权威披露源 ↗
-                              </a>
-                            </div>
-                            <p className="text-xs text-slate-400 mb-1.5">{m.role}</p>
-                            <div className="flex items-baseline justify-between mb-1">
-                              <div className="text-xl font-bold font-mono text-white">
-                                {m.value}<span className="text-xs text-slate-400 ml-1">{m.unit}</span>
-                              </div>
-                              <div className="flex items-center gap-3 text-xs font-mono">
-                                <span className="text-slate-300">{labels.p1}</span>
-                                <span className="text-slate-300">{labels.p5}</span>
+                              <div className="flex items-center gap-2 text-[11px] font-mono">
+                                <span className="text-emerald-300">data_dt: {m.observation_date}</span>
+                                <a href={m.url} target="_blank" rel="noreferrer" className="text-indigo-400 hover:underline">
+                                  源 ↗
+                                </a>
                               </div>
                             </div>
-                            <TrendChart10D
-                              data={m.trend_10d}
-                              dates={m.trend_dates || []}
-                              unit={m.unit}
-                              color="#10B981"
-                              label={trendLabel}
-                            />
-                            <div className="space-y-1 mt-2">
-                              <div className="flex justify-between text-[11px] text-slate-400">
-                                <span>{m.window_label || "近3年历史分位数"}</span>
-                                <span className="font-mono text-slate-200">{m.percentile_3y}% 分位 (关键水位: {m.threshold_warn}{m.unit})</span>
+                            <p className="text-[11px] text-slate-400 truncate mt-0.5" title={m.role}>{m.role}</p>
+                            <div className="flex items-center justify-between gap-3 my-1.5">
+                              <div>
+                                <div className="text-lg md:text-xl font-bold font-mono text-white leading-tight">
+                                  {m.value}<span className="text-xs text-slate-400 ml-1">{m.unit}</span>
+                                </div>
+                                <div className="flex items-center gap-2.5 text-xs font-mono mt-0.5">
+                                  <span className="text-slate-300">{labels.p1}</span>
+                                  <span className="text-slate-300">{labels.p5}</span>
+                                </div>
                               </div>
-                              <div className="h-1.5 w-full bg-slate-800 rounded-full overflow-hidden">
+                              <TrendChart10D
+                                data={m.trend_10d}
+                                dates={m.trend_dates || []}
+                                unit={m.unit}
+                                color="#10B981"
+                              />
+                            </div>
+                            <div className="flex items-center gap-2 text-[11px] text-slate-400">
+                              <span className="shrink-0">分位 {m.percentile_3y}%</span>
+                              <div className="h-1.5 flex-1 bg-slate-800 rounded-full overflow-hidden">
                                 <div
                                   style={{ width: `${m.percentile_3y}%` }}
                                   className={`h-full rounded-full ${m.percentile_3y > 75 ? "bg-emerald-500" : m.percentile_3y < 20 ? "bg-amber-500" : "bg-indigo-500"}`}
                                 />
                               </div>
+                              <span className="font-mono text-slate-300 shrink-0">水位 {m.threshold_warn}{m.unit}</span>
                             </div>
                           </div>
                         );
@@ -1839,52 +1896,57 @@
 
             {/* ==================== PAGE 2: 大宗商品期现月差、注册仓单、旬度现货与近10日走势工作台 ==================== */}
             {activePage === 2 && selectedCommodity && (
-              <div className="space-y-3.5 md:space-y-6">
-                {/* 顶部单行评级与口径纪律条 */}
-                <div className="glass-card rounded-2xl px-4 py-3 flex flex-wrap items-center justify-between gap-2 text-xs">
+              <div className="space-y-3.5 md:space-y-5">
+                {/* 顶部单行评级 + 近10期走势统一图例条（全页只标这一处，卡片内4格并排紧凑展示） */}
+                <div className="glass-card rounded-2xl px-4 py-2.5 flex flex-wrap items-center justify-between gap-2 text-xs">
                   <div className="font-bold text-white">
-                    6大商品期货月差、上期所日度仓单与统计局旬度现货（不同步子项已分别标注数据日期与真实样本年限）
+                    6大商品期货月差、上期所日度仓单与统计局旬度现货 | <span className="text-amber-300 font-mono">📈 卡片第4格曲线均为近10期主力价格走势 (首期➔最新)</span>
                   </div>
                   <div className="flex flex-wrap items-center gap-2 font-mono">
                     <span className="px-2 py-0.5 rounded bg-emerald-950/50 text-emerald-300 border border-emerald-500/30">
-                      ✅ 仓单&lt;25% + 期货近月Back
+                      ✅ 仓单&lt;25% + 期货Back
                     </span>
                     <span className="px-2 py-0.5 rounded bg-amber-950/50 text-amber-300 border border-amber-500/30">
-                      ⚖️ 铝链: 区分沪铝(收入)与氧化铝(成本)
+                      ⚖️ 铝链: 沪铝(收入)-氧化铝(成本)
                     </span>
                     <span className="px-2 py-0.5 rounded bg-slate-800 text-slate-300 border border-slate-700">
-                      🔒 无日频源(黑钨): 自动降为长单观察
+                      🔒 无日频源(黑钨): 长单观察
                     </span>
                   </div>
                 </div>
 
-                {/* 主体左7右5分栏：左侧品种矩阵(含分项日期与近10日走势图) + 右侧基差/远期曲线 & 一手现货调研流 */}
-                <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
+                {/* 主体左7右5分栏：左侧品种矩阵(4格并排紧凑卡片) + 右侧基差/远期曲线 & 一手现货调研流 */}
+                <div className="grid grid-cols-1 lg:grid-cols-12 gap-5">
                   {/* 左侧 7 列：6大品种一手监控矩阵 */}
-                  <div className="lg:col-span-7 space-y-3.5">
+                  <div className="lg:col-span-7 space-y-3">
                     {filteredCommodities.map((item) => {
                       const isSelected = item.id === selectedCommodity.id;
                       const isPositiveBasis = item.basis >= 0;
+                      const mainDt = item.futuresObsDate || "2026-11-19";
+                      const warrantDiffers = item.warrantObsDate && item.warrantObsDate !== mainDt;
                       return (
                         <div
                           key={item.id}
                           onClick={() => setSelectedCommodityId(item.id)}
-                          className={`glass-card p-4 rounded-2xl transition-all cursor-pointer ${
+                          className={`glass-card p-3.5 rounded-2xl transition-all cursor-pointer ${
                             isSelected ? "ring-2 ring-amber-500" : "hover:border-slate-700"
                           }`}
                         >
                           <div className="flex flex-wrap items-center justify-between gap-2">
                             <div className="flex flex-wrap items-center gap-2">
-                              <span className="px-2.5 py-0.5 text-xs font-bold rounded-lg bg-slate-800 text-amber-300 border border-slate-700">
+                              <span className="px-2 py-0.5 text-xs font-bold rounded-lg bg-slate-800 text-amber-300 border border-slate-700">
                                 {item.sector}
                               </span>
-                              <h4 className="text-base font-bold text-white">{item.name}</h4>
+                              <h4 className="text-sm md:text-base font-bold text-white">{item.name}</h4>
                               <span className="text-xs font-mono text-slate-400">{item.code}</span>
+                              <span className="text-[11px] font-mono text-sky-300 bg-sky-950/40 px-2 py-0.5 rounded border border-sky-500/30">
+                                data_dt: {mainDt}
+                              </span>
                             </div>
                             <div className="flex flex-wrap items-center gap-1.5">
                               {statusBadge(item.gradeBadgeColor, item.gradeLabel)}
                               <span
-                                className={`text-xs font-mono px-2.5 py-0.5 rounded-full font-semibold border ${
+                                className={`text-xs font-mono px-2 py-0.5 rounded-full font-semibold border ${
                                   isPositiveBasis
                                     ? "bg-emerald-950/50 text-emerald-300 border-emerald-500/30"
                                     : "bg-rose-950/50 text-rose-300 border-rose-500/30"
@@ -1895,28 +1957,22 @@
                             </div>
                           </div>
 
-                          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 mt-3 pt-3 border-t border-slate-800/80">
-                            {/* 子项1：期货主力与近月/现货价 + 期货日期 */}
-                            <div className="bg-slate-900/75 p-2.5 rounded-xl border border-slate-800">
-                              <div className="flex items-center justify-between text-[11px] text-slate-400">
-                                <span>{item.priceLabel || "期货主力 / 近月或现货"}</span>
-                                <span className="font-mono text-sky-300">📅 {item.futuresObsDate || "2026-11-19"}</span>
-                              </div>
+                          {/* 4列紧凑并排：1.主力/近月 2.月差与现货data_dt 3.注册仓单与分位 4.内联近10期走势 */}
+                          <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5 mt-2.5 pt-2.5 border-t border-slate-800/80">
+                            <div className="bg-slate-900/75 p-2 rounded-xl border border-slate-800">
+                              <div className="text-[11px] text-slate-400 truncate">{item.priceLabel || "主力 / 近月(现货)"}</div>
                               <div className="mt-0.5 flex items-baseline gap-1 font-mono">
                                 <span className="text-sm font-bold text-white">{item.futuresPrice}</span>
                                 <span className="text-xs text-slate-400">/</span>
                                 <span className="text-sm font-bold text-amber-300">{item.spotPrice}</span>
                               </div>
                               <div className={`text-xs font-mono ${item.changePct >= 0 ? "text-emerald-400" : "text-rose-400"}`}>
-                                主力日涨跌: {item.changePct >= 0 ? `+${item.changePct}%` : `${item.changePct}%`} ({item.unit})
+                                {item.changePct >= 0 ? `+${item.changePct}%` : `${item.changePct}%`} ({item.unit})
                               </div>
                             </div>
 
-                            {/* 子项2：期货近月-主力月差 vs 旬度现货/长单 + 现货日期 */}
-                            <div className="bg-slate-900/75 p-2.5 rounded-xl border border-slate-800">
-                              <div className="flex items-center justify-between text-[11px] text-slate-400">
-                                <span className="truncate">{item.diffLabel || "近月-主力月差"}</span>
-                              </div>
+                            <div className="bg-slate-900/75 p-2 rounded-xl border border-slate-800">
+                              <div className="text-[11px] text-slate-400 truncate" title={item.diffLabel}>{item.diffLabel || "近月-主力月差"}</div>
                               <div className="mt-0.5 flex items-baseline gap-1 font-mono">
                                 <span className={`text-sm font-bold ${item.basis >= 0 ? "text-emerald-400" : "text-rose-400"}`}>
                                   {item.basis >= 0 ? `+${item.basis}` : item.basis}
@@ -1926,44 +1982,35 @@
                                 </span>
                               </div>
                               <div className="text-[11px] text-amber-300/90 font-mono truncate" title={item.spotRefNote}>
-                                📅 现货源: {item.spotObsDate || "旬报"}
+                                spot_dt: {item.spotObsDate || "旬报"}
                               </div>
                             </div>
 
-                            {/* 子项3：交易所注册仓单 / 库存分位 (标明样本年限与仓单日期) */}
-                            <div className="bg-slate-900/75 p-2.5 rounded-xl border border-slate-800">
-                              <div className="flex items-center justify-between text-[11px] text-slate-400">
-                                <span className="truncate">{item.invWindowLabel || "注册仓单与分位"}</span>
-                                <span className="font-mono text-emerald-300">📅 {item.warrantObsDate || "2026-11-19"}</span>
+                            <div className="bg-slate-900/75 p-2 rounded-xl border border-slate-800">
+                              <div className="text-[11px] text-slate-400 truncate" title={item.invWindowLabel}>
+                                {item.invWindowLabel || "注册仓单与分位"}
                               </div>
-                              <div className="mt-1 flex items-center justify-between font-mono text-xs">
-                                <span className="font-bold text-white">{item.warrantTons || item.invLevel}</span>
-                                <span className="text-amber-300">分位: {item.invLevel}</span>
+                              <div className="mt-0.5 flex items-center justify-between font-mono text-xs">
+                                <span className="font-bold text-white truncate">{item.warrantTons || item.invLevel}</span>
+                                <span className="text-amber-300 shrink-0">{item.invLevel}</span>
                               </div>
-                              <div className="text-[11px] font-mono text-emerald-400 mt-0.5 truncate">
-                                变动: {item.invWeeklyChange}
+                              <div className="text-[11px] font-mono text-emerald-400 truncate">
+                                {warrantDiffers ? `dt:${item.warrantObsDate}` : item.invWeeklyChange}
                               </div>
+                            </div>
+
+                            <div className="bg-slate-900/75 p-2 rounded-xl border border-slate-800 flex items-center justify-center">
+                              <TrendChart10D
+                                data={item.trend_10d}
+                                dates={item.trend_dates || []}
+                                unit=""
+                                color={item.changePct >= 0 ? "#10B981" : "#F43F5E"}
+                              />
                             </div>
                           </div>
 
-                          {/* 每个大宗品种卡片内置近10日价格趋势图 */}
-                          <TrendChart10D
-                            data={item.trend_10d}
-                            dates={item.trend_dates || []}
-                            unit=""
-                            color={item.changePct >= 0 ? "#10B981" : "#F43F5E"}
-                            label={`近10期价格趋势 (${item.unit})`}
-                          />
-
-                          <div className="mt-2.5 pt-2 border-t border-slate-800/80 space-y-1 text-xs">
-                            {item.spotRefNote && (
-                              <div className="text-sky-300">
-                                <strong>📌 现货与统计口径说明：</strong>{item.spotRefNote}
-                              </div>
-                            )}
-                            <div className="text-slate-300">
-                              <strong className="text-amber-300">⚡ 交易所原表与产业链核对：</strong>{item.firstHandNote}
-                            </div>
+                          <div className="mt-2 pt-2 border-t border-slate-800/80 text-xs text-slate-300 leading-relaxed">
+                            <strong className="text-amber-300">⚡ 交易所原表与产业链核对：</strong>{item.firstHandNote}
                           </div>
                         </div>
                       );
@@ -2013,8 +2060,7 @@
                             dates={selectedCommodity.trend_dates || []}
                             unit=""
                             color={selectedCommodity.changePct >= 0 ? "#10B981" : "#F43F5E"}
-                            label={`${selectedCommodity.code} 近10日收盘轨迹 (${selectedCommodity.unit})`}
-                            height={92}
+                            expanded={true}
                           />
                         </div>
                       ) : chartMode === "basis_inv" ? (
@@ -2253,7 +2299,7 @@
                       ))}
                     </div>
                     <div className="text-xs font-mono text-emerald-300 bg-emerald-950/30 border border-emerald-500/30 px-3 py-1.5 rounded-xl">
-                      📅 日线行情与成交额统一日期: {rawData.meta?.equity_quote_date || "2026-11-19 (T-1已收盘前复权)"} | 基准: {rawData.meta?.benchmark_note || "沪深300 (+0.03%)"}
+                      行情统一 data_dt: {rawData.meta?.equity_quote_date || "2026-11-19 (T-1已收盘前复权)"} | 基准: {rawData.meta?.benchmark_note || "沪深300 (+0.03%)"}
                     </div>
                   </div>
 
@@ -2265,7 +2311,7 @@
                           <th className="p-3 font-semibold">板块 / 哑铃分组</th>
                           <th className="p-3 font-semibold">映射大宗 / 成本传导锚</th>
                           <th className="p-3 font-semibold text-right">T-1收盘 / 涨跌 / 成交额</th>
-                          <th className="p-3 font-semibold">资源自给率、公告核验日期与一手催化</th>
+                          <th className="p-3 font-semibold">资源自给率、公告 data_dt 与一手催化</th>
                           <th className="p-3 font-semibold">今日评级 &amp; 什么情况取消</th>
                         </tr>
                       </thead>
@@ -2308,7 +2354,7 @@
                             <td className="p-3 max-w-md leading-relaxed">
                               {row.announcementDate && (
                                 <div className="inline-block text-[11px] font-mono px-2 py-0.5 mb-1 rounded bg-slate-800 text-amber-300 border border-slate-700">
-                                  📅 披露/核验日: {row.announcementDate}
+                                  data_dt: {row.announcementDate}
                                 </div>
                               )}
                               <div className="text-slate-200 font-semibold">{row.selfSufficiency}</div>
@@ -2373,7 +2419,7 @@
                           </div>
                           {item.obs_date && (
                             <div className="text-[11px] font-mono text-emerald-300 mb-2">
-                              📅 {item.obs_date}
+                              data_dt: {item.obs_date.replace(/^[^:]+:s*/, "")}
                             </div>
                           )}
                           <div className="text-xs text-sky-300 font-medium bg-slate-950/70 p-2.5 rounded-lg border border-slate-800 mb-3">
