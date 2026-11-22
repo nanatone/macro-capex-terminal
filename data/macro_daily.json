@@ -1,6 +1,6 @@
 {
   "meta": {
-    "updated_at": "2026-11-21 13:38:27 CST",
+    "updated_at": "2026-11-22 13:04:16 CST",
     "equity_quote_date": "2026-11-19 (T-1已收盘前复权)",
     "benchmark_note": "沪深300 (000300.SH): 3984.84 (+0.03%)",
     "data_source": "FRED API (9项) + ChinaMoney/AkShare (7项) + 跨资产比价(4项) + SHFE/INE/SGE大宗期现库存(6项)",
@@ -1950,17 +1950,16 @@
         "crude"
       ],
       "commodity": "原油 / 油田工程技术服务",
-      "price": 30.29,
-      "changePct": -4.15,
-      "turnoverYi": 0.49,
-      "vsCsi300Pct": -4.18,
-      "quoteDate": "2026-11-19",
+      "price": 30.71,
+      "changePct": 1.39,
+      "turnoverYi": 0.83,
+      "vsCsi300Pct": 2.15,
+      "quoteDate": "2026-11-20",
       "announcementDate": "2026-10-29 (三季报油服营收核验)",
       "selfSufficiency": "中石油/中海油油田化学与地面工程服务商（业绩取决于上游油企CapEx结算而非单日油价）",
       "firstHandCatalyst": "INE原油近月SC2612虽升水主力+9.4元/桶，但个股11-19收跌-4.15%（成交额0.49亿元），短期走势与单日油价背离",
       "cancelCondition": "日成交额不足1亿元且相对基准走弱(-4.18pct)时，仅作跟踪，不触发次日交易",
       "trend_10d": [
-        37.07,
         36.47,
         35.55,
         35.9,
@@ -1969,10 +1968,10 @@
         33.1,
         31.98,
         31.6,
-        30.29
+        30.29,
+        30.71
       ],
       "trend_dates": [
-        "11-06",
         "11-09",
         "11-10",
         "11-11",
@@ -1981,7 +1980,8 @@
         "11-16",
         "11-17",
         "11-18",
-        "11-19"
+        "11-19",
+        "11-20"
       ],
       "resonanceGrade": "BACK_SUPPORT",
       "actionLabel": "期货Back支撑 · 结合量价跟踪",
@@ -2044,17 +2044,16 @@
       "bucketLabel": "防御 · 央国企真红利",
       "linkedCommodities": [],
       "commodity": "10Y中债(1.58%) 险资OCI类债锚",
-      "price": 30.88,
-      "changePct": 0.65,
-      "turnoverYi": 28.11,
-      "vsCsi300Pct": 0.62,
-      "quoteDate": "2026-11-19",
+      "price": 31.62,
+      "changePct": 2.4,
+      "turnoverYi": 60.53,
+      "vsCsi300Pct": 3.16,
+      "quoteDate": "2026-11-20",
       "announcementDate": "2026-10-31 (三季报来水与发电量公告)",
       "selfSufficiency": "六库联调垄断水电资产，现金流与分红完全免疫工业品Contango累库风险",
       "firstHandCatalyst": "10Y中债降至1.58%、11-20 FDR007仅1.37%，11-19长江电力收涨+0.65%（成交28.11亿元，近10日由29.91稳步升至30.88元）",
       "cancelCondition": "若10Y中债收益率快速反弹突破2.15%导致股息率利差收窄，则下调防御红利权重",
       "trend_10d": [
-        29.91,
         29.83,
         29.67,
         29.48,
@@ -2063,10 +2062,10 @@
         30.49,
         30.6,
         30.68,
-        30.88
+        30.88,
+        31.62
       ],
       "trend_dates": [
-        "11-06",
         "11-09",
         "11-10",
         "11-11",
@@ -2075,7 +2074,8 @@
         "11-16",
         "11-17",
         "11-18",
-        "11-19"
+        "11-19",
+        "11-20"
       ],
       "resonanceGrade": "CORE_DEFENSE",
       "actionLabel": "真红利底仓 · 险资OCI承接",
