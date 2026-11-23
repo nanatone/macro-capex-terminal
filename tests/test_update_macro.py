@@ -91,6 +91,38 @@ class MacroDataTests(unittest.TestCase):
         self.assertEqual(p_map["000807.SZ"]["resonanceGrade"], "COST_SQUEEZE_WATCH")
         self.assertEqual(p_map["920807.BJ"]["resonanceGrade"], "CACHE_WATCH")
 
+    def test_shfe_warrant_table_parser_extracts_core_commodities(self):
+        sample_html = """
+        <table><tr><td>地区</td><td>仓库</td><td>期货</td><td>增减</td></tr><tr><td>铜</td><td>单位：吨</td></tr><tr><td>总计</td><td>6,053</td><td>-448</td></tr></table>
+        <table><tr><td>地区</td><td>仓库</td><td>期货</td><td>增减</td></tr><tr><td>铝</td><td>单位：吨</td></tr><tr><td>总计</td><td>32470</td><td>-3294</td></tr></table>
+        <table><tr><td>地区</td><td>仓库</td><td>期货</td><td>增减</td></tr><tr><td>氧化铝(仓库)</td><td>单位：吨</td></tr><tr><td>总计</td><td>192589</td><td>9593</td></tr></table>
+        <table><tr><td>厂库</td><td>地区</td><td>期货</td><td>增减</td></tr><tr><td>氧化铝(厂库)</td><td>单位：吨</td></tr><tr><td>总计</td><td>9900</td><td>0</td></tr></table>
+        <table><tr><td>地区</td><td>交割仓库</td><td>本日数量</td><td>增减</td></tr><tr><td>中质含硫原油</td><td>单位：桶</td></tr><tr><td>总计</td><td>3666000</td><td>0</td></tr></table>
+        <table><tr><td>地区</td><td>仓库</td><td>期货</td><td>增减</td></tr><tr><td>铜(BC)</td><td>单位：吨</td></tr><tr><td>总计</td><td>427</td><td>0</td></tr></table>
+        """
+        parsed = macro._parse_shfe_warrant_tables(sample_html)
+        self.assertEqual(parsed["copper"], {"qty": 6053, "chg": -448})
+        self.assertEqual(parsed["aluminum"], {"qty": 32470, "chg": -3294})
+        self.assertEqual(parsed["alumina"], {"qty": 202489, "chg": 9593})
+        self.assertEqual(parsed["crude"], {"qty": 3666000, "chg": 0})
+
+    def test_ashare_kline_falls_back_to_tencent_on_eastmoney_disconnect(self):
+        fake_qq = {
+            "quoteDate": "2026-11-20",
+            "price": 21.01,
+            "changePct": -1.59,
+            "turnoverYi": 6.87,
+            "trend_10d": [21.35, 21.01],
+            "trend_dates": ["11-19", "11-20"]
+        }
+        with patch.object(macro.requests, "get", side_effect=ConnectionError("RemoteDisconnected")), \
+             patch.object(macro.time, "sleep", return_value=None), \
+             patch.object(macro, "_fetch_ashare_kline_tencent", return_value=fake_qq) as mock_qq:
+            res = macro._fetch_ashare_completed_kline("000807.SZ", "2026-11-23", False)
+        mock_qq.assert_called_once_with("000807.SZ", "2026-11-23", False)
+        self.assertEqual(res["quoteDate"], "2026-11-20")
+        self.assertEqual(res["price"], 21.01)
+
 
 if __name__ == "__main__":
     unittest.main()

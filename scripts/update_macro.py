@@ -1494,12 +1494,362 @@ def _ts_call(api_name, token, fields="", **params):
     return None
 
 
-def fetch_commodities_data(fallback_commodities: list, dfii10: float = 2.60) -> list:
+def _parse_shfe_warrant_tables(html_text: str) -> dict:
+    """解析上期所/能源中心官网 dailystock_YYYYMMDD/ZH/all.html 注册仓单总计表"""
+    result = {}
+    if not html_text:
+        return result
+    for tbl in re.findall(r"<table.*?</table>", html_text, re.S):
+        rows = re.findall(r"<tr.*?</tr>", tbl, re.S)
+        if len(rows) < 2:
+            continue
+        title_txt = " ".join(re.sub(r"<[^>]+>", " ", rows[1]).split())
+        last_tokens = re.sub(r"<[^>]+>", " ", rows[-1]).split()
+        nums = []
+        for tok in last_tokens:
+            clean_tok = tok.replace(",", "")
+            if re.match(r"^-?\d+(\.\d+)?$", clean_tok):
+                nums.append(float(clean_tok))
+        if len(nums) < 2:
+            continue
+        total_qty, daily_chg = int(round(nums[-2])), int(round(nums[-1]))
+
+        if title_txt.startswith("铜 ") or title_txt.startswith("铜|") or ("铜" in title_txt and "铜(BC)" not in title_txt and "国际铜" not in title_txt):
+            if "copper" not in result:
+                result["copper"] = {"qty": total_qty, "chg": daily_chg}
+        elif title_txt.startswith("铝 ") or title_txt.startswith("铝|"):
+            if "aluminum" not in result:
+                result["aluminum"] = {"qty": total_qty, "chg": daily_chg}
+        elif "氧化铝" in title_txt:
+            prev = result.get("alumina", {"qty": 0, "chg": 0})
+            result["alumina"] = {"qty": prev["qty"] + total_qty, "chg": prev["chg"] + daily_chg}
+        elif title_txt.startswith("黄金"):
+            result["gold"] = {"qty": total_qty, "chg": daily_chg}
+        elif "螺纹钢(仓库)" in title_txt:
+            result["rebar_wh"] = {"qty": total_qty, "chg": daily_chg}
+        elif "螺纹钢(厂库)" in title_txt:
+            result["rebar_fac"] = {"qty": total_qty, "chg": daily_chg}
+        elif "中质含硫原油" in title_txt:
+            result["crude"] = {"qty": total_qty, "chg": daily_chg}
+    return result
+
+
+def _extract_exchange_contracts(payload: dict, product_id: str) -> dict:
+    """从上期所/INE官网 kxYYYYMMDD.dat 提取近月、主力合约价格、涨跌幅与期限曲线"""
+    rows = []
+    for x in (payload or {}).get("o_curinstrument") or []:
+        if str(x.get("PRODUCTID", "")).strip() != product_id:
+            continue
+        dm = str(x.get("DELIVERYMONTH", "")).strip()
+        if not dm.isdigit():
+            continue
+        try:
+            close_p = float(x.get("CLOSEPRICE") or 0)
+            oi = float(x.get("OPENINTEREST") or 0)
+            pre_s = float(x.get("PRESETTLEMENTPRICE") or 0)
+        except (TypeError, ValueError):
+            continue
+        if close_p > 0 and oi > 0:
+            rows.append({"dm": dm, "close": close_p, "oi": oi, "pre_settle": pre_s})
+    if not rows:
+        return {}
+    rows.sort(key=lambda r: r["dm"])
+    main_row = max(rows, key=lambda r: r["oi"])
+    near_row = rows[0]
+    chg_pct = round((main_row["close"] - main_row["pre_settle"]) / main_row["pre_settle"] * 100.0, 2) if main_row["pre_settle"] > 0 else 0.0
+    curve = [r["close"] for r in rows[:6]]
+    return {
+        "near_dm": near_row["dm"],
+        "near_close": near_row["close"],
+        "main_dm": main_row["dm"],
+        "main_close": main_row["close"],
+        "pre_settle": main_row["pre_settle"],
+        "change_pct": chg_pct,
+        "forward_curve": curve
+    }
+
+
+def _fetch_shfe_ine_public_commodities() -> dict:
+    """直连上期所(SHFE)/上期能源(INE)官网日行情与仓单原表，并结合SGE Au99.99与期货10日走势，无需Tushare Token"""
+    now_cst = datetime.datetime.utcnow() + datetime.timedelta(hours=8)
+    is_after_settle = (now_cst.hour > 15) or (now_cst.hour == 15 and now_cst.minute >= 25)
+    start_offset = 0 if is_after_settle else 1
+
+    shfe_json, ine_json, warrant_map, trade_dt_iso = None, None, {}, None
+    req_headers = dict(HTTP_HEADERS, Connection="close")
+
+    for offset in range(start_offset, start_offset + 10):
+        cand_date = (now_cst.date() - datetime.timedelta(days=offset))
+        if cand_date.weekday() >= 5:
+            continue
+        ymd = cand_date.strftime("%Y%m%d")
+        try:
+            r_shfe = requests.get(
+                f"https://www.shfe.com.cn/data/tradedata/future/dailydata/kx{ymd}.dat",
+                headers=req_headers,
+                timeout=10
+            )
+            if r_shfe.status_code == 200 and "o_curinstrument" in r_shfe.text:
+                data_s = r_shfe.json()
+                if data_s.get("o_curinstrument"):
+                    shfe_json = data_s
+                    trade_dt_iso = cand_date.strftime("%Y-%m-%d")
+                    try:
+                        r_ine = requests.get(
+                            f"https://www.ine.cn/data/tradedata/future/dailydata/kx{ymd}.dat",
+                            headers=req_headers,
+                            timeout=10
+                        )
+                        if r_ine.status_code == 200 and "o_curinstrument" in r_ine.text:
+                            ine_json = r_ine.json()
+                    except Exception as e_ine:
+                        print(f"[WARN] INE 日行情 {ymd} 拉取异常: {e_ine}")
+                    try:
+                        r_w = requests.get(
+                            f"https://www.shfe.com.cn/data/tradedata/future/stockdata/dailystock_{ymd}/ZH/all.html",
+                            headers=req_headers,
+                            timeout=12
+                        )
+                        if r_w.status_code == 200:
+                            warrant_map = _parse_shfe_warrant_tables(r_w.text)
+                    except Exception as e_w:
+                        print(f"[WARN] 上期所仓单日报 {ymd} 拉取异常: {e_w}")
+                    break
+        except Exception:
+            continue
+
+    if not shfe_json or not trade_dt_iso:
+        return {}
+
+    contracts = {
+        "copper": _extract_exchange_contracts(shfe_json, "cu_f"),
+        "alumina": _extract_exchange_contracts(shfe_json, "ao_f"),
+        "aluminum": _extract_exchange_contracts(shfe_json, "al_f"),
+        "gold": _extract_exchange_contracts(shfe_json, "au_f"),
+        "rebar": _extract_exchange_contracts(shfe_json, "rb_f"),
+        "crude": _extract_exchange_contracts(ine_json, "sc_f") if ine_json else {}
+    }
+
+    sge_gold = None
+    if ak is not None:
+        try:
+            sge_df = ak.spot_hist_sge(symbol="Au99.99")
+            if sge_df is not None and not sge_df.empty:
+                sge_df = sge_df.sort_values("date")
+                last_sge = sge_df.iloc[-1]
+                sge_val = float(last_sge["close"])
+                sge_dt = str(last_sge["date"])[:10]
+                if sge_val > 0:
+                    prev_sge = float(sge_df.iloc[-2]["close"]) if len(sge_df) >= 2 else sge_val
+                    sge_chg = round((sge_val - prev_sge) / prev_sge * 100.0, 2) if prev_sge > 0 else 0.0
+                    sge_gold = {"close": round(sge_val, 2), "date": sge_dt, "change_pct": sge_chg}
+        except Exception as e_sge:
+            print(f"[WARN] 上金所 Au99.99 日行情拉取跳过: {e_sge}")
+
+    trends = {}
+    if ak is not None:
+        start_q = (now_cst.date() - datetime.timedelta(days=30)).strftime("%Y%m%d")
+        today_iso = now_cst.strftime("%Y-%m-%d")
+        for cid, sym, dec in [("copper", "CU0", 0), ("alumina", "AO0", 0), ("gold", "AU0", 2), ("crude", "SC0", 1), ("rebar", "RB0", 0)]:
+            try:
+                fdf = ak.futures_main_sina(symbol=sym, start_date=start_q)
+                if fdf is not None and not fdf.empty:
+                    fdf = fdf.copy()
+                    fdf["dt_str"] = fdf["日期"].astype(str).str.slice(0, 10)
+                    if not is_after_settle:
+                        fdf = fdf[fdf["dt_str"] != today_iso]
+                    tail = fdf.tail(10)
+                    if len(tail) >= 2:
+                        trends[cid] = {
+                            "trend_10d": [int(round(float(v))) if dec == 0 else round(float(v), dec) for v in tail["收盘价"].tolist()],
+                            "trend_dates": [d[5:] for d in tail["dt_str"].tolist()]
+                        }
+            except Exception:
+                pass
+
+    return {
+        "trade_date": trade_dt_iso,
+        "contracts": contracts,
+        "warrants": warrant_map,
+        "sge_gold": sge_gold,
+        "trends": trends
+    }
+
+
+def fetch_commodities_data(fallback_commodities: list, dfii10: float = 2.60, fetch_live: bool = False) -> list:
     """更新 6 大核心大宗商品期现基差、期限结构、库存分位及自动基本面评级"""
     commodities = copy.deepcopy(fallback_commodities if fallback_commodities else DEFAULT_COMMODITIES)
     token = os.environ.get("TUSHARE_TOKEN", "").strip()
+    updated_via_public = False
 
-    if token:
+    if fetch_live:
+        try:
+            pub = _fetch_shfe_ine_public_commodities()
+            if pub and pub.get("trade_date"):
+                td = pub["trade_date"]
+                contracts = pub.get("contracts") or {}
+                warrants = pub.get("warrants") or {}
+                sge_gold = pub.get("sge_gold")
+                trends = pub.get("trends") or {}
+                al_c = contracts.get("aluminum") or {}
+
+                for item in commodities:
+                    cid = item.get("id")
+                    if cid == "tungsten":
+                        continue
+                    cinfo = contracts.get(cid) or {}
+                    if not cinfo:
+                        continue
+                    dec = 2 if cid == "gold" else (1 if cid == "crude" else 0)
+                    fmt_v = lambda v: int(round(v)) if dec == 0 else round(v, dec)
+                    fut_p = cinfo["main_close"]
+                    near_p = cinfo["near_close"]
+                    main_dm, near_dm = cinfo["main_dm"], cinfo["near_dm"]
+                    item["futuresPrice"] = fmt_v(fut_p)
+                    item["changePct"] = cinfo["change_pct"]
+                    item["futuresObsDate"] = td
+                    item["data_status"] = "updated"
+
+                    if cid in trends:
+                        item["trend_10d"] = trends[cid]["trend_10d"]
+                        item["trend_dates"] = trends[cid]["trend_dates"]
+
+                    if cid == "copper":
+                        basis = fmt_v(near_p - fut_p)
+                        basis_pct = round((near_p - fut_p) / fut_p * 100.0, 2) if fut_p else 0.0
+                        item["code"] = f"主力CU{main_dm} / 近月CU{near_dm}"
+                        item["priceLabel"] = f"主力CU{main_dm} / 近月CU{near_dm}"
+                        item["spotPrice"] = fmt_v(near_p)
+                        item["basis"] = basis
+                        item["basisPct"] = basis_pct
+                        item["structure"] = f"期货近月{'Back' if basis >= 0 else 'Contango'} ({basis:+,}元/吨)"
+                        if cinfo.get("forward_curve"):
+                            item["forwardCurve"] = [fmt_v(x) for x in cinfo["forward_curve"]]
+                        if "copper" in warrants:
+                            w = warrants["copper"]
+                            item["warrantTons"] = f"{w['qty']:,} 吨"
+                            item["invWeeklyChange"] = f"日{'增' if w['chg'] >= 0 else '减'} {w['chg']:+,}吨 ({td})"
+                            item["warrantObsDate"] = td
+                            item["cycleStage"] = f"注册仓单{w['qty']:,}吨({w['chg']:+,}) · 期货近月{'Back' if basis >= 0 else 'Contango'}"
+                            item["firstHandNote"] = (
+                                f"上期所{td}铜注册仓单报{w['qty']:,}吨（单日{w['chg']:+,}吨），"
+                                f"近月CU{near_dm}({fmt_v(near_p):,})较主力CU{main_dm}({fmt_v(fut_p):,})月差{basis:+,}元/吨({basis_pct:+.2f}%)。"
+                            )
+                    elif cid == "alumina":
+                        basis = fmt_v(near_p - fut_p)
+                        basis_pct = round((near_p - fut_p) / fut_p * 100.0, 2) if fut_p else 0.0
+                        item["spotPrice"] = fmt_v(near_p)
+                        item["priceLabel"] = f"氧化铝主力AO{main_dm} / 近月AO{near_dm}"
+                        item["basis"] = basis
+                        item["basisPct"] = basis_pct
+                        if al_c:
+                            al_main = int(round(al_c["main_close"]))
+                            al_near = int(round(al_c["near_close"]))
+                            al_chg = al_c["change_pct"]
+                            al_spread = al_near - al_main
+                            item["code"] = f"沪铝AL{al_c['main_dm']} / 氧化铝AO{main_dm}"
+                            item["alFuturesPrice"] = al_main
+                            item["alNearPrice"] = al_near
+                            item["alChangePct"] = al_chg
+                            item["diffLabel"] = f"氧化铝近月-主力月差 | 沪铝AL{al_c['main_dm']}: {al_main:,} ({al_chg:+.2f}%)"
+                            item["structure"] = f"铝{'Back' if al_spread >= 0 else 'Contango'}({al_spread:+}) / 氧化铝{'Back' if basis >= 0 else 'Contango'}({basis:+})"
+                            item["cycleStage"] = (
+                                f"沪铝({al_chg:+.2f}%) vs 氧化铝({cinfo['change_pct']:+.2f}%) · "
+                                + ("吨铝利润待确认" if al_chg <= 0 and cinfo["change_pct"] >= al_chg else "铝价走势同步核验")
+                            )
+                        if cinfo.get("forward_curve"):
+                            item["forwardCurve"] = [fmt_v(x) for x in cinfo["forward_curve"]]
+                        if "alumina" in warrants or "aluminum" in warrants:
+                            ao_w = warrants.get("alumina")
+                            al_w = warrants.get("aluminum")
+                            if ao_w and al_w:
+                                item["warrantTons"] = f"氧化铝{ao_w['qty']:,}吨 / 沪铝{al_w['qty']:,}吨"
+                                item["invWeeklyChange"] = f"AO日{ao_w['chg']:+,}吨 / AL日{al_w['chg']:+,}吨"
+                            elif ao_w:
+                                item["warrantTons"] = f"氧化铝{ao_w['qty']:,}吨"
+                                item["invWeeklyChange"] = f"AO日{ao_w['chg']:+,}吨"
+                            item["warrantObsDate"] = td
+                            al_txt = f"沪铝主力{int(round(al_c['main_close'])):,}元/吨({al_c['change_pct']:+.2f}%)" if al_c else "沪铝"
+                            item["firstHandNote"] = (
+                                f"{td}上期所{item['warrantTons']}（{item['invWeeklyChange']}，AO分位基于2023.06上市以来历史）。"
+                                f"当日{al_txt}，氧化铝主力AO{main_dm}报{fmt_v(fut_p):,}元/吨({cinfo['change_pct']:+.2f}%)，近月-主力月差{basis:+}元/吨。"
+                            )
+                    elif cid == "gold":
+                        spot_p = sge_gold["close"] if sge_gold else near_p
+                        basis = round(spot_p - fut_p, 2)
+                        basis_pct = round(basis / fut_p * 100.0, 2) if fut_p else 0.0
+                        item["code"] = f"主力AU{main_dm} / 现货Au99.99"
+                        item["priceLabel"] = f"沪金主力AU{main_dm} / 上金所Au99.99"
+                        item["spotPrice"] = round(spot_p, 2)
+                        item["basis"] = basis
+                        item["basisPct"] = basis_pct
+                        item["invWeeklyChange"] = f"近月AU{near_dm}报 {near_p:.2f}元/克"
+                        if sge_gold:
+                            item["spotObsDate"] = f"{sge_gold['date']} (上金所日行情)"
+                            item["spotRefNote"] = f"上金所 Au99.99 每日收盘实取 ({sge_gold['close']:.2f}元/克，日{sge_gold['change_pct']:+.2f}%)"
+                        if "gold" in warrants:
+                            gw = warrants["gold"]
+                            item["warrantTons"] = f"SHFE交割金库 {gw['qty']:,}千克"
+                            item["warrantObsDate"] = td
+                        item["cycleStage"] = f"10Y TIPS实际利率({dfii10}%)约束短线 · 央行购金托底"
+                        item["firstHandNote"] = (
+                            f"{td}上期所沪金主力AU{main_dm}收报{fut_p:.2f}元/克({cinfo['change_pct']:+.2f}%)，"
+                            f"上金所Au99.99报{spot_p:.2f}元/克，期现基差{basis:+.2f}元/克({basis_pct:+.2f}%)。"
+                        )
+                        if cinfo.get("forward_curve"):
+                            item["forwardCurve"] = [round(spot_p, 2)] + [round(x, 2) for x in cinfo["forward_curve"][:5]]
+                    elif cid == "crude":
+                        basis = round(near_p - fut_p, 1)
+                        basis_pct = round((near_p - fut_p) / fut_p * 100.0, 2) if fut_p else 0.0
+                        item["code"] = f"主力SC{main_dm} / 近月SC{near_dm}"
+                        item["priceLabel"] = f"主力SC{main_dm} / 近月SC{near_dm}"
+                        item["diffLabel"] = f"期货近月-主力月差 (SC{near_dm} - SC{main_dm})"
+                        item["spotPrice"] = round(near_p, 1)
+                        item["basis"] = basis
+                        item["basisPct"] = basis_pct
+                        item["structure"] = f"期货近月{'Back' if basis >= 0 else 'Contango'} ({basis:+.1f}元/桶)"
+                        if cinfo.get("forward_curve"):
+                            item["forwardCurve"] = [round(x, 1) for x in cinfo["forward_curve"]]
+                        if "crude" in warrants:
+                            cw = warrants["crude"]
+                            wan_bbl = cw["qty"] / 10000.0
+                            item["warrantTons"] = f"INE仓单 {wan_bbl:.1f}万桶"
+                            item["invWeeklyChange"] = f"INE仓单日增减 {cw['chg']:+,}桶"
+                            item["warrantObsDate"] = f"{td} (INE) / {str(item.get('spotObsDate', 'EIA周报')).split(' ')[0]} (EIA周报)"
+                        item["firstHandNote"] = (
+                            f"{td}INE原油主力SC{main_dm}收报{fut_p:.1f}元/桶({cinfo['change_pct']:+.2f}%)，"
+                            f"近月SC{near_dm}报{near_p:.1f}元/桶，近月-主力月差{basis:+.1f}元/桶({basis_pct:+.2f}%)；{item.get('warrantTons', '')}。"
+                        )
+                    elif cid == "rebar":
+                        item["code"] = f"主力RB{main_dm} / 近月RB{near_dm}"
+                        spot_ref = float(item.get("spotPrice") or fut_p)
+                        basis = int(round(spot_ref - fut_p))
+                        basis_pct = round(basis / fut_p * 100.0, 2) if fut_p else 0.0
+                        item["basis"] = basis
+                        item["basisPct"] = basis_pct
+                        item["diffLabel"] = f"旬度现货-主力价差 | 期货近月RB{near_dm}: {int(round(near_p)):,}"
+                        if "rebar_wh" in warrants:
+                            rw = warrants["rebar_wh"]
+                            rf = warrants.get("rebar_fac")
+                            item["warrantTons"] = (
+                                f"仓库{rw['qty']:,}吨" + (f" / 厂库{rf['qty']:,}吨" if rf else "")
+                            )
+                            chg_total = rw["chg"] + (rf["chg"] if rf else 0)
+                            item["invWeeklyChange"] = f"日增减 {chg_total:+,}吨 ({td})"
+                            item["warrantObsDate"] = td
+                        item["firstHandNote"] = (
+                            f"{td}上期所螺纹钢主力RB{main_dm}收报{int(round(fut_p)):,}元/吨({cinfo['change_pct']:+.2f}%)，"
+                            f"近月RB{near_dm}报{int(round(near_p)):,}元/吨，仓单{item.get('warrantTons', '')}。冬季淡季维持伪红利排雷观察。"
+                        )
+                        if cinfo.get("forward_curve"):
+                            item["forwardCurve"] = [int(round(spot_ref))] + [int(round(x)) for x in cinfo["forward_curve"][:5]]
+
+                updated_via_public = True
+                print(f"[SUCCESS] 上期所/INE/上金所公开大宗期现与仓单更新成功: {td}")
+        except Exception as e:
+            print(f"[WARN] 上期所/INE公开大宗日更异常，保留快照或尝试Tushare: {e}")
+
+    if token and not updated_via_public:
         try:
             df_dates = _ts_call("fut_daily", token, ts_code="CU.SHF", fields="trade_date")
             trade_dates = sorted(df_dates["trade_date"].astype(str).unique().tolist(), reverse=True)[:15] if (df_dates is not None and not df_dates.empty) else []
@@ -1641,11 +1991,18 @@ def evaluate_equity_fundamental(stock: dict, commodities_map: dict, defense_weig
                 "badgeColor": "amber",
                 "diagnosis": f"关联品种【{names_str}】受央行购金与上金所Au99.99支撑，短线等待10Y TIPS实际利率回落窗口。"
             }
+        if "BACK_WATCH" in grades:
+            return {
+                "resonanceGrade": "BACK_SUPPORT",
+                "actionLabel": "期货Back支撑 · 结合量价跟踪",
+                "badgeColor": "sky",
+                "diagnosis": f"关联品种【{names_str}】维持近月Back结构，结合个股成交额与相对基准强弱跟踪。"
+            }
         return {
-            "resonanceGrade": "BACK_SUPPORT",
-            "actionLabel": "期货Back支撑 · 结合量价跟踪",
-            "badgeColor": "sky",
-            "diagnosis": f"关联品种【{names_str}】维持近月Back结构，结合个股成交额与相对基准强弱跟踪。"
+            "resonanceGrade": "NEUTRAL_WATCH",
+            "actionLabel": "期现均衡观察 · 结合量价跟踪",
+            "badgeColor": "slate",
+            "diagnosis": f"关联品种【{names_str}】当前处于期现均衡状态，待仓单去化与近月升水共振后再升级候选。"
         }
 
     return {
@@ -1656,9 +2013,50 @@ def evaluate_equity_fundamental(stock: dict, commodities_map: dict, defense_weig
     }
 
 
+def _fetch_ashare_kline_tencent(code: str, today_str: str, is_after_close: bool) -> dict:
+    """腾讯公开前复权日K线兜底接口（支持沪/深/北交所及沪深300指数）"""
+    num, exch = code.split(".")
+    sym = f"{exch.lower()}{num}"
+    req_headers = dict(HTTP_HEADERS, Connection="close")
+    rows = []
+    for param in (f"{sym},day,,,15,qfq", f"{sym},day,,,15"):
+        url = f"https://web.ifzq.gtimg.cn/appstock/app/fqkline/get?param={param}"
+        resp = requests.get(url, headers=req_headers, timeout=8)
+        resp.raise_for_status()
+        d = (resp.json().get("data") or {}).get(sym) or {}
+        cand = d.get("qfqday") or d.get("day") or []
+        if not is_after_close:
+            cand = [r for r in cand if len(r) >= 6 and str(r[0]) != today_str]
+        if len(cand) >= 2:
+            rows = cand
+            break
+    if len(rows) < 2:
+        return {}
+    done = rows[-10:]
+    last_r, prev_r = done[-1], done[-2]
+    close_p = float(last_r[2])
+    prev_c = float(prev_r[2])
+    chg_pct = round((close_p - prev_c) / prev_c * 100.0, 2) if prev_c > 0 else 0.0
+    out = {
+        "quoteDate": str(last_r[0]),
+        "price": round(close_p, 2),
+        "changePct": chg_pct,
+        "trend_10d": [round(float(r[2]), 2) for r in done],
+        "trend_dates": [str(r[0])[5:] for r in done]
+    }
+    try:
+        vol_hands = float(last_r[5])
+        if vol_hands > 0 and not code.startswith("000300."):
+            out["turnoverYi"] = round(close_p * vol_hands * 100.0 / 1e8, 2)
+    except (TypeError, ValueError):
+        pass
+    return out
+
+
 def _fetch_ashare_completed_kline(code: str, today_str: str, is_after_close: bool) -> dict:
     """
-    直连东财公开日K线接口获取单只A股（含沪/深/北交所）最新已完成交易日的前复权收盘价、涨跌幅、成交额(亿)及近10日收盘序列。
+    获取单只A股（含沪/深/北交所）最新已完成交易日的前复权收盘价、涨跌幅、成交额(亿)及近10日收盘序列。
+    主源：东方财富公开日K线（3次重试 + Connection: close 防断连）；兜底：腾讯公开前复权日K线。
     盘中运行(15:15前)自动剔除当日未收盘K线，确保早盘/盘中复盘100%使用上一交易日已完成日线。
     """
     num, exch = code.split(".")
@@ -1668,26 +2066,47 @@ def _fetch_ashare_completed_kline(code: str, today_str: str, is_after_close: boo
         f"secid={secid}&fields1=f1,f2,f3&fields2=f51,f52,f53,f54,f55,f56,f57,f58,f59"
         f"&klt=101&fqt=1&end=20500101&lmt=15"
     )
-    resp = requests.get(url, headers=HTTP_HEADERS, timeout=8)
-    resp.raise_for_status()
-    klines = ((resp.json().get("data") or {}).get("klines")) or []
-    if not is_after_close:
-        klines = [k for k in klines if not k.startswith(today_str)]
-    done = klines[-10:]
-    if not done:
-        return {}
-    last_parts = done[-1].split(",")
-    return {
-        "quoteDate": last_parts[0],
-        "price": round(float(last_parts[2]), 2),
-        "changePct": round(float(last_parts[8]), 2),
-        "turnoverYi": round(float(last_parts[6]) / 1e8, 2),
-        "trend_10d": [round(float(k.split(",")[2]), 2) for k in done],
-        "trend_dates": [k.split(",")[0][5:] for k in done]
-    }
+    req_headers = dict(HTTP_HEADERS, Connection="close")
+    last_err = None
+    for attempt in range(3):
+        try:
+            resp = requests.get(url, headers=req_headers, timeout=8)
+            resp.raise_for_status()
+            klines = ((resp.json().get("data") or {}).get("klines")) or []
+            if not is_after_close:
+                klines = [k for k in klines if not k.startswith(today_str)]
+            done = klines[-10:]
+            if done:
+                last_parts = done[-1].split(",")
+                return {
+                    "quoteDate": last_parts[0],
+                    "price": round(float(last_parts[2]), 2),
+                    "changePct": round(float(last_parts[8]), 2),
+                    "turnoverYi": round(float(last_parts[6]) / 1e8, 2),
+                    "trend_10d": [round(float(k.split(",")[2]), 2) for k in done],
+                    "trend_dates": [k.split(",")[0][5:] for k in done]
+                }
+        except Exception as e:
+            last_err = e
+            if attempt < 2:
+                time.sleep(0.35 * (attempt + 1))
+
+    # 东财连续失败时自动切换腾讯前复权日K线兜底
+    try:
+        fallback_q = _fetch_ashare_kline_tencent(code, today_str, is_after_close)
+        if fallback_q:
+            print(f"[INFO] A股日线 {code} 东财断连({type(last_err).__name__ if last_err else 'empty'})，已由腾讯K线兜底成功 ({fallback_q['quoteDate']})")
+            return fallback_q
+    except Exception as e_qq:
+        if last_err is not None:
+            raise RuntimeError(f"东财({last_err}) & 腾讯兜底({e_qq}) 均失败") from None
+        raise
+    if last_err is not None:
+        raise last_err
+    return {}
 
 
-def enrich_equity_pool(fallback_pool: list, commodities: list, defense_weight: int = 65, fetch_live_quotes: bool = False) -> list:
+def enrich_equity_pool(fallback_pool: list, commodities: list, defense_weight: int = 65, fetch_live_quotes: bool = False, benchmark_out: dict = None) -> list:
     pool = copy.deepcopy(fallback_pool if fallback_pool else DEFAULT_EQUITY_POOL)
     c_map = {c["id"]: c for c in (commodities or [])}
 
@@ -1695,14 +2114,18 @@ def enrich_equity_pool(fallback_pool: list, commodities: list, defense_weight: i
         now_cst = datetime.datetime.utcnow() + datetime.timedelta(hours=8)
         today_str = now_cst.strftime("%Y-%m-%d")
         is_after_close = (now_cst.hour > 15) or (now_cst.hour == 15 and now_cst.minute >= 15)
-        csi300_chg = 0.03
+        csi300_chg = 0.0
         try:
             bm = _fetch_ashare_completed_kline("000300.SH", today_str, is_after_close)
             if bm:
                 csi300_chg = bm["changePct"]
-        except Exception:
-            pass
-        for stock in pool:
+                if isinstance(benchmark_out, dict):
+                    benchmark_out.update(bm)
+        except Exception as e_bm:
+            print(f"[WARN] 沪深300基准日线拉取跳过: {e_bm}")
+        for idx, stock in enumerate(pool):
+            if idx > 0:
+                time.sleep(0.2)
             try:
                 q = _fetch_ashare_completed_kline(stock["code"], today_str, is_after_close)
                 if q:
@@ -2061,7 +2484,7 @@ def run_hard_rule_engine(us: dict, cn: dict, cross_asset: dict = None, commoditi
     return {"hard_rules": rules, "barbell_allocation": barbell}
 
 
-def generate_soft_reports(us: dict, cn: dict, engine_res: dict, cross_asset: dict = None, commodities: list = None) -> dict:
+def generate_soft_reports(us: dict, cn: dict, engine_res: dict, cross_asset: dict = None, commodities: list = None, equity_pool: list = None) -> dict:
     """
     第二层决策引擎：基于真实规则状态与大宗期现结构动态合成双视角软研报
     1. 二级市场交易实战版 (trading_perspective)
@@ -2095,6 +2518,8 @@ def generate_soft_reports(us: dict, cn: dict, engine_res: dict, cross_asset: dic
     cn10y_pct = cn["cn10y"]["percentile_3y"]
     cn30y = cn["cn30y"]["value"]
     dr007_val = cn["dr007"]["value"]
+    dr007_dt_raw = str(cn["dr007"].get("observation_date") or "")
+    dr007_mmdd = dr007_dt_raw[5:10] if len(dr007_dt_raw) >= 10 else "最新"
     r_dr_spread = cn.get("r007_dr007_spread", DEFAULT_CN_METRICS["r007_dr007_spread"])["value"]
     us_cn_spread = cn.get("us_cn_spread", DEFAULT_CN_METRICS["us_cn_spread"])["value"]
     scissors = cn["m1_m2_diff"]["value"]
@@ -2106,6 +2531,27 @@ def generate_soft_reports(us: dict, cn: dict, engine_res: dict, cross_asset: dic
     dxy_v = ca.get("dxy", {}).get("value", 103.41)
     cg_v = ca.get("cop_gold", {}).get("value", 3.49)
     go_v = ca.get("gold_oil", {}).get("value", 43.7)
+
+    c_list = commodities if commodities is not None else DEFAULT_COMMODITIES
+    c_map = {c.get("id"): c for c in c_list if isinstance(c, dict)}
+    cu_c = c_map.get("copper") or {}
+    ao_c = c_map.get("alumina") or {}
+    cu_warrant = cu_c.get("warrantTons", "6,501 吨")
+    cu_wchg = cu_c.get("invWeeklyChange", "日减")
+    cu_basis = cu_c.get("basis", 2570)
+    cu_dt = str(cu_c.get("futuresObsDate") or "")[5:10] or "最新"
+    al_chg = float(ao_c.get("alChangePct", -1.66) or 0.0)
+    ao_chg = float(ao_c.get("changePct", 0.04) or 0.0)
+    eq_map = {e.get("code"): e for e in (equity_pool or DEFAULT_EQUITY_POOL) if isinstance(e, dict)}
+    zjxc = eq_map.get("300308.SZ") or {}
+    zjxc_dt = str(zjxc.get("quoteDate") or "")[5:10] or "T-1"
+    zjxc_note = f"中际旭创{zjxc_dt}成交{zjxc.get('turnoverYi', 166)}亿({float(zjxc.get('changePct', 0)):+.2f}%)"
+    yl_squeeze = (al_chg <= 0 and ao_chg >= al_chg)
+    yl_stance = (
+        f"把【外购氧化铝受成本挤压的云铝股份(沪铝{al_chg:+.2f}% vs 氧化铝{ao_chg:+.2f}%)】降为待确认"
+        if yl_squeeze else
+        f"跟踪【云铝股份(沪铝{al_chg:+.2f}% vs 氧化铝{ao_chg:+.2f}%，同步核验吨铝利润)】"
+    )
 
     rule_map = {r["id"]: r for r in engine_res["hard_rules"]}
     r_cn_redemp = rule_map["RULE_CN_WEALTH_REDEMPTION"]
@@ -2137,19 +2583,19 @@ def generate_soft_reports(us: dict, cn: dict, engine_res: dict, cross_asset: dic
     trading_report = {
         "title": f"【今日总纲·交易视角】海外高实际利率({dfii10}%)杀概念 vs 国内10月M1-M2改善({scissors}%) · 锁定「{def_w}%短债真红利 + {off_w}%铜矿/算力真景气」",
         "core_marginal_change": (
-            f"① 国内资金与信用破冰：11-20货币网FDR007报{dr007_val}%（R-DR分层仅{r_dr_spread}bp），10月M1-M2剪刀差收窄至{scissors}%（环比{scissors_chg:+}pct），10Y中债{cn10y}%推升沪深300 ERP至{erp_val}%。\n"
+            f"① 国内资金与信用破冰：{dr007_mmdd}货币网FDR007报{dr007_val}%（R-DR分层仅{r_dr_spread}bp），10月M1-M2剪刀差收窄至{scissors}%（环比{scissors_chg:+}pct），10Y中债{cn10y}%推升沪深300 ERP至{erp_val}%。\n"
             f"② 海外分母与流动性底线：10Y美债{us10y}%（实际利率{dfii10}% + 通胀{t10yie}%），ON RRP仅剩{rrp_val}B、TGA {tga_val}B，银行准备金{wresbal_val}B（破3000B充裕线）。\n"
-            f"③ 大宗仓单与产业链分化：上期所铜仓单日减905吨至6,501吨（期货近月Back +2,570元）；但沪铝(-1.66%)弱于氧化铝(+0.04%)，黑钨无当日新长单。"
+            f"③ 大宗仓单与产业链分化：上期所{cu_dt}铜仓单报{cu_warrant}（{cu_wchg}，期货近月月差{cu_basis:+}元）；沪铝({al_chg:+.2f}%) vs 氧化铝({ao_chg:+.2f}%)，黑钨无当日新长单。"
         ),
         "transmission_logic": (
             f"{us_view_str}\n"
             f"{cn_view_str}\n"
-            f"③ 多空鲜明表态：看多【高自给铜矿(紫金) + 放量算力龙头(中际旭创11-19成交166亿涨+3.05%)】；把【外购氧化铝受成本挤压的云铝股份】降为待确认；剔除【无日频新长单的黑钨链与淡季螺纹钢】。"
+            f"③ 多空鲜明表态：看多【高自给铜矿(紫金) + 放量算力龙头({zjxc_note})】；{yl_stance}；剔除【无日频新长单的黑钨链与淡季螺纹钢】。"
         ),
         "action_instructions": [
             f"① 仓位指令：防守 {def_w}%（短债{bond_w}% + 央企真红利{div_w}%）: 进攻 {off_w}%（AI算力{ai_w}% + 紧缺资源{com_w}% + 工控/Agent {agent_w}%）。",
-            "② 明日重点看谁：进攻首选 300308 中际旭创（量价齐升+TSMC月报高景气）与 601899 紫金矿业（铜仓单连降+期货Back）；底仓持 600900 长江电力 / 600941 中国移动。",
-            "③ 什么情况取消：若上期所铜仓单连续3日累库>3000吨、或10Y实际利率突破3.0%引发外盘流动性冲击，立即暂停资源进攻桶；云铝待沪铝涨幅跑赢氧化铝后再恢复候选。"
+            "② 明日重点看谁：进攻首选 300308 中际旭创（量价与TSMC月报高景气核对）与 601899 紫金矿业（铜仓单连降+期货Back）；底仓持 600900 长江电力 / 600941 中国移动。",
+            "③ 什么情况取消：若上期所铜仓单连续3日累库>3000吨、或10Y实际利率突破3.0%引发外盘流动性冲击，立即暂停资源进攻桶；云铝待沪铝持续跑赢氧化铝且量价企稳后再纳入核心候选。"
         ]
     }
 
@@ -2165,7 +2611,7 @@ def generate_soft_reports(us: dict, cn: dict, engine_res: dict, cross_asset: dic
     wealth_report = {
         "title": f"【今日总纲·渠道视角】非银分层仅{r_dr_spread}bp无赎回冲击，10Y中债{cn10y}%长久期赔率薄 · 主推「短债底仓 + 央企红利/硬科技固收+」",
         "core_marginal_change": (
-            f"① 赎回雷达安全：11-20定盘FDR007报{dr007_val}%，R007-DR007流动性分层利差仅{r_dr_spread}bp（<25bp安全区），非银融资顺畅。\n"
+            f"① 赎回雷达安全：{dr007_mmdd}定盘FDR007报{dr007_val}%，R007-DR007流动性分层利差仅{r_dr_spread}bp（<25bp安全区），非银融资顺畅。\n"
             f"② 长端利率赔率偏薄：10Y中债报{cn10y}%（近3年{cn10y_pct}%极低分位）、30Y中债报{cn30y}%，继续拉长久期性价比低。\n"
             f"③ 含权固收+性价比突出：沪深300 ERP达{erp_val}%（{erp_pct}%分位），叠加10月M1-M2改善至{scissors}%，权益向下空间封锁。"
         ),
@@ -2252,16 +2698,22 @@ def main():
     cross_asset = fetch_cross_asset_anchors(current_data.get("metrics", {}).get("cross_asset", {}))
     commodities = fetch_commodities_data(
         current_data.get("commodities", DEFAULT_COMMODITIES),
-        dfii10=us_metrics["dfii10"]["value"]
+        dfii10=us_metrics["dfii10"]["value"],
+        fetch_live=True
     )
 
     engine_out = run_hard_rule_engine(us_metrics, cn_metrics, cross_asset=cross_asset, commodities=commodities)
-    soft_reports = generate_soft_reports(us_metrics, cn_metrics, engine_out, cross_asset=cross_asset, commodities=commodities)
+    bm_info = {}
     equity_pool = enrich_equity_pool(
         current_data.get("equity_pool", DEFAULT_EQUITY_POOL),
         commodities=commodities,
         defense_weight=engine_out["barbell_allocation"]["defense_total"],
-        fetch_live_quotes=True
+        fetch_live_quotes=True,
+        benchmark_out=bm_info
+    )
+    soft_reports = generate_soft_reports(
+        us_metrics, cn_metrics, engine_out,
+        cross_asset=cross_asset, commodities=commodities, equity_pool=equity_pool
     )
 
     tz_cst = datetime.timezone(datetime.timedelta(hours=8))
@@ -2279,7 +2731,14 @@ def main():
     if unverified:
         regime_str += "（含缓存指标）"
 
+    eq_dates = [e.get("quoteDate") for e in equity_pool if e.get("quoteDate")]
+    latest_eq_dt = max(eq_dates) if eq_dates else current_data["meta"].get("equity_quote_date", "")
+
     current_data["meta"]["updated_at"] = now_str
+    if latest_eq_dt:
+        current_data["meta"]["equity_quote_date"] = f"{latest_eq_dt} (T-1已收盘前复权)"
+    if bm_info and bm_info.get("price") is not None:
+        current_data["meta"]["benchmark_note"] = f"沪深300 (000300.SH): {bm_info['price']:.2f} ({bm_info['changePct']:+.2f}%)"
     current_data["meta"]["data_source"] = "FRED API (9项) + ChinaMoney/AkShare (7项) + 跨资产比价(4项) + SHFE/INE/SGE大宗期现库存(6项)"
     current_data["meta"]["market_regime"] = regime_str
     current_data["meta"]["regime_code"] = "PRO_EIGHT_DIM_UNIFIED"
