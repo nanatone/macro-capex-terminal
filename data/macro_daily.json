@@ -1,10 +1,10 @@
 {
   "meta": {
-    "updated_at": "2026-11-27 14:44:19 CST",
-    "equity_quote_date": "2026-11-26 (T-1已收盘前复权)",
-    "benchmark_note": "沪深300 (000300.SH): 3900.55 (+0.06%)",
+    "updated_at": "2026-11-28 14:18:59 CST",
+    "equity_quote_date": "2026-11-27 (T-1已收盘前复权)",
+    "benchmark_note": "沪深300 (000300.SH): 4063.06 (+4.17%)",
     "data_source": "FRED API (9项) + ChinaMoney/AkShare (7项) + 跨资产比价(4项) + SHFE/INE/SGE大宗期现库存(6项)",
-    "market_regime": "海外实际利率2.79% + 国内资产荒(中债1.59%) + 1大宗低库存Back共振 · 哑铃 55:45",
+    "market_regime": "海外实际利率2.73% + 国内资产荒(中债1.6%) + 1大宗低库存Back共振 · 哑铃 55:45",
     "regime_code": "PRO_EIGHT_DIM_UNIFIED",
     "data_quality_note": "全部16项中美宏观、流动性与估值指标均已实时核验更新。 大宗期现基差/库存分位(6大品种)与科技CapEx三阶段产业链已联动核验；双视角晨报由八维规则引擎动态合成。"
   },
@@ -13,20 +13,19 @@
       "dgs10": {
         "name": "10Y 美债名义收益率",
         "code": "DGS10",
-        "value": 4.91,
+        "value": 4.85,
         "unit": "%",
         "freq": "daily",
         "window_label": "近3年历史分位数",
-        "chg_1d_bp": -1.0,
-        "chg_5d_bp": -19.0,
-        "percentile_3y": 94,
+        "chg_1d_bp": -6.0,
+        "chg_5d_bp": -22.0,
+        "percentile_3y": 93,
         "threshold_warn": 4.35,
         "role": "DCF分母总锚：名义利率 = 实际利率(DFII10) + 通胀预期(T10YIE)",
         "url": "https://fred.stlouisfed.org/series/DGS10",
         "data_status": "updated",
-        "observation_date": "2026-11-24",
+        "observation_date": "2026-11-25",
         "trend_10d": [
-          4.98,
           5.1,
           5.15,
           5.12,
@@ -35,10 +34,10 @@
           5.04,
           4.92,
           4.92,
-          4.91
+          4.91,
+          4.85
         ],
         "trend_dates": [
-          "11-10",
           "11-12",
           "11-13",
           "11-16",
@@ -47,26 +46,26 @@
           "11-19",
           "11-20",
           "11-23",
-          "11-24"
+          "11-24",
+          "11-25"
         ]
       },
       "dfii10": {
         "name": "10Y TIPS 实际利率",
         "code": "DFII10",
-        "value": 2.79,
+        "value": 2.73,
         "unit": "%",
         "freq": "daily",
         "window_label": "近3年历史分位数",
-        "chg_1d_bp": 0.0,
-        "chg_5d_bp": -10.0,
-        "percentile_3y": 97,
+        "chg_1d_bp": -6.0,
+        "chg_5d_bp": -15.0,
+        "percentile_3y": 96,
         "threshold_warn": 2.2,
         "role": "DCF真实分母端：剔除通胀后的全球科技成长股与黄金真实无风险贴现率",
         "url": "https://fred.stlouisfed.org/series/DFII10",
         "data_status": "updated",
-        "observation_date": "2026-11-24",
+        "observation_date": "2026-11-25",
         "trend_10d": [
-          2.78,
           2.86,
           2.91,
           2.92,
@@ -75,10 +74,10 @@
           2.88,
           2.77,
           2.79,
-          2.79
+          2.79,
+          2.73
         ],
         "trend_dates": [
-          "11-10",
           "11-12",
           "11-13",
           "11-16",
@@ -87,26 +86,26 @@
           "11-19",
           "11-20",
           "11-23",
-          "11-24"
+          "11-24",
+          "11-25"
         ]
       },
       "t10yie": {
         "name": "10Y 盈亏平衡通胀预期",
         "code": "T10YIE",
-        "value": 2.12,
+        "value": 2.15,
         "unit": "%",
         "freq": "daily",
         "window_label": "近3年历史分位数",
-        "chg_1d_bp": 0.0,
-        "chg_5d_bp": -7.0,
-        "percentile_3y": 3,
+        "chg_1d_bp": 3.0,
+        "chg_5d_bp": -1.0,
+        "percentile_3y": 4,
         "threshold_warn": 2.45,
         "role": "DCF分子端与大宗再通胀映射：隐含通胀与增长预期（急跌<1.9%预示衰退交易）",
         "url": "https://fred.stlouisfed.org/series/T10YIE",
         "data_status": "updated",
-        "observation_date": "2026-11-25",
+        "observation_date": "2026-11-27",
         "trend_10d": [
-          2.24,
           2.24,
           2.2,
           2.21,
@@ -115,10 +114,10 @@
           2.15,
           2.13,
           2.12,
-          2.12
+          2.12,
+          2.15
         ],
         "trend_dates": [
-          "11-12",
           "11-13",
           "11-16",
           "11-17",
@@ -127,26 +126,26 @@
           "11-20",
           "11-23",
           "11-24",
-          "11-25"
+          "11-25",
+          "11-27"
         ]
       },
       "t10y2y": {
         "name": "10Y-2Y 美债期限利差",
         "code": "T10Y2Y",
-        "value": 0.24,
+        "value": 0.25,
         "unit": "%",
         "freq": "daily",
         "window_label": "近3年历史分位数",
-        "chg_1d_bp": -4.0,
+        "chg_1d_bp": 1.0,
         "chg_5d_bp": -3.0,
         "percentile_3y": 37,
         "threshold_warn": 0.5,
         "role": "收益率曲线形态与长债期限溢价(Term Premium)周期",
         "url": "https://fred.stlouisfed.org/series/T10Y2Y",
         "data_status": "updated",
-        "observation_date": "2026-11-25",
+        "observation_date": "2026-11-27",
         "trend_10d": [
-          0.24,
           0.27,
           0.29,
           0.3,
@@ -155,10 +154,10 @@
           0.29,
           0.29,
           0.28,
-          0.24
+          0.24,
+          0.25
         ],
         "trend_dates": [
-          "11-12",
           "11-13",
           "11-16",
           "11-17",
@@ -167,7 +166,8 @@
           "11-20",
           "11-23",
           "11-24",
-          "11-25"
+          "11-25",
+          "11-27"
         ]
       },
       "effr": {
@@ -184,7 +184,7 @@
         "role": "美联储短端政策利率基准与全球大宗贸易融资资金成本锚",
         "url": "https://fred.stlouisfed.org/series/EFFR",
         "data_status": "updated",
-        "observation_date": "2026-11-24",
+        "observation_date": "2026-11-25",
         "trend_10d": [
           3.88,
           3.88,
@@ -196,46 +196,6 @@
           3.88,
           3.88,
           3.88
-        ],
-        "trend_dates": [
-          "11-10",
-          "11-12",
-          "11-13",
-          "11-16",
-          "11-17",
-          "11-18",
-          "11-19",
-          "11-20",
-          "11-23",
-          "11-24"
-        ]
-      },
-      "rrp": {
-        "name": "美联储隔夜逆回购 (ON RRP)",
-        "code": "RRPONTSYD",
-        "value": 0.3,
-        "unit": "十亿美元",
-        "freq": "daily",
-        "window_label": "近3年历史分位数",
-        "chg_1d_bp": -0.0,
-        "chg_5d_bp": -0.0,
-        "percentile_3y": 5,
-        "threshold_warn": 200.0,
-        "role": "美元非银超额流动性第一道缓冲池（耗尽后QT直接抽离银行准备金）",
-        "url": "https://fred.stlouisfed.org/series/RRPONTSYD",
-        "data_status": "updated",
-        "observation_date": "2026-11-25",
-        "trend_10d": [
-          0.25,
-          0.33,
-          0.18,
-          0.35,
-          0.33,
-          0.41,
-          0.4,
-          0.35,
-          0.3,
-          0.3
         ],
         "trend_dates": [
           "11-12",
@@ -250,23 +210,62 @@
           "11-25"
         ]
       },
+      "rrp": {
+        "name": "美联储隔夜逆回购 (ON RRP)",
+        "code": "RRPONTSYD",
+        "value": 0.35,
+        "unit": "十亿美元",
+        "freq": "daily",
+        "window_label": "近3年历史分位数",
+        "chg_1d_bp": 0.0,
+        "chg_5d_bp": -0.1,
+        "percentile_3y": 7,
+        "threshold_warn": 200.0,
+        "role": "美元非银超额流动性第一道缓冲池（耗尽后QT直接抽离银行准备金）",
+        "url": "https://fred.stlouisfed.org/series/RRPONTSYD",
+        "data_status": "updated",
+        "observation_date": "2026-11-27",
+        "trend_10d": [
+          0.33,
+          0.18,
+          0.35,
+          0.33,
+          0.41,
+          0.4,
+          0.35,
+          0.3,
+          0.3,
+          0.35
+        ],
+        "trend_dates": [
+          "11-13",
+          "11-16",
+          "11-17",
+          "11-18",
+          "11-19",
+          "11-20",
+          "11-23",
+          "11-24",
+          "11-25",
+          "11-27"
+        ]
+      },
       "tga": {
         "name": "美国财政部一般账户 (TGA)",
         "code": "WTREGEN",
-        "value": 916.61,
+        "value": 902.04,
         "unit": "十亿美元",
         "freq": "weekly",
         "window_label": "近3年历史分位数(周频)",
-        "chg_1d_bp": 2.2,
-        "chg_5d_bp": 33.2,
-        "percentile_3y": 87,
+        "chg_1d_bp": -14.6,
+        "chg_5d_bp": -50.0,
+        "percentile_3y": 81,
         "threshold_warn": 800.0,
         "role": "财政发债抽水(>800B显著收紧市场准备金)与财政支出投放账户",
         "url": "https://fred.stlouisfed.org/series/WTREGEN",
         "data_status": "updated",
-        "observation_date": "2026-11-18",
+        "observation_date": "2026-11-25",
         "trend_10d": [
-          877.03,
           977.08,
           948.67,
           880.25,
@@ -275,10 +274,10 @@
           999.73,
           957.17,
           914.37,
-          916.61
+          916.61,
+          902.04
         ],
         "trend_dates": [
-          "09-16",
           "09-23",
           "09-30",
           "10-07",
@@ -287,26 +286,26 @@
           "10-28",
           "11-04",
           "11-11",
-          "11-18"
+          "11-18",
+          "11-25"
         ]
       },
       "wresbal": {
         "name": "美联储商业银行准备金余额",
         "code": "WRESBAL",
-        "value": 2979.66,
+        "value": 2963.67,
         "unit": "十亿美元",
         "freq": "weekly",
         "window_label": "近3年历史分位数(周频)",
-        "chg_1d_bp": 19.1,
-        "chg_5d_bp": -42.5,
-        "percentile_3y": 20,
+        "chg_1d_bp": -16.0,
+        "chg_5d_bp": 1.1,
+        "percentile_3y": 18,
         "threshold_warn": 3000.0,
         "role": "美元流动性最终底线（跌破3000B触发华尔街回购市场资金紧缺预警）",
         "url": "https://fred.stlouisfed.org/series/WRESBAL",
         "data_status": "updated",
-        "observation_date": "2026-11-18",
+        "observation_date": "2026-11-25",
         "trend_10d": [
-          3013.79,
           2930.19,
           2948.09,
           3029.66,
@@ -315,10 +314,10 @@
           2893.77,
           2930.09,
           2960.6,
-          2979.66
+          2979.66,
+          2963.67
         ],
         "trend_dates": [
-          "09-16",
           "09-23",
           "09-30",
           "10-07",
@@ -327,27 +326,26 @@
           "10-28",
           "11-04",
           "11-11",
-          "11-18"
+          "11-18",
+          "11-25"
         ]
       },
       "hy_oas": {
         "name": "美国高收益债利差 (HY OAS)",
         "code": "BAMLH0A0HYM2",
-        "value": 3.72,
+        "value": 3.77,
         "unit": "%",
         "freq": "daily",
         "window_label": "近3年历史分位数",
-        "chg_1d_bp": 9.0,
-        "chg_5d_bp": 29.0,
-        "percentile_3y": 95,
+        "chg_1d_bp": 0.0,
+        "chg_5d_bp": 25.0,
+        "percentile_3y": 96,
         "threshold_warn": 4.0,
         "role": "跨市场信用风险溢价与全球套息交易(Carry Trade)去杠杆温度计",
         "url": "https://fred.stlouisfed.org/series/BAMLH0A0HYM2",
         "data_status": "updated",
-        "observation_date": "2026-11-24",
+        "observation_date": "2026-11-26",
         "trend_10d": [
-          3.3,
-          3.2,
           3.23,
           3.34,
           3.43,
@@ -355,49 +353,9 @@
           3.52,
           3.76,
           3.63,
-          3.72
-        ],
-        "trend_dates": [
-          "11-11",
-          "11-12",
-          "11-13",
-          "11-16",
-          "11-17",
-          "11-18",
-          "11-19",
-          "11-20",
-          "11-23",
-          "11-24"
-        ]
-      }
-    },
-    "cn": {
-      "cn10y": {
-        "name": "10Y 中债国债收益率",
-        "code": "CN10Y",
-        "value": 1.59,
-        "unit": "%",
-        "freq": "daily",
-        "window_label": "近3年历史分位数",
-        "chg_1d_bp": -0.0,
-        "chg_5d_bp": 1.6,
-        "percentile_3y": 1,
-        "threshold_warn": 2.15,
-        "role": "DCF分母端：国内无风险利率核心锚与低利率资产荒温度计",
-        "url": "https://yield.chinabond.com.cn/",
-        "data_status": "updated",
-        "observation_date": "2026-11-26",
-        "trend_10d": [
-          1.61,
-          1.63,
-          1.61,
-          1.59,
-          1.58,
-          1.58,
-          1.59,
-          1.59,
-          1.59,
-          1.59
+          3.72,
+          3.77,
+          3.77
         ],
         "trend_dates": [
           "11-13",
@@ -410,6 +368,48 @@
           "11-24",
           "11-25",
           "11-26"
+        ]
+      }
+    },
+    "cn": {
+      "cn10y": {
+        "name": "10Y 中债国债收益率",
+        "code": "CN10Y",
+        "value": 1.6,
+        "unit": "%",
+        "freq": "daily",
+        "window_label": "近3年历史分位数",
+        "chg_1d_bp": 0.6,
+        "chg_5d_bp": 1.7,
+        "percentile_3y": 2,
+        "threshold_warn": 2.15,
+        "role": "DCF分母端：国内无风险利率核心锚与低利率资产荒温度计",
+        "url": "https://yield.chinabond.com.cn/",
+        "data_status": "updated",
+        "observation_date": "2026-11-27",
+        "trend_10d": [
+          1.63,
+          1.61,
+          1.59,
+          1.58,
+          1.58,
+          1.59,
+          1.59,
+          1.59,
+          1.59,
+          1.6
+        ],
+        "trend_dates": [
+          "11-16",
+          "11-17",
+          "11-18",
+          "11-19",
+          "11-20",
+          "11-23",
+          "11-24",
+          "11-25",
+          "11-26",
+          "11-27"
         ]
       },
       "cn30y": {
@@ -419,16 +419,15 @@
         "unit": "%",
         "freq": "daily",
         "window_label": "近3年历史分位数",
-        "chg_1d_bp": 0.5,
-        "chg_5d_bp": 2.6,
-        "percentile_3y": 37,
+        "chg_1d_bp": 0.7,
+        "chg_5d_bp": 3.2,
+        "percentile_3y": 39,
         "threshold_warn": 2.35,
         "role": "险资长久期配置锚与超长期特别国债供给冲击敏感度指标",
         "url": "https://yield.chinabond.com.cn/",
         "data_status": "updated",
-        "observation_date": "2026-11-26",
+        "observation_date": "2026-11-27",
         "trend_10d": [
-          2.06,
           2.08,
           2.06,
           2.05,
@@ -437,10 +436,10 @@
           2.05,
           2.04,
           2.06,
+          2.07,
           2.07
         ],
         "trend_dates": [
-          "11-13",
           "11-16",
           "11-17",
           "11-18",
@@ -449,7 +448,8 @@
           "11-23",
           "11-24",
           "11-25",
-          "11-26"
+          "11-26",
+          "11-27"
         ]
       },
       "dr007": {
@@ -535,20 +535,19 @@
       "us_cn_spread": {
         "name": "中美 10Y 国债利差 (中-美)",
         "code": "CN10Y-US10Y",
-        "value": -3.26,
+        "value": -3.34,
         "unit": "%",
         "freq": "daily",
         "window_label": "近3年历史分位数",
-        "chg_1d_bp": 6.6,
-        "chg_5d_bp": 22.2,
-        "percentile_3y": 10,
+        "chg_1d_bp": -8.4,
+        "chg_5d_bp": 12.2,
+        "percentile_3y": 6,
         "threshold_warn": -2.2,
         "role": "跨境资本流动、人民币汇率稳汇率约束与港股离岸市场分母端锚",
         "url": "https://yield.chinabond.com.cn/",
         "data_status": "updated",
-        "observation_date": "2026-11-25",
+        "observation_date": "2026-11-27",
         "trend_10d": [
-          -3.5,
           -3.54,
           -3.49,
           -3.49,
@@ -557,10 +556,10 @@
           -3.34,
           -3.33,
           -3.32,
-          -3.26
+          -3.26,
+          -3.34
         ],
         "trend_dates": [
-          "11-12",
           "11-13",
           "11-16",
           "11-17",
@@ -569,7 +568,8 @@
           "11-20",
           "11-23",
           "11-24",
-          "11-25"
+          "11-25",
+          "11-27"
         ]
       },
       "m1_m2_diff": {
@@ -615,20 +615,19 @@
       "erp_csi300": {
         "name": "沪深300 股债风险溢价 (ERP)",
         "code": "CSI300_ERP",
-        "value": 6.35,
+        "value": 6.18,
         "unit": "%",
         "freq": "daily",
         "window_label": "近3年历史分位数",
-        "chg_1d_bp": -3.1,
-        "chg_5d_bp": 4.1,
-        "percentile_3y": 53,
+        "chg_1d_bp": -16.0,
+        "chg_5d_bp": -8.4,
+        "percentile_3y": 41,
         "threshold_warn": 5.8,
         "role": "A股股债性价比标尺（>=5.8%且处高分位代表权益向下空间封锁）",
         "url": "https://www.csindex.com.cn/",
         "data_status": "updated",
-        "observation_date": "2026-11-26",
+        "observation_date": "2026-11-27",
         "trend_10d": [
-          6.31,
           6.29,
           6.31,
           6.29,
@@ -637,10 +636,10 @@
           6.33,
           6.3,
           6.38,
-          6.35
+          6.35,
+          6.18
         ],
         "trend_dates": [
-          "11-13",
           "11-16",
           "11-17",
           "11-18",
@@ -649,7 +648,8 @@
           "11-23",
           "11-24",
           "11-25",
-          "11-26"
+          "11-26",
+          "11-27"
         ]
       }
     },
@@ -658,10 +658,10 @@
         "id": "dxy",
         "name": "美元指数 (DXY)",
         "code": "ICE: DXY",
-        "value": 103.73,
+        "value": 104.04,
         "unit": "",
-        "change": "-0.05%",
-        "trend": "down",
+        "change": "+0.25%",
+        "trend": "up",
         "signal": "美元偏强震荡 · 留意计价弹性",
         "spark": [
           103.58,
@@ -673,7 +673,7 @@
           103.83,
           103.7,
           103.78,
-          103.73
+          104.04
         ],
         "role": "全球大宗商品计价货币总锚与非美市场跨境资本流动压力表",
         "data_status": "updated",
@@ -707,9 +707,9 @@
         "id": "cop_gold",
         "name": "铜金比 (Copper/Gold)",
         "code": "COMEX HG / GC",
-        "value": 3.42,
+        "value": 3.36,
         "unit": "",
-        "change": "+0.09",
+        "change": "+0.03",
         "trend": "up",
         "signal": "制造业与电网用铜回暖",
         "spark": [
@@ -722,7 +722,7 @@
           3.37,
           3.34,
           3.33,
-          3.42
+          3.36
         ],
         "role": "全球制造业景气度、特高压电网CapEx与AIDC数据中心用铜密度领先风向标",
         "data_status": "updated",
@@ -756,9 +756,9 @@
         "id": "gold_oil",
         "name": "金油比 (Gold/WTI)",
         "code": "XAU / WTI",
-        "value": 42.6,
+        "value": 44.2,
         "unit": "x",
-        "change": "+0.3x",
+        "change": "+1.9x",
         "trend": "up",
         "signal": "避险溢价相对走扩",
         "spark": [
@@ -771,7 +771,7 @@
           43.9,
           43.0,
           42.3,
-          42.6
+          44.2
         ],
         "role": "衡量货币避险溢价 vs 工业实体能源需求与再通胀交易的温度计",
         "data_status": "updated",
@@ -860,8 +860,8 @@
         "status": "warning",
         "status_label": "实际利率承压",
         "trigger_condition": "10Y美债>=4.35% 或 实际利率>=2.20% 或 5日>=+12bp",
-        "current_reading": "名义 4.91% (5日-19.0bp) | 实际 2.79% + 通胀 2.12%",
-        "action_instruction": "10Y美债报4.91%（近5日虽边际回落19.0bp），拆解看10Y TIPS实际利率高达2.79%、通胀预期2.12%。高实际利率直接抬升DCF无风险分母，压制远期现金流占比高但无当期业绩的纯概念股；海外债久期宜控制在短端。"
+        "current_reading": "名义 4.85% (5日-22.0bp) | 实际 2.73% + 通胀 2.15%",
+        "action_instruction": "10Y美债报4.85%（近5日虽边际回落22.0bp），拆解看10Y TIPS实际利率高达2.73%、通胀预期2.15%。高实际利率直接抬升DCF无风险分母，压制远期现金流占比高但无当期业绩的纯概念股；海外债久期宜控制在短端。"
       },
       {
         "id": "RULE_US_LIQUIDITY_BUFFER",
@@ -869,8 +869,8 @@
         "status": "danger",
         "status_label": "准备金逼近临界",
         "trigger_condition": "(RRP<200B且TGA>750B) 或 准备金<3000B 或 HY利差>=4%",
-        "current_reading": "准备金 2979.66B | RRP 0.3B | TGA 916.61B | HY利差 3.72%",
-        "action_instruction": "ON RRP蓄水池仅剩0.3B（近乎耗尽），叠加财政部TGA高达916.61B抽水，直接导致美联储商业银行准备金降至2979.66B（低于3000B充裕线），高收益债利差报3.72%。警惕华尔街回购利率跳升与海外高Beta资产去杠杆波动。"
+        "current_reading": "准备金 2963.67B | RRP 0.35B | TGA 902.04B | HY利差 3.77%",
+        "action_instruction": "ON RRP蓄水池仅剩0.35B（近乎耗尽），叠加财政部TGA高达902.04B抽水，直接导致美联储商业银行准备金降至2963.67B（低于3000B充裕线），高收益债利差报3.77%。警惕华尔街回购利率跳升与海外高Beta资产去杠杆波动。"
       },
       {
         "id": "RULE_CROSS_BORDER_FX",
@@ -878,8 +878,8 @@
         "status": "warning",
         "status_label": "深度倒挂约束",
         "trigger_condition": "中美10Y利差 <= -2.20% 触发外部稳汇率与离岸分母约束",
-        "current_reading": "中美利差 -3.26% (中债1.59% - 美债4.91%)",
-        "action_instruction": "中美10Y利差深度倒挂至-3.26%（中债1.59% vs 美债4.91%），外部稳汇率（USD/CNH）约束国内央行大幅降息空间，同时压制离岸港股分母端外资回流；权益配置宜偏重内需自主可控、上游紧缺资源与A股红利底仓。"
+        "current_reading": "中美利差 -3.34% (中债1.6% - 美债4.85%)",
+        "action_instruction": "中美10Y利差深度倒挂至-3.34%（中债1.6% vs 美债4.85%），外部稳汇率（USD/CNH）约束国内央行大幅降息空间，同时压制离岸港股分母端外资回流；权益配置宜偏重内需自主可控、上游紧缺资源与A股红利底仓。"
       },
       {
         "id": "RULE_CN_ASSET_FAMINE",
@@ -887,8 +887,8 @@
         "status": "bullish",
         "status_label": "资产荒延续",
         "trigger_condition": "10Y中债<=2.18% 且 DR007<=1.80% 且 5日变动<8bp",
-        "current_reading": "10Y中债 1.59% (1%分位) | 30Y 2.07% | DR007 1.37%",
-        "action_instruction": "银行间FDR007报1.37%维持低位，注意10Y中债已处1.59%（近3年1%极低分位），30Y超长债(2.07%)赔率空间受限且对特别国债供给敏感，建议以1-3年高等级信用债吃票息+央国企红利低波替代盲目拉长久期。"
+        "current_reading": "10Y中债 1.6% (2%分位) | 30Y 2.07% | DR007 1.37%",
+        "action_instruction": "银行间FDR007报1.37%维持低位，注意10Y中债已处1.6%（近3年2%极低分位），30Y超长债(2.07%)赔率空间受限且对特别国债供给敏感，建议以1-3年高等级信用债吃票息+央国企红利低波替代盲目拉长久期。"
       },
       {
         "id": "RULE_CN_WEALTH_REDEMPTION",
@@ -896,8 +896,8 @@
         "status": "bullish",
         "status_label": "非银无赎回压力",
         "trigger_condition": "R007-DR007分层利差>=25bp 或 (长债5日>=10bp且利差>=15bp)",
-        "current_reading": "R007-DR007利差 5.55bp | 10Y中债5日 +1.6bp",
-        "action_instruction": "R007-DR007分层利差仅5.55bp且10Y中债5日变动+1.6bp，银行向非银流动性传导顺畅，理财与债基规模稳定，信用债票息套息环境安全。"
+        "current_reading": "R007-DR007利差 5.55bp | 10Y中债5日 +1.7bp",
+        "action_instruction": "R007-DR007分层利差仅5.55bp且10Y中债5日变动+1.7bp，银行向非银流动性传导顺畅，理财与债基规模稳定，信用债票息套息环境安全。"
       },
       {
         "id": "RULE_CN_CREDIT_PULSE",
@@ -914,8 +914,8 @@
         "status": "bullish",
         "status_label": "高性价比赔率区",
         "trigger_condition": "沪深300 ERP >= 5.80% 触发高性价比配置信号",
-        "current_reading": "ERP 6.35% (近3年 53%分位 | 1日 -3.1bp)",
-        "action_instruction": "沪深300 ERP达6.35%（近3年53%分位（因包含2024年极端底部样本，但绝对溢价已显著高于5.8%配置线）），10Y国债1.59%低利率推升权益隐含风险溢价，指数向下空间受封锁，宜通过哑铃进攻端布局低库存+Back紧缺资源品与CapEx订单验证的硬科技板块。"
+        "current_reading": "ERP 6.18% (近3年 41%分位 | 1日 -16.0bp)",
+        "action_instruction": "沪深300 ERP达6.18%（近3年41%分位（因包含2024年极端底部样本，但绝对溢价已显著高于5.8%配置线）），10Y国债1.6%低利率推升权益隐含风险溢价，指数向下空间受封锁，宜通过哑铃进攻端布局低库存+Back紧缺资源品与CapEx订单验证的硬科技板块。"
       },
       {
         "id": "RULE_COMMODITY_BASIS_RESONANCE",
@@ -923,7 +923,7 @@
         "status": "neutral",
         "status_label": "期现结构分化",
         "trigger_condition": "显性库存5年分位<25% 且 现货升水(Back) 触发资源进攻；Contango且库存>=35% 触发伪红利排雷",
-        "current_reading": "强Back低库存: 阴极铜 | Contango排雷: 螺纹钢 | DXY 103.73",
+        "current_reading": "强Back低库存: 阴极铜 | Contango排雷: 螺纹钢 | DXY 104.04",
         "action_instruction": "大宗商品期现结构呈品种间分化，严格遵循“只做低库存+Back升水龙头、规避Contango累库伪红利”原则。"
       }
     ],
@@ -949,7 +949,7 @@
           "group_key": "defense_dividend",
           "weight": 25,
           "tag": "险资OCI类债替代锚",
-          "rationale": "10Y国债1.59%（1%分位）背景下，自由现金流充裕的水电/运营商/国有大行具备险资OCI账户强力承接（已定向剔除【螺纹钢】等Contango现货贴水累库伪红利）。"
+          "rationale": "10Y国债1.6%（2%分位）背景下，自由现金流充裕的水电/运营商/国有大行具备险资OCI账户强力承接（已定向剔除【螺纹钢】等Contango现货贴水累库伪红利）。"
         },
         {
           "bucket": "进攻端：全球AI算力基建与电力/铜连接卡点",
@@ -976,9 +976,9 @@
     },
     "soft_reports": {
       "trading_perspective": {
-        "title": "【今日总纲·交易视角】海外高实际利率(2.79%)杀概念 vs 国内10月M1-M2改善(-2.7%) · 锁定「55%短债真红利 + 45%铜矿/算力真景气」",
-        "core_marginal_change": "① 国内资金与信用破冰：11-27货币网FDR007报1.37%（R-DR分层仅5.55bp），10月M1-M2剪刀差收窄至-2.7%（环比+1.3pct），10Y中债1.59%推升沪深300 ERP至6.35%。\n② 海外分母与流动性底线：10Y美债4.91%（实际利率2.79% + 通胀2.12%），ON RRP仅剩0.3B、TGA 916.61B，银行准备金2979.66B（破3000B充裕线）。\n③ 大宗仓单与产业链分化：上期所11-26铜仓单报1,969 吨（日减 -1,211吨 (2026-11-26)，期货近月月差+2500元）；沪铝(+0.29%) vs 氧化铝(-0.08%)，黑钨无当日新长单。",
-        "transmission_logic": "① 海外分母紧约束（杀纯概念）：10Y美债5日虽边际回落19.0bp至4.91%，但10Y实际利率仍高达2.79%、准备金降至2979.66B(<3000B线)，坚决规避无当期现金流的纯题材股。\n② 国内分子端破冰 + 资产荒底仓：10月M1-M2收窄至-2.7%（环比+1.3pct），10Y中债1.59% + FDR007 1.37%，既支撑央企真红利底仓（长江电力/中国移动），又激活顺周期高自给资源与工控修复。\n③ 多空鲜明表态：看多【高自给铜矿(紫金) + 放量算力龙头(中际旭创11-26成交197.06亿(+5.18%))】；跟踪【云铝股份(沪铝+0.29% vs 氧化铝-0.08%，同步核验吨铝利润)】；剔除【无日频新长单的黑钨链与淡季螺纹钢】。",
+        "title": "【今日总纲·交易视角】海外高实际利率(2.73%)杀概念 vs 国内10月M1-M2改善(-2.7%) · 锁定「55%短债真红利 + 45%铜矿/算力真景气」",
+        "core_marginal_change": "① 国内资金与信用破冰：11-27货币网FDR007报1.37%（R-DR分层仅5.55bp），10月M1-M2剪刀差收窄至-2.7%（环比+1.3pct），10Y中债1.6%推升沪深300 ERP至6.18%。\n② 海外分母与流动性底线：10Y美债4.85%（实际利率2.73% + 通胀2.15%），ON RRP仅剩0.35B、TGA 902.04B，银行准备金2963.67B（破3000B充裕线）。\n③ 大宗仓单与产业链分化：上期所11-27铜仓单报2,044 吨（日增 +75吨 (2026-11-27)，期货近月月差+2320元）；沪铝(+2.43%) vs 氧化铝(+0.04%)，黑钨无当日新长单。",
+        "transmission_logic": "① 海外分母紧约束（杀纯概念）：10Y美债5日虽边际回落22.0bp至4.85%，但10Y实际利率仍高达2.73%、准备金降至2963.67B(<3000B线)，坚决规避无当期现金流的纯题材股。\n② 国内分子端破冰 + 资产荒底仓：10月M1-M2收窄至-2.7%（环比+1.3pct），10Y中债1.6% + FDR007 1.37%，既支撑央企真红利底仓（长江电力/中国移动），又激活顺周期高自给资源与工控修复。\n③ 多空鲜明表态：看多【高自给铜矿(紫金) + 放量算力龙头(中际旭创11-27成交333.97亿(+19.98%))】；跟踪【云铝股份(沪铝+2.43% vs 氧化铝+0.04%，同步核验吨铝利润)】；剔除【无日频新长单的黑钨链与淡季螺纹钢】。",
         "action_instructions": [
           "① 仓位指令：防守 55%（短债30% + 央企真红利25%）: 进攻 45%（AI算力20% + 紧缺资源15% + 工控/Agent 10%）。",
           "② 明日重点看谁：进攻首选 300308 中际旭创（量价与TSMC月报高景气核对）与 601899 紫金矿业（铜仓单连降+期货Back）；底仓持 600900 长江电力 / 600941 中国移动。",
@@ -986,12 +986,12 @@
         ]
       },
       "wealth_perspective": {
-        "title": "【今日总纲·渠道视角】非银分层仅5.55bp无赎回冲击，10Y中债1.59%长久期赔率薄 · 主推「短债底仓 + 央企红利/硬科技固收+」",
-        "core_marginal_change": "① 赎回雷达安全：11-27定盘FDR007报1.37%，R007-DR007流动性分层利差仅5.55bp（<25bp安全区），非银融资顺畅。\n② 长端利率赔率偏薄：10Y中债报1.59%（近3年1%极低分位）、30Y中债报2.07%，继续拉长久期性价比低。\n③ 含权固收+性价比突出：沪深300 ERP达6.35%（53%分位），叠加10月M1-M2改善至-2.7%，权益向下空间封锁。",
+        "title": "【今日总纲·渠道视角】非银分层仅5.55bp无赎回冲击，10Y中债1.6%长久期赔率薄 · 主推「短债底仓 + 央企红利/硬科技固收+」",
+        "core_marginal_change": "① 赎回雷达安全：11-27定盘FDR007报1.37%，R007-DR007流动性分层利差仅5.55bp（<25bp安全区），非银融资顺畅。\n② 长端利率赔率偏薄：10Y中债报1.6%（近3年2%极低分位）、30Y中债报2.07%，继续拉长久期性价比低。\n③ 含权固收+性价比突出：沪深300 ERP达6.18%（41%分位），叠加10月M1-M2改善至-2.7%，权益向下空间封锁。",
         "transmission_logic": "① 纯债归因（控久期锁票息）：决定理财回撤的核心是非银分层（R007-DR007当前5.55bp）。当前短端信用债套息极稳，但30Y超长债对供给敏感，宜控久期在1-3年。\n② 固收+归因（哑铃替代单押长债）：用 25% 央企真红利替代高波动超长债，用 45% 算力/金铜捕捉实体修复。\n③ 渠道排雷（严防伪红利）：绝不把黑色建材等淡季弱现货周期股当作红利产推荐给稳健客群，避免『赚股息、亏净值』。",
         "action_instructions": [
           "① 存续安抚话术：“当前银行间FDR007仅1.37%、非银分层利差仅5.55bp（远低于25bp预警线），无机构赎回踩踏压力，短债底仓安心持有吃票息。”",
-          "② 转化促单话术：“10年国债1.59%已处历史地板，单押长债赔率有限；建议按『30%短债理财 + 25%央企真红利 + 45%硬科技/金铜固收+』做哑铃配置。”",
+          "② 转化促单话术：“10年国债1.6%已处历史地板，单押长债赔率有限；建议按『30%短债理财 + 25%央企真红利 + 45%硬科技/金铜固收+』做哑铃配置。”",
           "③ 三条风控扳机线：紧盯 10Y中债 2.15%（久期止损）、FDR007 1.85%（资金收敛）、R007-DR007 25bp（赎回预警，当前仅5.55bp）。"
         ]
       }
@@ -1063,35 +1063,35 @@
       "sector": "有色金属",
       "name": "SHFE 阴极铜",
       "code": "主力CU2701 / 近月CU2612",
-      "futuresPrice": 89300,
-      "spotPrice": 91800,
+      "futuresPrice": 93660,
+      "spotPrice": 95980,
       "priceLabel": "主力CU2701 / 近月CU2612",
       "diffLabel": "期货近月-主力月差 (非同日现货)",
       "unit": "元/吨",
-      "changePct": -0.51,
-      "basis": 2500,
-      "basisPct": 2.8,
-      "structure": "期货近月Back (+2,500元/吨)",
+      "changePct": 5.51,
+      "basis": 2320,
+      "basisPct": 2.48,
+      "structure": "期货近月Back (+2,320元/吨)",
       "invLevel": "11.8%",
       "invPercentile": 11.8,
       "invWindowLabel": "上期所近5年注册仓单分位",
-      "warrantTons": "1,969 吨",
-      "invWeeklyChange": "日减 -1,211吨 (2026-11-26)",
-      "futuresObsDate": "2026-11-26",
-      "warrantObsDate": "2026-11-26",
+      "warrantTons": "2,044 吨",
+      "invWeeklyChange": "日增 +75吨 (2026-11-27)",
+      "futuresObsDate": "2026-11-27",
+      "warrantObsDate": "2026-11-27",
       "spotRefNote": "统计局11月上旬1#电解铜市场价维持高位；缺少同日现货报价时仅以期货月差与仓单核验",
       "spotObsDate": "2026-11-10 (统计局旬报)",
       "data_status": "updated",
-      "cycleStage": "注册仓单1,969吨(-1,211) · 期货近月Back",
+      "cycleStage": "注册仓单2,044吨(+75) · 期货近月Back",
       "capexLink": "AIDC电源HVDC铜排/液冷散热 + 特高压电网CapEx刚性拉动",
-      "firstHandNote": "上期所2026-11-26铜注册仓单报1,969吨（单日-1,211吨），近月CU2612(91,800)较主力CU2701(89,300)月差+2,500元/吨(+2.80%)。",
+      "firstHandNote": "上期所2026-11-27铜注册仓单报2,044吨（单日+75吨），近月CU2612(95,980)较主力CU2701(93,660)月差+2,320元/吨(+2.48%)。",
       "forwardCurve": [
-        91800,
-        89300,
-        88960,
-        89030,
-        89020,
-        89180
+        95980,
+        93660,
+        93390,
+        93450,
+        93480,
+        93400
       ],
       "basisHistory": [
         {
@@ -1128,11 +1128,10 @@
       "fundamentalGrade": "STRONG_BULL",
       "gradeLabel": "仓单去化+期货Back 强共振",
       "gradeBadgeColor": "emerald",
-      "gradeSummary": "交易所注册仓单处 11.8% 低分位（上期所近5年注册仓单分位），且近月较主力合约升水 +2.8%（期货月差Back），供需紧平衡支撑上游高自给率矿端龙头。",
+      "gradeSummary": "交易所注册仓单处 11.8% 低分位（上期所近5年注册仓单分位），且近月较主力合约升水 +2.48%（期货月差Back），供需紧平衡支撑上游高自给率矿端龙头。",
       "allowOffense": true,
       "pseudoDividendWarning": false,
       "trend_10d": [
-        105150,
         104090,
         103510,
         97920,
@@ -1141,10 +1140,10 @@
         92350,
         92410,
         87950,
-        89300
+        89300,
+        93660
       ],
       "trend_dates": [
-        "11-13",
         "11-16",
         "11-17",
         "11-18",
@@ -1153,7 +1152,8 @@
         "11-23",
         "11-24",
         "11-25",
-        "11-26"
+        "11-26",
+        "11-27"
       ]
     },
     {
@@ -1161,38 +1161,38 @@
       "sector": "铝产业链 (收入vs成本)",
       "name": "SHFE 电解铝(AL) & 氧化铝(AO)",
       "code": "沪铝AL2701 / 氧化铝AO2701",
-      "futuresPrice": 2550,
-      "spotPrice": 2526,
+      "futuresPrice": 2561,
+      "spotPrice": 2537,
       "priceLabel": "氧化铝主力AO2701 / 近月AO2612",
-      "diffLabel": "氧化铝近月-主力月差 | 沪铝AL2701: 21,080 (+0.29%)",
-      "alFuturesPrice": 21080,
-      "alNearPrice": 22065,
-      "alChangePct": 0.29,
+      "diffLabel": "氧化铝近月-主力月差 | 沪铝AL2701: 21,510 (+2.43%)",
+      "alFuturesPrice": 21510,
+      "alNearPrice": 22515,
+      "alChangePct": 2.43,
       "unit": "元/吨",
-      "changePct": -0.08,
+      "changePct": 0.04,
       "basis": -24,
       "basisPct": -0.94,
-      "structure": "铝Back(+985) / 氧化铝Contango(-24)",
+      "structure": "铝Back(+1005) / 氧化铝Contango(-24)",
       "invLevel": "14.5%",
       "invPercentile": 14.5,
       "invWindowLabel": "氧化铝2023.06上市以来(3.4年)仓单分位",
-      "warrantTons": "氧化铝212,113吨 / 沪铝27,475吨",
-      "invWeeklyChange": "AO日+2,714吨 / AL日-375吨",
-      "futuresObsDate": "2026-11-26",
-      "warrantObsDate": "2026-11-26",
+      "warrantTons": "氧化铝213,337吨 / 沪铝27,225吨",
+      "invWeeklyChange": "AO日+1,224吨 / AL日-250吨",
+      "futuresObsDate": "2026-11-27",
+      "warrantObsDate": "2026-11-27",
       "spotRefNote": "统计局11月上旬铝锭市场价跟踪；注意氧化铝是电解铝(云铝)的采购成本项",
       "spotObsDate": "2026-11-10 (统计局旬报)",
       "data_status": "updated",
-      "cycleStage": "沪铝(+0.29%) vs 氧化铝(-0.08%) · 铝价走势同步核验",
+      "cycleStage": "沪铝(+2.43%) vs 氧化铝(+0.04%) · 铝价走势同步核验",
       "capexLink": "绿电铝产能天花板 + 区分【氧化铝外销受益】与【电解铝外购氧化铝成本挤压】",
-      "firstHandNote": "2026-11-26上期所氧化铝212,113吨 / 沪铝27,475吨（AO日+2,714吨 / AL日-375吨，AO分位基于2023.06上市以来历史）。当日沪铝主力21,080元/吨(+0.29%)，氧化铝主力AO2701报2,550元/吨(-0.08%)，近月-主力月差-24元/吨。",
+      "firstHandNote": "2026-11-27上期所氧化铝213,337吨 / 沪铝27,225吨（AO日+1,224吨 / AL日-250吨，AO分位基于2023.06上市以来历史）。当日沪铝主力21,510元/吨(+2.43%)，氧化铝主力AO2701报2,561元/吨(+0.04%)，近月-主力月差-24元/吨。",
       "forwardCurve": [
-        2526,
-        2550,
-        2558,
-        2569,
-        2582,
-        2596
+        2537,
+        2561,
+        2566,
+        2576,
+        2590,
+        2603
       ],
       "basisHistory": [
         {
@@ -1233,7 +1233,6 @@
       "allowOffense": false,
       "pseudoDividendWarning": false,
       "trend_10d": [
-        2622,
         2614,
         2603,
         2591,
@@ -1242,10 +1241,10 @@
         2553,
         2553,
         2555,
-        2550
+        2550,
+        2561
       ],
       "trend_dates": [
-        "11-13",
         "11-16",
         "11-17",
         "11-18",
@@ -1254,7 +1253,8 @@
         "11-23",
         "11-24",
         "11-25",
-        "11-26"
+        "11-26",
+        "11-27"
       ]
     },
     {
@@ -1360,35 +1360,35 @@
       "sector": "贵金属",
       "name": "SHFE 沪金 / 上金所 Au99.99",
       "code": "主力AU2702 / 现货Au99.99",
-      "futuresPrice": 767.62,
-      "spotPrice": 765.82,
+      "futuresPrice": 785.84,
+      "spotPrice": 784.0,
       "priceLabel": "沪金主力AU2702 / 上金所Au99.99",
       "diffLabel": "期现基差 (Au99.99现货 - 沪金主力)",
       "unit": "元/克",
-      "changePct": -0.17,
-      "basis": -1.8,
+      "changePct": 3.9,
+      "basis": -1.84,
       "basisPct": -0.23,
       "structure": "上金所Au99.99日行情实取",
       "invLevel": "18.5%",
       "invPercentile": 18.5,
       "invWindowLabel": "黄金按实际利率与央行购金定价(不套用工业库存)",
       "warrantTons": "SHFE交割金库 119,892千克",
-      "invWeeklyChange": "近月AU2612报 765.36元/克",
-      "futuresObsDate": "2026-11-26",
-      "warrantObsDate": "2026-11-26",
-      "spotRefNote": "上金所 Au99.99 每日收盘实取 (765.82元/克，日+1.12%)",
-      "spotObsDate": "2026-11-26 (上金所日行情)",
+      "invWeeklyChange": "近月AU2612报 783.78元/克",
+      "futuresObsDate": "2026-11-27",
+      "warrantObsDate": "2026-11-27",
+      "spotRefNote": "上金所 Au99.99 每日收盘实取 (784.00元/克，日+2.37%)",
+      "spotObsDate": "2026-11-27 (上金所日行情)",
       "data_status": "updated",
-      "cycleStage": "10Y TIPS实际利率(2.79%)约束短线 · 央行购金托底",
+      "cycleStage": "10Y TIPS实际利率(2.73%)约束短线 · 央行购金托底",
       "capexLink": "对冲美国财政赤字与信用货币稀释的战略底仓",
-      "firstHandNote": "2026-11-26上期所沪金主力AU2702收报767.62元/克(-0.17%)，上金所Au99.99报765.82元/克，期现基差-1.80元/克(-0.23%)。",
+      "firstHandNote": "2026-11-27上期所沪金主力AU2702收报785.84元/克(+3.90%)，上金所Au99.99报784.00元/克，期现基差-1.84元/克(-0.23%)。",
       "forwardCurve": [
-        765.82,
-        765.36,
-        766.34,
-        767.62,
-        769.52,
-        771.64
+        784.0,
+        783.78,
+        784.58,
+        785.84,
+        787.58,
+        789.7
       ],
       "basisHistory": [
         {
@@ -1425,11 +1425,10 @@
       "fundamentalGrade": "PRECIOUS_HEDGE",
       "gradeLabel": "央行购金底仓 · 实际利率约束",
       "gradeBadgeColor": "amber",
-      "gradeSummary": "10Y TIPS实际利率(2.79%)处高位对金价构成短线分母约束，上金所Au99.99(765.82元/克)与央行购金封锁中期下行空间，宜待实际利率回落分批配置。",
+      "gradeSummary": "10Y TIPS实际利率(2.73%)处高位对金价构成短线分母约束，上金所Au99.99(784.0元/克)与央行购金封锁中期下行空间，宜待实际利率回落分批配置。",
       "allowOffense": true,
       "pseudoDividendWarning": false,
       "trend_10d": [
-        839.0,
         830.56,
         834.66,
         814.32,
@@ -1438,10 +1437,10 @@
         780.8,
         780.42,
         757.4,
-        767.62
+        767.62,
+        785.84
       ],
       "trend_dates": [
-        "11-13",
         "11-16",
         "11-17",
         "11-18",
@@ -1450,7 +1449,8 @@
         "11-23",
         "11-24",
         "11-25",
-        "11-26"
+        "11-26",
+        "11-27"
       ]
     },
     {
@@ -1458,35 +1458,35 @@
       "sector": "能源化工",
       "name": "INE 中质含硫原油 / EIA周库存",
       "code": "主力SC2701 / 近月SC2612",
-      "futuresPrice": 593.3,
-      "spotPrice": 603.9,
+      "futuresPrice": 602.4,
+      "spotPrice": 615.1,
       "priceLabel": "主力SC2701 / 近月SC2612",
       "diffLabel": "期货近月-主力月差 (SC2612 - SC2701)",
       "unit": "元/桶",
-      "changePct": 2.66,
-      "basis": 10.6,
-      "basisPct": 1.79,
-      "structure": "期货近月Back (+10.6元/桶)",
+      "changePct": 1.41,
+      "basis": 12.7,
+      "basisPct": 2.11,
+      "structure": "期货近月Back (+12.7元/桶)",
       "invLevel": "31.0%",
       "invPercentile": 31.0,
       "invWindowLabel": "EIA美国商业原油5年周库存分位(地域:美国)",
       "warrantTons": "INE仓单 339.6万桶",
       "invWeeklyChange": "INE仓单日增减 +0桶",
-      "futuresObsDate": "2026-11-26",
-      "warrantObsDate": "2026-11-26 (INE) / 2026-11-13 (EIA周报)",
+      "futuresObsDate": "2026-11-27",
+      "warrantObsDate": "2026-11-27 (INE) / 2026-11-13 (EIA周报)",
       "spotRefNote": "库存分位源自美国EIA商业原油周库存(具地域属性)，配合INE原油交割库仓单366.6万桶跟踪",
       "spotObsDate": "2026-11-13 (EIA周报)",
       "data_status": "updated",
       "cycleStage": "近月期货Back(+1.60%) + 美国商业原油库存中性偏低",
       "capexLink": "全球海工油服上游勘探CapEx + 通胀预期(T10YIE)驱动锚",
-      "firstHandNote": "2026-11-26INE原油主力SC2701收报593.3元/桶(+2.66%)，近月SC2612报603.9元/桶，近月-主力月差+10.6元/桶(+1.79%)；INE仓单 339.6万桶。",
+      "firstHandNote": "2026-11-27INE原油主力SC2701收报602.4元/桶(+1.41%)，近月SC2612报615.1元/桶，近月-主力月差+12.7元/桶(+2.11%)；INE仓单 339.6万桶。",
       "forwardCurve": [
-        603.9,
-        593.3,
-        584.5,
-        575.1,
-        564.3,
-        556.2
+        615.1,
+        602.4,
+        593.9,
+        584.6,
+        573.6,
+        565.0
       ],
       "basisHistory": [
         {
@@ -1523,11 +1523,10 @@
       "fundamentalGrade": "BACK_WATCH",
       "gradeLabel": "期货近月Back · 结构支撑",
       "gradeBadgeColor": "sky",
-      "gradeSummary": "期货近月保持升水 +1.79%（月差Back），库存分位 31.0%（EIA美国商业原油5年周库存分位(地域:美国)）处于可控区间，具备逢低配置价值。",
+      "gradeSummary": "期货近月保持升水 +2.11%（月差Back），库存分位 31.0%（EIA美国商业原油5年周库存分位(地域:美国)）处于可控区间，具备逢低配置价值。",
       "allowOffense": true,
       "pseudoDividendWarning": false,
       "trend_10d": [
-        625.5,
         620.8,
         581.4,
         576.1,
@@ -1536,10 +1535,10 @@
         586.0,
         571.1,
         573.8,
-        593.3
+        593.3,
+        602.4
       ],
       "trend_dates": [
-        "11-13",
         "11-16",
         "11-17",
         "11-18",
@@ -1548,43 +1547,44 @@
         "11-23",
         "11-24",
         "11-25",
-        "11-26"
+        "11-26",
+        "11-27"
       ]
     },
     {
       "id": "rebar",
       "sector": "黑色建材",
       "name": "SHFE 螺纹钢",
-      "code": "主力RB2701 / 近月RB2612",
-      "futuresPrice": 3070,
+      "code": "主力RB2705 / 近月RB2612",
+      "futuresPrice": 3035,
       "spotPrice": 2955,
       "priceLabel": "主力RB2701 / 统计局旬度现货参考",
-      "diffLabel": "旬度现货-主力价差 | 期货近月RB2612: 3,083",
+      "diffLabel": "旬度现货-主力价差 | 期货近月RB2612: 3,094",
       "unit": "元/吨",
-      "changePct": 0.75,
-      "basis": -115,
-      "basisPct": -3.75,
+      "changePct": 0.6,
+      "basis": -80,
+      "basisPct": -2.64,
       "structure": "现货偏弱 / 老仓单集中注销",
       "invLevel": "42.0%",
       "invPercentile": 42.0,
       "invWindowLabel": "社会库存与钢厂库存5年季节性分位",
       "warrantTons": "仓库10,058吨 / 厂库25,500吨",
-      "invWeeklyChange": "日增减 +0吨 (2026-11-26)",
-      "futuresObsDate": "2026-11-26",
-      "warrantObsDate": "2026-11-26",
+      "invWeeklyChange": "日增减 +0吨 (2026-11-27)",
+      "futuresObsDate": "2026-11-27",
+      "warrantObsDate": "2026-11-27",
       "spotRefNote": "统计局11月上旬螺纹钢(Φ20mm,HRB400E)市场价偏弱；仓单骤减系老仓单制度性注销而非终端抢料",
       "spotObsDate": "2026-11-10 (统计局旬报)",
       "data_status": "updated",
       "cycleStage": "冬季施工淡季 + 规避传统周期伪红利",
       "capexLink": "传统地产/基建施工映射（须待10月M1-M2改善向实物工作量传导确认）",
-      "firstHandNote": "2026-11-26上期所螺纹钢主力RB2701收报3,070元/吨(+0.75%)，近月RB2612报3,083元/吨，仓单仓库10,058吨 / 厂库25,500吨。冬季淡季维持伪红利排雷观察。",
+      "firstHandNote": "2026-11-27上期所螺纹钢主力RB2705收报3,035元/吨(+0.60%)，近月RB2612报3,094元/吨，仓单仓库10,058吨 / 厂库25,500吨。冬季淡季维持伪红利排雷观察。",
       "forwardCurve": [
         2955,
-        3083,
-        3070,
-        3000,
-        3005,
-        3019
+        3094,
+        3077,
+        3007,
+        3017,
+        3031
       ],
       "basisHistory": [
         {
@@ -1621,11 +1621,10 @@
       "fundamentalGrade": "CONTANGO_BEAR",
       "gradeLabel": "现货偏弱+高库存 · 伪红利排雷",
       "gradeBadgeColor": "rose",
-      "gradeSummary": "旬度现货较期货贴水 -3.75% 且库存分位达 42.0%，反映施工淡季需求偏弱，严禁因静态高股息率将其作为红利底仓。",
+      "gradeSummary": "旬度现货较期货贴水 -2.64% 且库存分位达 42.0%，反映施工淡季需求偏弱，严禁因静态高股息率将其作为红利底仓。",
       "allowOffense": false,
       "pseudoDividendWarning": true,
       "trend_10d": [
-        3035,
         3014,
         2965,
         2977,
@@ -1634,10 +1633,10 @@
         3004,
         3028,
         3062,
-        3070
+        3070,
+        3077
       ],
       "trend_dates": [
-        "11-13",
         "11-16",
         "11-17",
         "11-18",
@@ -1646,7 +1645,8 @@
         "11-23",
         "11-24",
         "11-25",
-        "11-26"
+        "11-26",
+        "11-27"
       ]
     }
   ],
@@ -1662,17 +1662,16 @@
         "gold"
       ],
       "commodity": "阴极铜 / 黄金",
-      "price": 23.75,
-      "changePct": 3.4,
-      "turnoverYi": 64.29,
-      "vsCsi300Pct": 3.34,
-      "quoteDate": "2026-11-26",
+      "price": 24.85,
+      "changePct": 4.63,
+      "turnoverYi": 88.76,
+      "vsCsi300Pct": 0.46,
+      "quoteDate": "2026-11-27",
       "announcementDate": "2026-10-25 (三季报产量核验)",
       "selfSufficiency": "矿产铜107万吨/金72吨，矿端高自给率直接受益铜价与金价",
       "firstHandCatalyst": "上期所铜仓单11-19再降905吨至6,501吨，期货近月CU2612升水主力+2,570元/吨；11-19成交额99.2亿元跟随铜金期货回调",
       "cancelCondition": "若上期所铜仓单连续3日累库>3000吨，或沪铜近月-主力转为Contango贴水，取消资源首选评级",
       "trend_10d": [
-        26.38,
         25.96,
         25.99,
         24.52,
@@ -1681,10 +1680,10 @@
         24.26,
         23.21,
         22.97,
-        23.75
+        23.75,
+        24.85
       ],
       "trend_dates": [
-        "11-13",
         "11-16",
         "11-17",
         "11-18",
@@ -1693,7 +1692,8 @@
         "11-23",
         "11-24",
         "11-25",
-        "11-26"
+        "11-26",
+        "11-27"
       ],
       "resonanceGrade": "STRONG_RESONANCE",
       "actionLabel": "仓单去化+期货Back · 矿端观察首选",
@@ -1710,17 +1710,16 @@
         "alumina"
       ],
       "commodity": "电解铝(收入) - 氧化铝(成本)",
-      "price": 20.35,
-      "changePct": 1.7,
-      "turnoverYi": 8.75,
-      "vsCsi300Pct": 1.64,
-      "quoteDate": "2026-11-26",
+      "price": 21.36,
+      "changePct": 4.96,
+      "turnoverYi": 11.05,
+      "vsCsi300Pct": 0.79,
+      "quoteDate": "2026-11-27",
       "announcementDate": "2026-03-28 (2025年报成本结构)",
       "selfSufficiency": "据2025年报：原铝板块采购氧化铝与电力生产电解铝（氧化铝自给率不足100%，外购部分属成本项）",
       "firstHandCatalyst": "11-19沪铝主力21,330元/吨(-1.66%)下跌而氧化铝2,590元/吨(+0.04%)抗跌，仅氧化铝涨/抗跌会挤压外购氧化铝的吨铝利润",
       "cancelCondition": "当氧化铝涨幅>沪铝涨幅导致模拟吨铝利润走弱时，取消自动看多（已触发降级为待确认）",
       "trend_10d": [
-        23.04,
         22.84,
         22.68,
         22.24,
@@ -1729,10 +1728,10 @@
         21.35,
         20.5,
         20.01,
-        20.35
+        20.35,
+        21.36
       ],
       "trend_dates": [
-        "11-13",
         "11-16",
         "11-17",
         "11-18",
@@ -1741,7 +1740,8 @@
         "11-23",
         "11-24",
         "11-25",
-        "11-26"
+        "11-26",
+        "11-27"
       ],
       "resonanceGrade": "NEUTRAL_WATCH",
       "actionLabel": "期现均衡观察 · 结合量价跟踪",
@@ -1758,17 +1758,16 @@
         "tungsten"
       ],
       "commodity": "超硬材料 / 碳化钨工具",
-      "price": 6.35,
-      "changePct": -2.31,
-      "turnoverYi": 0.06,
-      "vsCsi300Pct": -2.37,
-      "quoteDate": "2026-11-26",
+      "price": 6.94,
+      "changePct": 9.29,
+      "turnoverYi": 0.14,
+      "vsCsi300Pct": 5.12,
+      "quoteDate": "2026-11-27",
       "announcementDate": "2026-11-05 (11月上半月钨长单)",
       "selfSufficiency": "金刚石与硬质合金超硬工具（注：碳化钨亦为原材料成本项，需验证向下游顺价能力）",
       "firstHandCatalyst": "黑钨长单停留在11-05数据且无日频行情源，11-19成交额仅0.09亿元、日跌-4.95%，已撤下自动强共振评级",
       "cancelCondition": "无新一期钨企长单报价或成交额低于0.2亿元时，仅作观察，不列入次日进攻候选",
       "trend_10d": [
-        7.67,
         7.55,
         7.45,
         7.27,
@@ -1777,10 +1776,10 @@
         6.79,
         6.84,
         6.5,
-        6.35
+        6.35,
+        6.94
       ],
       "trend_dates": [
-        "11-13",
         "11-16",
         "11-17",
         "11-18",
@@ -1789,7 +1788,8 @@
         "11-23",
         "11-24",
         "11-25",
-        "11-26"
+        "11-26",
+        "11-27"
       ],
       "resonanceGrade": "CACHE_WATCH",
       "actionLabel": "长单/公告观察 · 暂停自动强共振",
@@ -1806,17 +1806,16 @@
         "tungsten"
       ],
       "commodity": "高端钛合金 / 超导线材",
-      "price": 37.86,
-      "changePct": -2.92,
-      "turnoverYi": 2.91,
-      "vsCsi300Pct": -2.98,
-      "quoteDate": "2026-11-26",
+      "price": 41.2,
+      "changePct": 8.82,
+      "turnoverYi": 5.16,
+      "vsCsi300Pct": 4.65,
+      "quoteDate": "2026-11-27",
       "announcementDate": "2026-10-29 (三季报合同负债核验)",
       "selfSufficiency": "航空钛材与MRI/核聚变超导线材龙头，按公司公告与合同负债跟踪（不挂钩黑钨日频共振）",
       "firstHandCatalyst": "11-19逆势收涨+1.80%（跑赢沪深300 +1.77pct，成交额4.40亿元），三季报超导线材与高端钛材交付稳健",
       "cancelCondition": "若后续季度合同负债环比下滑或跌破20日均线量能萎缩，移出观察候选",
       "trend_10d": [
-        42.35,
         40.21,
         39.41,
         40.02,
@@ -1825,10 +1824,10 @@
         40.15,
         39.8,
         39.0,
-        37.86
+        37.86,
+        41.2
       ],
       "trend_dates": [
-        "11-13",
         "11-16",
         "11-17",
         "11-18",
@@ -1837,7 +1836,8 @@
         "11-23",
         "11-24",
         "11-25",
-        "11-26"
+        "11-26",
+        "11-27"
       ],
       "resonanceGrade": "CACHE_WATCH",
       "actionLabel": "长单/公告观察 · 暂停自动强共振",
@@ -1854,17 +1854,16 @@
         "gold"
       ],
       "commodity": "黄金 (国内主力矿山)",
-      "price": 23.3,
-      "changePct": 3.1,
-      "turnoverYi": 15.92,
-      "vsCsi300Pct": 3.04,
-      "quoteDate": "2026-11-26",
+      "price": 24.37,
+      "changePct": 4.59,
+      "turnoverYi": 19.64,
+      "vsCsi300Pct": 0.42,
+      "quoteDate": "2026-11-27",
       "announcementDate": "2026-10-30 (三季报自产金核验)",
       "selfSufficiency": "自产矿产金约45吨，纯正黄金矿端高自给率龙头",
       "firstHandCatalyst": "11-19上金所Au99.99收于801.93元/克，股价逆势收涨+1.55%（成交额14.70亿元，跑赢基准+1.52pct），展现矿端底部韧性",
       "cancelCondition": "若10Y TIPS实际利率突破3.00%且上金所Au99.99跌破780元/克，暂停逢低加配",
       "trend_10d": [
-        24.41,
         23.85,
         24.19,
         23.29,
@@ -1873,10 +1872,10 @@
         23.6,
         22.75,
         22.6,
-        23.3
+        23.3,
+        24.37
       ],
       "trend_dates": [
-        "11-13",
         "11-16",
         "11-17",
         "11-18",
@@ -1885,7 +1884,8 @@
         "11-23",
         "11-24",
         "11-25",
-        "11-26"
+        "11-26",
+        "11-27"
       ],
       "resonanceGrade": "PRECIOUS_ANCHOR",
       "actionLabel": "央行购金底仓 · 盯实际利率拐点",
@@ -1902,17 +1902,16 @@
         "gold"
       ],
       "commodity": "黄金 (加纳金矿)",
-      "price": 33.83,
-      "changePct": 7.29,
-      "turnoverYi": 15.03,
-      "vsCsi300Pct": 7.23,
-      "quoteDate": "2026-11-26",
+      "price": 36.48,
+      "changePct": 7.83,
+      "turnoverYi": 16.59,
+      "vsCsi300Pct": 3.66,
+      "quoteDate": "2026-11-27",
       "announcementDate": "2026-10-28 (三季报加纳矿产金核验)",
       "selfSufficiency": "海外加纳三大金矿权益，20cm高Beta金矿标的",
       "firstHandCatalyst": "受10Y美债实际利率(2.89%)高位与沪金主力(-2.60%)回调影响，11-19收跌-2.83%（成交额5.51亿元），相对山东黄金偏弱",
       "cancelCondition": "在实际利率(DFII10)未拐头向下且相对板块龙头(山东黄金)走弱期间，暂不追高",
       "trend_10d": [
-        37.11,
         34.89,
         35.69,
         34.61,
@@ -1921,10 +1920,10 @@
         34.74,
         33.15,
         31.53,
-        33.83
+        33.83,
+        36.48
       ],
       "trend_dates": [
-        "11-13",
         "11-16",
         "11-17",
         "11-18",
@@ -1933,7 +1932,8 @@
         "11-23",
         "11-24",
         "11-25",
-        "11-26"
+        "11-26",
+        "11-27"
       ],
       "resonanceGrade": "PRECIOUS_ANCHOR",
       "actionLabel": "央行购金底仓 · 盯实际利率拐点",
@@ -1950,17 +1950,16 @@
         "crude"
       ],
       "commodity": "原油 / 油田工程技术服务",
-      "price": 30.73,
-      "changePct": 4.17,
-      "turnoverYi": 0.92,
-      "vsCsi300Pct": 4.11,
-      "quoteDate": "2026-11-26",
+      "price": 32.65,
+      "changePct": 6.25,
+      "turnoverYi": 1.22,
+      "vsCsi300Pct": 2.08,
+      "quoteDate": "2026-11-27",
       "announcementDate": "2026-10-29 (三季报油服营收核验)",
       "selfSufficiency": "中石油/中海油油田化学与地面工程服务商（业绩取决于上游油企CapEx结算而非单日油价）",
       "firstHandCatalyst": "INE原油近月SC2612虽升水主力+9.4元/桶，但个股11-19收跌-4.15%（成交额0.49亿元），短期走势与单日油价背离",
       "cancelCondition": "日成交额不足1亿元且相对基准走弱(-4.18pct)时，仅作跟踪，不触发次日交易",
       "trend_10d": [
-        35.37,
         33.1,
         31.98,
         31.6,
@@ -1969,10 +1968,10 @@
         30.99,
         31.24,
         29.5,
-        30.73
+        30.73,
+        32.65
       ],
       "trend_dates": [
-        "11-13",
         "11-16",
         "11-17",
         "11-18",
@@ -1981,7 +1980,8 @@
         "11-23",
         "11-24",
         "11-25",
-        "11-26"
+        "11-26",
+        "11-27"
       ],
       "resonanceGrade": "BACK_SUPPORT",
       "actionLabel": "期货Back支撑 · 结合量价跟踪",
@@ -1998,17 +1998,16 @@
         "crude"
       ],
       "commodity": "原油 (海上油气区块勘探)",
-      "price": 19.32,
-      "changePct": 3.26,
-      "turnoverYi": 1.7,
-      "vsCsi300Pct": 3.2,
-      "quoteDate": "2026-11-26",
+      "price": 20.34,
+      "changePct": 5.28,
+      "turnoverYi": 1.68,
+      "vsCsi300Pct": 1.11,
+      "quoteDate": "2026-11-27",
       "announcementDate": "2026-10-28 (三季报区块进展)",
       "selfSufficiency": "地震数据处理找油技术 + 海上油气区块开发分成权益",
       "firstHandCatalyst": "11-19收跌-2.23%（成交额0.88亿元），虽INE原油维持近月Back结构，但区块投产兑现需以巨潮正式钻井/投产公告为准",
       "cancelCondition": "无新钻井/产量公告且成交额低于1.5亿元时，维持观察，不自动升级为强共振",
       "trend_10d": [
-        22.41,
         21.5,
         21.05,
         21.06,
@@ -2017,10 +2016,10 @@
         19.73,
         19.4,
         18.71,
-        19.32
+        19.32,
+        20.34
       ],
       "trend_dates": [
-        "11-13",
         "11-16",
         "11-17",
         "11-18",
@@ -2029,7 +2028,8 @@
         "11-23",
         "11-24",
         "11-25",
-        "11-26"
+        "11-26",
+        "11-27"
       ],
       "resonanceGrade": "BACK_SUPPORT",
       "actionLabel": "期货Back支撑 · 结合量价跟踪",
@@ -2044,17 +2044,16 @@
       "bucketLabel": "防御 · 央国企真红利",
       "linkedCommodities": [],
       "commodity": "10Y中债(1.58%) 险资OCI类债锚",
-      "price": 31.8,
-      "changePct": -0.5,
-      "turnoverYi": 31.84,
-      "vsCsi300Pct": -0.56,
-      "quoteDate": "2026-11-26",
+      "price": 31.22,
+      "changePct": -1.82,
+      "turnoverYi": 54.31,
+      "vsCsi300Pct": -5.99,
+      "quoteDate": "2026-11-27",
       "announcementDate": "2026-10-31 (三季报来水与发电量公告)",
       "selfSufficiency": "六库联调垄断水电资产，现金流与分红完全免疫工业品Contango累库风险",
       "firstHandCatalyst": "10Y中债降至1.58%、11-20 FDR007仅1.37%，11-19长江电力收涨+0.65%（成交28.11亿元，近10日由29.91稳步升至30.88元）",
       "cancelCondition": "若10Y中债收益率快速反弹突破2.15%导致股息率利差收窄，则下调防御红利权重",
       "trend_10d": [
-        29.91,
         30.49,
         30.6,
         30.68,
@@ -2063,10 +2062,10 @@
         31.35,
         31.64,
         31.96,
-        31.8
+        31.8,
+        31.22
       ],
       "trend_dates": [
-        "11-13",
         "11-16",
         "11-17",
         "11-18",
@@ -2075,7 +2074,8 @@
         "11-23",
         "11-24",
         "11-25",
-        "11-26"
+        "11-26",
+        "11-27"
       ],
       "resonanceGrade": "CORE_DEFENSE",
       "actionLabel": "真红利底仓 · 险资OCI承接",
@@ -2088,11 +2088,11 @@
       "board": "主板 (10cm)",
       "bucketGroup": "defense_dividend",
       "bucketLabel": "防御 · 央国企真红利",
-      "price": 109.68,
-      "changePct": 2.0,
-      "turnoverYi": 13.98,
-      "vsCsi300Pct": 1.94,
-      "quoteDate": "2026-11-26",
+      "price": 105.49,
+      "changePct": -3.82,
+      "turnoverYi": 22.2,
+      "vsCsi300Pct": -7.99,
+      "quoteDate": "2026-11-27",
       "announcementDate": "2026-10-22 (三季报经营现金流与派息指引)",
       "linkedCommodities": [],
       "commodity": "高派息央企 + 运营商算力底座",
@@ -2100,7 +2100,6 @@
       "firstHandCatalyst": "11-19收涨+0.39%报107.80元（成交额15.87亿元，近10日由98.70低点连续走强至107.80元），与低利率资产荒高度契合",
       "cancelCondition": "若应收账款周转明显恶化或运营商资本开支超预期重回扩张侵蚀自由现金流，取消红利首选",
       "trend_10d": [
-        101.46,
         104.49,
         105.2,
         107.38,
@@ -2109,10 +2108,10 @@
         107.75,
         107.77,
         107.53,
-        109.68
+        109.68,
+        105.49
       ],
       "trend_dates": [
-        "11-13",
         "11-16",
         "11-17",
         "11-18",
@@ -2121,7 +2120,8 @@
         "11-23",
         "11-24",
         "11-25",
-        "11-26"
+        "11-26",
+        "11-27"
       ],
       "resonanceGrade": "CORE_DEFENSE",
       "actionLabel": "真红利底仓 · 险资OCI承接",
@@ -2138,17 +2138,16 @@
         "copper"
       ],
       "commodity": "800G/1.6T光模块 (行业月报+季报核对)",
-      "price": 430.18,
-      "changePct": 5.18,
-      "turnoverYi": 197.06,
-      "vsCsi300Pct": 5.12,
-      "quoteDate": "2026-11-26",
+      "price": 516.15,
+      "changePct": 19.98,
+      "turnoverYi": 333.97,
+      "vsCsi300Pct": 15.81,
+      "quoteDate": "2026-11-27",
       "announcementDate": "2026-10-28 (三季报毛利率/存货核验) | 2026-11-10 (台积电10月营收参照)",
       "selfSufficiency": "全球800G/1.6T光模块龙头（注：台积电月营收仅验证行业景气，公司订单与份额以季报/公告为准）",
       "firstHandCatalyst": "11-19放量收涨+3.05%报408.40元（全市场头部成交额166.08亿元，跑赢沪深300 +3.02pct），资金承接强劲",
       "cancelCondition": "若下季北美四大云厂CapEx同比增速斜率放缓，或公司季报存货跌价准备/毛利率环比恶化，立即止盈降级",
       "trend_10d": [
-        466.2,
         408.97,
         393.0,
         396.3,
@@ -2157,10 +2156,10 @@
         417.2,
         417.0,
         409.0,
-        430.18
+        430.18,
+        516.15
       ],
       "trend_dates": [
-        "11-13",
         "11-16",
         "11-17",
         "11-18",
@@ -2169,7 +2168,8 @@
         "11-23",
         "11-24",
         "11-25",
-        "11-26"
+        "11-26",
+        "11-27"
       ],
       "resonanceGrade": "CAPEX_TRACK",
       "actionLabel": "行业月报高景气 · 个股按公告核对",
@@ -2184,17 +2184,16 @@
       "bucketLabel": "进攻 · 科技CapEx跟踪",
       "linkedCommodities": [],
       "commodity": "通用工控 + 具身智能丝杠/伺服",
-      "price": 51.8,
-      "changePct": -0.82,
-      "turnoverYi": 10.83,
-      "vsCsi300Pct": -0.88,
-      "quoteDate": "2026-11-26",
+      "price": 55.2,
+      "changePct": 6.56,
+      "turnoverYi": 21.04,
+      "vsCsi300Pct": 2.39,
+      "quoteDate": "2026-11-27",
       "announcementDate": "2026-10-29 (三季报) | 10月M1-M2(-2.7%)顺周期跟踪",
       "selfSufficiency": "国内通用伺服/变频器龙头（人形机器人执行器仍处送样孵化期，必须待正式定点公告确认，不提前记为已验证）",
       "firstHandCatalyst": "11-19平盘报53.45元（成交额11.75亿元）；央行10月M1-M2剪刀差收窄至-2.7%利好工控主业筑底，机器人业务待正式定点公告",
       "cancelCondition": "未披露正式量产定点通知书前，不赋予具身智能溢价；若工控订单增速低于预期则移出候选",
       "trend_10d": [
-        53.45,
         52.96,
         52.8,
         53.45,
@@ -2203,10 +2202,10 @@
         54.63,
         53.61,
         52.23,
-        51.8
+        51.8,
+        55.2
       ],
       "trend_dates": [
-        "11-13",
         "11-16",
         "11-17",
         "11-18",
@@ -2215,7 +2214,8 @@
         "11-23",
         "11-24",
         "11-25",
-        "11-26"
+        "11-26",
+        "11-27"
       ],
       "resonanceGrade": "CAPEX_TRACK",
       "actionLabel": "行业月报高景气 · 个股按公告核对",
